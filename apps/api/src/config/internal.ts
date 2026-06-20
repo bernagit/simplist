@@ -1,0 +1,21 @@
+const DEFAULT_SERVER_PORT = 3000
+const DEFAULT_LOG_LEVEL = 'info'
+const DEFAULT_IS_DEV = false
+const DEFAULT_JWT_EXPIRES_IN = '24h'
+// eslint-disable-next-line @typescript-eslint/no-magic-numbers
+const DEFAULT_COOKIE_MAX_AGE = 24 * 60 * 60 * 1000
+
+const SHUTDOWN_TIMEOUT_MS = 10000
+
+const MS_IN_SECOND = 1000
+
+export const cfg = {
+  DEFAULT_SERVER_PORT,
+  DEFAULT_LOG_LEVEL,
+  DEFAULT_IS_DEV,
+  DEFAULT_JWT_EXPIRES_IN,
+  SHUTDOWN_TIMEOUT_MS,
+  MS_IN_SECOND,
+  AUTH_COOKIE_NAME: 'accessToken',
+  COOKIE_MAX_AGE: DEFAULT_COOKIE_MAX_AGE
+}

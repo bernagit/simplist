@@ -1,0 +1,35 @@
+import { boolean, pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core'
+import { users } from './users'
+
+export const lists = pgTable('lists', {
+  id: uuid().primaryKey().defaultRandom(),
+  ownerId: uuid('owner_id')
+    .notNull()
+    .references(() => users.id),
+
+  title: text('title').notNull(),
+  description: text('description'),
+  color: varchar('color', { length: 25 }).notNull(),
+  icon: varchar('icon', { length: 100 }).notNull(),
+  favorite: boolean('favorite').notNull().default(false),
+
+  archivedAt: timestamp('archived_at', {
+    withTimezone: true
+  }),
+
+  createdAt: timestamp('created_at', {
+    withTimezone: true
+  })
+    .notNull()
+    .defaultNow(),
+
+  updatedAt: timestamp('updated_at', {
+    withTimezone: true
+  })
+    .notNull()
+    .defaultNow(),
+
+  deletedAt: timestamp('deleted_at', {
+    withTimezone: true
+  })
+})
