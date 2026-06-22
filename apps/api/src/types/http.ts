@@ -17,6 +17,8 @@ export const Errors = {
 
   unauthorized: (msg = 'Unauthorized') => new AppError(msg, HTTP_STATUS.UNAUTHORIZED),
 
+  forbidden: (msg = 'Forbidden') => new AppError(msg, HTTP_STATUS.FORBIDDEN),
+
   notFound: (msg = 'Not found') => new AppError(msg, HTTP_STATUS.NOT_FOUND),
 
   conflict: (msg = 'Conflict') => new AppError(msg, HTTP_STATUS.CONFLICT),

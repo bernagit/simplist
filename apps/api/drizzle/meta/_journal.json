@@ -8,6 +8,20 @@
       "when": 1781957745667,
       "tag": "0000_initial_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1781969863439,
+      "tag": "0001_fix list nullable field",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1782139890679,
+      "tag": "0002_remove favorite in lists",
+      "breakpoints": true
     }
   ]
 }

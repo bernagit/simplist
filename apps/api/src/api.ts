@@ -4,12 +4,15 @@ import { HTTP_STATUS } from './types/http'
 import { morganMiddleware } from './infrastructure/middleware/morgan'
 import { errorHandler } from './infrastructure/middleware/errorHandler'
 import authRouter from './modules/auth/auth.route'
+import listRouter from './modules/list/list.route'
+import cookieParser from 'cookie-parser'
 
 const app = express()
 
 app.use(express.json())
 app.use(correlationIdMiddleware)
 app.use(morganMiddleware)
+app.use(cookieParser())
 
 // health check endpoint
 app.get('/api/health', (_req, res) => {
@@ -17,6 +20,7 @@ app.get('/api/health', (_req, res) => {
 })
 
 app.use('/api/auth', authRouter)
+app.use('/api/lists', listRouter)
 
 // this should be the last middleware to ensure it catches all errors
 app.use(errorHandler)

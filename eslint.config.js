@@ -4,6 +4,7 @@ import tsParser from '@typescript-eslint/parser'
 import tsPlugin from '@typescript-eslint/eslint-plugin'
 import prettierPlugin from 'eslint-plugin-prettier'
 import prettierConfig from 'eslint-config-prettier'
+import drizzlePlugin from 'eslint-plugin-drizzle'
 import globals from 'globals'
 
 const config = defineConfig([
@@ -42,7 +43,8 @@ const config = defineConfig([
     },
     plugins: {
       '@typescript-eslint': tsPlugin,
-      prettier: prettierPlugin
+      prettier: prettierPlugin,
+      drizzle: drizzlePlugin
     },
     rules: {
       ...tsPlugin.configs.recommended.rules,

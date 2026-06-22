@@ -6,7 +6,7 @@ morgan.token('correlation-id', () => {
   return requestContext.getStore()?.correlationId ?? '-'
 })
 
-export const morganMiddleware = morgan(':correlation-id :method :url :status :response-time ms', {
+export const morganMiddleware = morgan(':method :url :status :response-time ms', {
   stream: {
     write: (message: string) => {
       logger.http(message.trim())

@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm'
 import db from '../../infrastructure/database/db'
 import { users } from '../../db/schema/users'
 
-export class AuthRepository {
+export class UserRepository {
   async findByEmail(email: string) {
     const [user] = await db.select().from(users).where(eq(users.email, email))
     return user

@@ -1,18 +1,14 @@
 import { Router } from 'express'
-
 import { validate } from '../../infrastructure/middleware/validate'
-
-import { AuthRepository } from './auth.repository'
-import { AuthService } from './auth.service'
 import { AuthController } from './auth.controller'
-
 import { registerSchema, loginSchema, refreshSchema } from './auth.schema'
+import { requireAuth } from '../../infrastructure/middleware/auth'
 
 const router = Router()
 
-const repository = new AuthRepository()
-const service = new AuthService(repository)
-const controller = new AuthController(service)
+const controller = new AuthController()
+
+router.get('/me', requireAuth, controller.getCurrentUser)
 
 router.post('/register', validate(registerSchema), controller.register)
 

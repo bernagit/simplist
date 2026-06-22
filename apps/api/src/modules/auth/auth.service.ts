@@ -1,17 +1,18 @@
 import { jwtService } from '../../infrastructure/auth/jwt'
 import { createModuleLogger } from '../../infrastructure/logging/logger'
 import { Errors } from '../../types/http'
-import { AuthRepository } from './auth.repository'
+import { UserRepository } from '../user/user.repository'
 import { LoginInput, RegisterInput } from './auth.schema'
 import bcrypt from 'bcrypt'
 
 export class AuthService {
   private readonly logger = createModuleLogger('AuthService')
-  constructor(private authRepository: AuthRepository) {}
+  private userRepository: UserRepository = new UserRepository()
+  constructor() {}
 
   public async register(data: RegisterInput) {
     // check if user already exists
-    const existingUser = await this.authRepository.findByEmail(data.email)
+    const existingUser = await this.userRepository.findByEmail(data.email)
     if (existingUser) {
       throw Errors.conflict('User with this email already exists')
     }
@@ -20,7 +21,7 @@ export class AuthService {
     const passwordHash = await this.hashPassword(data.password)
 
     // create user
-    const user = await this.authRepository.createUser({
+    const user = await this.userRepository.createUser({
       name: data.name || '',
       email: data.email,
       passwordHash
@@ -34,7 +35,7 @@ export class AuthService {
   }
 
   public async login(data: LoginInput) {
-    const user = await this.authRepository.findByEmail(data.email)
+    const user = await this.userRepository.findByEmail(data.email)
     if (!user) {
       throw Errors.unauthorized('Invalid email or password')
     }

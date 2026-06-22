@@ -8,7 +8,27 @@ import { createModuleLogger } from '../../infrastructure/logging/logger'
 
 export class AuthController {
   private readonly logger = createModuleLogger('AuthController')
-  constructor(private readonly authService: AuthService) {}
+  private readonly authService: AuthService = new AuthService()
+  constructor() {}
+
+  getCurrentUser = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const user = req.user
+
+      if (!user) {
+        return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+          message: 'Not authenticated'
+        })
+      }
+
+      res.status(HTTP_STATUS.OK).json({
+        message: 'Current user retrieved successfully',
+        data: user
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
 
   register = async (req: Request, res: Response, next: NextFunction) => {
     try {

@@ -1,4 +1,5 @@
 import type { z } from 'zod'
+import { User } from './shared'
 
 declare global {
   namespace Express {
@@ -7,7 +8,8 @@ declare global {
         body?: unknown
         params?: unknown
         query?: unknown
-      }
+      },
+      user?: User
     }
   }
 }

@@ -1,4 +1,4 @@
-import { boolean, pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core'
 import { users } from './users'
 
 export const lists = pgTable('lists', {
@@ -9,9 +9,8 @@ export const lists = pgTable('lists', {
 
   title: text('title').notNull(),
   description: text('description'),
-  color: varchar('color', { length: 25 }).notNull(),
-  icon: varchar('icon', { length: 100 }).notNull(),
-  favorite: boolean('favorite').notNull().default(false),
+  color: varchar('color', { length: 25 }),
+  icon: varchar('icon', { length: 100 }),
 
   archivedAt: timestamp('archived_at', {
     withTimezone: true
