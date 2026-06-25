@@ -12,6 +12,7 @@ const appConfigSchema = z.object({
     .enum(['error', 'warn', 'info', 'debug'])
     .default(cfg.DEFAULT_LOG_LEVEL as 'error' | 'warn' | 'info' | 'debug'),
   isDev: z.boolean().default(cfg.DEFAULT_IS_DEV),
+  corsOrigin: z.string().default(cfg.DEFAULT_CORS_ORIGIN),
   databaseUrl: z.string(),
   jwtPrivateKey: z.string().default(privkey),
   jwtPublicKey: z.string().default(pubkey),
@@ -22,6 +23,7 @@ const appConfig = appConfigSchema.parse({
   port: process.env.PORT ? parseInt(process.env.PORT, 10) : undefined,
   logLevel: process.env.LOG_LEVEL,
   isDev: process.env.NODE_ENV === 'development',
+  corsOrigin: process.env.CORS_ORIGIN,
   databaseUrl: process.env.DATABASE_URL,
   jwtPrivateKey: process.env.JWT_PRIVATE_KEY,
   jwtPublicKey: process.env.JWT_PUBLIC_KEY,
