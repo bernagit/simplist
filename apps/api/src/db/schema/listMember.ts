@@ -4,6 +4,7 @@ import { users } from './users'
 import { lists } from './lists'
 
 export const listRoleEnum = pgEnum('list_role', ['owner', 'editor', 'viewer'])
+export type ListMemberRole = 'owner' | 'editor' | 'viewer'
 
 export const listMembers = pgTable('list_members', {
   id: uuid().primaryKey().defaultRandom(),

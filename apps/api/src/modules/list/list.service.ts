@@ -1,5 +1,6 @@
 import { Errors } from '../../types/http'
 import { SectionRepository } from '../section/section.repository'
+import { TaskRepository } from '../task/task.repository'
 import { UserRepository } from '../user/user.repository'
 import { ListRepository } from './list.repository'
 import { ListCreateInput, ListShareInput, ListUpdateInput } from './list.schema'
@@ -8,6 +9,7 @@ export class ListService {
   private readonly repository: ListRepository = new ListRepository()
   private readonly sectionRepository: SectionRepository = new SectionRepository()
   private readonly userRepository: UserRepository = new UserRepository()
+  private readonly taskRepository: TaskRepository = new TaskRepository()
   constructor() {}
 
   async create(data: ListCreateInput, ownerId: string) {
@@ -18,7 +20,7 @@ export class ListService {
     }
 
     // create also the default section for the list
-    await this.sectionRepository.create(list.id, 'DEFAULT', 1)
+    await this.sectionRepository.createDefault(list.id)
 
     return list
   }
@@ -47,8 +49,23 @@ export class ListService {
       throw Errors.forbidden('You do not have permission to view this list')
     }
 
-    const lists = await this.repository.getById(listId, ownerId)
-    return lists
+    const list = await this.repository.getById(listId, ownerId)
+    if (!list) {
+      throw Errors.notFound('List not found')
+    }
+    // get members
+    const members = await this.repository.getMembers(listId)
+    // get sections
+    const sections = await this.sectionRepository.getByListId(listId)
+    // get tasks
+    const tasks = await this.taskRepository.getByListId(listId)
+
+    return {
+      ...list,
+      members,
+      sections,
+      tasks
+    }
   }
 
   async update(listId: string, data: Partial<ListUpdateInput>, userId: string) {
@@ -91,7 +108,7 @@ export class ListService {
       throw Errors.badRequest('You cannot share a list with yourself')
     }
 
-    return await this.repository.share(listId, userShare.id, role)
+    return await this.repository.addMember(listId, userShare.id, role)
   }
 
   async archive(listId: string, userId: string) {

@@ -7,6 +7,11 @@ async function getLists(): Promise<Resp<AllList>> {
     return await api.get("lists").json();
 }
 
+async function getListById(listId: string): Promise<Resp<AllList>> {
+    return await api.get(`lists/${listId}`).json();
+}
+
 export const listsService = {
-    getLists
+    getLists,
+    getListById
 };

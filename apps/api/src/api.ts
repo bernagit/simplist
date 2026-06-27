@@ -6,6 +6,8 @@ import { morganMiddleware } from './infrastructure/middleware/morgan'
 import { errorHandler } from './infrastructure/middleware/errorHandler'
 import authRouter from './modules/auth/auth.route'
 import listRouter from './modules/list/list.route'
+import sectionRouter from './modules/section/section.route'
+import taskRouter from './modules/task/task.route'
 import cookieParser from 'cookie-parser'
 import appConfig from './config/env'
 
@@ -30,6 +32,8 @@ app.get('/api/health', (_req, res) => {
 
 app.use('/api/auth', authRouter)
 app.use('/api/lists', listRouter)
+app.use('/api/sections', sectionRouter)
+app.use('/api/tasks', taskRouter)
 
 // this should be the last middleware to ensure it catches all errors
 app.use(errorHandler)

@@ -10,8 +10,7 @@ import {
   Avatar,
   Menu,
   ActionIcon,
-  UnstyledButton,
-  useMantineColorScheme,
+  UnstyledButton
 } from "@mantine/core";
 import {
   IconHome2,
@@ -33,6 +32,7 @@ import { spotlight } from "@mantine/spotlight";
 import { useMe } from "@/queries/auth";
 import { useLists } from "@/queries/lists";
 import { useSidebar } from "@/providers/SidebarProvider";
+import { useColorScheme } from "@mantine/hooks";
 
 const SIDEBAR_WIDTH = 280;
 
@@ -41,7 +41,9 @@ export function Sidebar() {
   const [projectsOpen, setProjectsOpen] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
-  const { colorScheme } = useMantineColorScheme();
+  const colorScheme = useColorScheme();
+
+  console.log("Sidebar opened:", opened, "isMobile:", isMobile, "colorScheme:", colorScheme);
 
   const { data: me, isLoading: meLoading } = useMe();
   const { data: lists } = useLists();
@@ -156,12 +158,10 @@ export function Sidebar() {
 
             <NavLink
               label={
-                <Text size="xs" fw={600} tt="uppercase" c="dimmed" style={{ letterSpacing: "0.06em" }}>
-                  My Projects
-                </Text>
-              }
-              rightSection={
-                <Group wrap="nowrap" gap={4} flex={1}>
+                <Group justify="space-between" align="center" style={{ width: "100%" }}>
+                  <Text size="xs" fw={600} tt="uppercase" c="dimmed" style={{ letterSpacing: "0.06em" }}>
+                    My Projects
+                  </Text>
                   <ActionIcon
                     variant="subtle"
                     color="gray"
@@ -174,6 +174,10 @@ export function Sidebar() {
                   >
                     <IconPlus size={14} />
                   </ActionIcon>
+                </Group>
+              }
+              rightSection={
+                <Group wrap="nowrap" gap={4} flex={1}>
                   <ActionIcon
                     variant="subtle"
                     color="gray"

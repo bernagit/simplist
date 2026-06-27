@@ -2,8 +2,7 @@ import { eq, isNull, SQL, and, or } from 'drizzle-orm'
 import { lists } from '../../db/schema/lists'
 import db from '../../infrastructure/database/db'
 import { ListCreateInput, ListUpdateInput } from './list.schema'
-import { listMembers } from '../../db/schema/listMember'
-import { tasks } from '../../db/schema/tasks'
+import { ListMemberRole, listMembers } from '../../db/schema/listMember'
 
 export class ListRepository {
   constructor() {}
@@ -18,7 +17,6 @@ export class ListRepository {
   }
 
   // PUBLIC METHODS
-
   async create(data: ListCreateInput, ownerId: string) {
     const newList = {
       ...data,
@@ -72,7 +70,6 @@ export class ListRepository {
       .select()
       .from(lists)
       .leftJoin(listMembers, eq(lists.id, listMembers.listId))
-      .leftJoin(tasks, eq(lists.id, tasks.listId))
       .where(
         and(
           eq(lists.id, listId),
@@ -82,7 +79,7 @@ export class ListRepository {
       )
 
     const result = await query.execute()
-    return result
+    return result[0]?.lists || null
   }
 
   async canView(listId: string, userId: string) {
@@ -148,7 +145,7 @@ export class ListRepository {
     return deletedList
   }
 
-  async share(listId: string, shareWithUserId: string, role: 'viewer' | 'editor') {
+  async addMember(listId: string, shareWithUserId: string, role: ListMemberRole) {
     const newMember = {
       listId,
       userId: shareWithUserId,
@@ -157,5 +154,12 @@ export class ListRepository {
 
     const [sharedList] = await db.insert(listMembers).values(newMember).returning()
     return sharedList
+  }
+
+  async getMembers(listId: string) {
+    const query = db.select().from(listMembers).where(eq(listMembers.listId, listId))
+
+    const result = await query.execute()
+    return result
   }
 }
