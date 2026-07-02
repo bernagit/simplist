@@ -22,6 +22,13 @@
       "when": 1782139890679,
       "tag": "0002_remove favorite in lists",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1782820133360,
+      "tag": "0003_cloudy_roulette",
+      "breakpoints": true
     }
   ]
 }

@@ -1,8 +1,11 @@
-import { boolean, integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { boolean, integer, pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 
 import { lists } from './lists'
 import { sections } from './sections'
 import { users } from './users'
+
+export const priorityEnum = pgEnum('task_priority', ['low', 'medium', 'high'])
+export type TaskPriority = 'low' | 'medium' | 'high'
 
 export const tasks = pgTable('tasks', {
   id: uuid().primaryKey().defaultRandom(),
@@ -27,9 +30,7 @@ export const tasks = pgTable('tasks', {
     withTimezone: true
   }),
 
-  completedAt: timestamp('completed_at', {
-    withTimezone: true
-  }),
+  priority: priorityEnum('priority'),
 
   order: integer('order').notNull().default(0),
 

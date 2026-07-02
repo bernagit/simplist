@@ -10,6 +10,7 @@ const controller = new TaskController()
 route.use(requireAuth) // Ensure that the user is authenticated for all routes in this router
 
 route.post('/:listId{/:sectionId}', validate(createTaskSchema), controller.create)
+route.patch('/:id/toggle', validate(taskIdSchema), controller.toggleComplete)
 route.delete('/:id', validate(taskIdSchema), controller.delete)
 
 export default route

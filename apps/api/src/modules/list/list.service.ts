@@ -22,15 +22,18 @@ export class ListService {
     // create also the default section for the list
     await this.sectionRepository.createDefault(list.id)
 
+    // add the owner as a member of the list
+    await this.repository.addMember(list.id, ownerId, 'owner')
+
     return list
   }
 
-  async getAll(ownerId: string) {
-    const lists = await this.repository.getWithFilter(ownerId, {
+  async getAll(userId: string) {
+    const lists = await this.repository.getWithFilter(userId, {
       archived: false
     })
 
-    const sharedLists = await this.repository.getShared(ownerId)
+    const sharedLists = await this.repository.getShared(userId)
 
     if (!lists || !sharedLists) {
       throw Errors.internal('Failed to retrieve lists')
@@ -42,14 +45,14 @@ export class ListService {
     }
   }
 
-  async getById(listId: string, ownerId: string) {
+  async getById(listId: string, userId: string) {
     // Check if the user has permission to view the list
-    const canView = await this.repository.canView(listId, ownerId)
+    const canView = await this.repository.canView(listId, userId)
     if (!canView) {
       throw Errors.forbidden('You do not have permission to view this list')
     }
 
-    const list = await this.repository.getById(listId, ownerId)
+    const list = await this.repository.getById(listId, userId)
     if (!list) {
       throw Errors.notFound('List not found')
     }
@@ -57,11 +60,16 @@ export class ListService {
     const members = await this.repository.getMembers(listId)
     // get sections
     const sections = await this.sectionRepository.getByListId(listId)
+    // find the default section id
+    const defaultSection = await this.sectionRepository.getDefaultSection(listId)
+    const defaultSectionId = defaultSection ? defaultSection.id : null
+
     // get tasks
     const tasks = await this.taskRepository.getByListId(listId)
 
     return {
       ...list,
+      defaultSectionId,
       members,
       sections,
       tasks

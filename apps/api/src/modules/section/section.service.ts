@@ -25,7 +25,24 @@ export class SectionService {
       throw Errors.forbidden('You do not have permission to create a section in this list')
     }
 
-    const section = await this.repository.create(data.listId, data.title)
+    // if no order is provided, get the last section and set the order to last order + 1
+    if (data.order === undefined) {
+      const lastSection = await this.repository.getLastOrderInList(data.listId)
+      data.order = lastSection + 1
+    } else {
+      // move all sections with order >= data.order down by 1
+      const sections = await this.repository.getByListId(data.listId)
+      const sectionsToUpdate = sections.filter(
+        section => section.order !== null && section.order >= data.order!
+      )
+
+      for (const section of sectionsToUpdate) {
+        await this.repository.update(section.id, { order: (section.order ?? 0) + 1 })
+      }
+    }
+
+    // create the section
+    const section = await this.repository.create(data.listId, data.title, data.order)
 
     if (!section) {
       throw Errors.internal('Failed to create section')

@@ -1,6 +1,6 @@
 import { sections } from '../../db/schema/sections'
 import db from '../../infrastructure/database/db'
-import { eq, and } from 'drizzle-orm'
+import { eq, and, max } from 'drizzle-orm'
 
 export class SectionRepository {
   async create(listId: string, title: string, order: number | undefined = undefined) {
@@ -12,6 +12,13 @@ export class SectionRepository {
 
     const [section] = await db.insert(sections).values(newSection).returning()
 
+    return section
+  }
+
+  async update(sectionId: string, data: Partial<{ title: string; order: number | undefined }>) {
+    const query = db.update(sections).set(data).where(eq(sections.id, sectionId))
+
+    const [section] = await query.returning().execute()
     return section
   }
 
@@ -30,7 +37,7 @@ export class SectionRepository {
   }
 
   async createDefault(listId: string) {
-    return await this.create(listId, 'DEFAULT', 1)
+    return await this.create(listId, 'DEFAULT', 0)
   }
 
   async getDefaultSection(listId: string) {
@@ -41,5 +48,15 @@ export class SectionRepository {
 
     const result = await query.execute()
     return result[0]
+  }
+
+  async getLastOrderInList(listId: string) {
+    const query = db
+      .select({ maxOrder: max(sections.order) })
+      .from(sections)
+      .where(eq(sections.listId, listId))
+
+    const result = await query.execute()
+    return result[0]?.maxOrder ?? 0
   }
 }

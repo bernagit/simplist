@@ -1,8 +1,9 @@
-import { eq, isNull, SQL, and, or } from 'drizzle-orm'
+import { eq, isNull, SQL, and, or, not } from 'drizzle-orm'
 import { lists } from '../../db/schema/lists'
 import db from '../../infrastructure/database/db'
 import { ListCreateInput, ListUpdateInput } from './list.schema'
 import { ListMemberRole, listMembers } from '../../db/schema/listMember'
+import { tasks } from '../../db/schema/tasks'
 
 export class ListRepository {
   constructor() {}
@@ -58,7 +59,9 @@ export class ListRepository {
       .select()
       .from(lists)
       .leftJoin(listMembers, eq(lists.id, listMembers.listId))
-      .where(and(eq(listMembers.userId, userId), this.notDeleted()))
+      .where(
+        and(eq(listMembers.userId, userId), this.notDeleted(), not(eq(listMembers.role, 'owner')))
+      )
     const result = await query.execute()
     return result
   }
@@ -80,6 +83,17 @@ export class ListRepository {
 
     const result = await query.execute()
     return result[0]?.lists || null
+  }
+
+  async getByTaskId(taskId: string) {
+    const query = db
+      .select({ listId: lists.id })
+      .from(lists)
+      .leftJoin(tasks, eq(lists.id, tasks.listId))
+      .where(and(eq(tasks.id, taskId), this.notDeleted()))
+
+    const result = await query.execute()
+    return result[0] || null
   }
 
   async canView(listId: string, userId: string) {

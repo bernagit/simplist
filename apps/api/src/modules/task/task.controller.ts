@@ -38,4 +38,19 @@ export class TaskController {
       next(error)
     }
   }
+
+  toggleComplete = async (req: Request, res: Response, next: NextFunction) => {
+    const { id: userId } = req.user!
+    const { id: taskId } = req.validated!.params as TaskIdInput
+
+    try {
+      await this.service.toggleComplete(taskId, userId)
+
+      res.status(HTTP_STATUS.OK).json({
+        message: 'Task completion toggled successfully'
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
 }

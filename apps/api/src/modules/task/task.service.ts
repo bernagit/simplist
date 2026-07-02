@@ -13,46 +13,69 @@ export class TaskService {
 
   private readonly canEditRoles: ListMemberRole[] = ['owner', 'editor']
 
-  async create(
-    data: CreateTaskInput,
-    listId: string,
-    sectionId: string | undefined,
-    userId: string
-  ) {
-    const members = await this.listRepository.getMembers(listId)
-
-    const isMember = members.some(
+  // PRIVATE METHODS
+  private isMember = (members: { userId: string; role: ListMemberRole }[], userId: string) => {
+    return members.some(
       member => member.userId === userId && this.canEditRoles.includes(member.role)
     )
+  }
 
-    if (!isMember) {
+  // PUBLIC METHODS
+  async create(data: CreateTaskInput, listId: string, sectionId: string, userId: string) {
+    const members = await this.listRepository.getMembers(listId)
+
+    if (!this.isMember(members, userId)) {
       throw Errors.forbidden('You do not have permission to create a task in this list')
     }
 
-    if (!sectionId) {
-      // get the default section for the list
-      const section = await this.sectionRepository.getDefaultSection(listId)
-      if (!section) {
-        throw Errors.internal('Default section not found for the list')
-      }
-      sectionId = section.id
-    }
+    // if (!sectionId) {
+    //   // get the default section for the list
+    //   const section = await this.sectionRepository.getDefaultSection(listId)
+    //   if (!section) {
+    //     throw Errors.internal('Default section not found for the list')
+    //   }
+    //   sectionId = section.id
+    // }
+
+    // get the last order in the section
+    const lastOrder = await this.repository.getLastOrderInSection(sectionId)
+    data.order = lastOrder + 1
 
     const task = await this.repository.create(userId, listId, sectionId, data)
     return task
   }
 
   async delete(taskId: string, userId: string) {
-    const members = await this.listRepository.getMembers(taskId)
+    const list = await this.listRepository.getByTaskId(taskId)
+    if (!list) {
+      throw Errors.notFound('Task not found')
+    }
+    const members = await this.listRepository.getMembers(list.listId)
 
-    const isMember = members.some(
-      member => member.userId === userId && this.canEditRoles.includes(member.role)
-    )
-
-    if (!isMember) {
+    if (!this.isMember(members, userId)) {
       throw Errors.forbidden('You do not have permission to delete this task')
     }
 
     await this.repository.delete(taskId)
+  }
+
+  async toggleComplete(taskId: string, userId: string) {
+    const list = await this.listRepository.getByTaskId(taskId)
+    if (!list) {
+      throw Errors.notFound('Task not found')
+    }
+    const members = await this.listRepository.getMembers(list.listId)
+
+    if (!this.isMember(members, userId)) {
+      throw Errors.forbidden('You do not have permission to update this task')
+    }
+
+    const task = await this.repository.getById(taskId)
+    if (!task) {
+      throw Errors.notFound('Task not found')
+    }
+
+    const completed = task.completed ? false : true
+    await this.repository.update(taskId, { completed })
   }
 }

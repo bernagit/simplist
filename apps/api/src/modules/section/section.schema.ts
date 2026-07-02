@@ -4,7 +4,8 @@ import z from 'zod'
 export const createSectionSchema = z.object({
   body: z.object({
     listId: z.uuid(),
-    title: z.string().max(255)
+    title: z.string().max(255),
+    order: z.number().min(1).optional()
   })
 })
 

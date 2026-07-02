@@ -1,10 +1,17 @@
 import { tasks } from '../../db/schema/tasks'
 import db from '../../infrastructure/database/db'
 import { eq, max } from 'drizzle-orm'
-import { CreateTaskInput } from './task.schema'
+import { CreateTaskInput, UpdateTaskInput } from './task.schema'
 
 export class TaskRepository {
   constructor() {}
+
+  async getById(taskId: string) {
+    const query = db.select().from(tasks).where(eq(tasks.id, taskId))
+
+    const [task] = await query.execute()
+    return task
+  }
 
   async getByListId(listId: string) {
     const query = db.select().from(tasks).where(eq(tasks.listId, listId))
@@ -28,7 +35,8 @@ export class TaskRepository {
       title: data.title,
       description: data.description,
       dueDate: data.dueDate,
-      order: data.order
+      order: data.order,
+      priority: data.priority
     }
     const [task] = await db.insert(tasks).values(newTask).returning()
 
@@ -59,5 +67,12 @@ export class TaskRepository {
     const query = db.delete(tasks).where(eq(tasks.id, taskId))
 
     await query.execute()
+  }
+
+  async update(taskId: string, data: Partial<UpdateTaskInput>) {
+    const query = db.update(tasks).set(data).where(eq(tasks.id, taskId))
+
+    const [task] = await query.returning().execute()
+    return task
   }
 }
