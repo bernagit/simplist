@@ -21,7 +21,10 @@ async function shutdown(signal: string) {
 
   server.close(async err => {
     if (err) {
-      logger.error(`${err instanceof Error ? err.message : String(err)}`, 'Error during server shutdown')
+      logger.error(
+        `${err instanceof Error ? err.message : String(err)}`,
+        'Error during server shutdown'
+      )
       process.exit(1)
     }
 
@@ -46,6 +49,9 @@ process.on('uncaughtException', err => {
 })
 
 process.on('unhandledRejection', reason => {
-  logger.crit(`${reason instanceof Error ? reason.message : String(reason)}`, 'Unhandled promise rejection')
+  logger.crit(
+    `${reason instanceof Error ? reason.message : String(reason)}`,
+    'Unhandled promise rejection'
+  )
   process.exit(1)
 })

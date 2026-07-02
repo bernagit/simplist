@@ -1,61 +1,52 @@
-"use client";
+'use client'
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-} from "react";
-import { useMediaQuery } from "@mantine/hooks";
+import { createContext, useContext, useState, useCallback } from 'react'
+import { useMediaQuery } from '@mantine/hooks'
 
 interface SidebarContextType {
-  opened: boolean;
-  toggle: () => void;
-  open: () => void;
-  close: () => void;
-  isMobile: boolean;
+  opened: boolean
+  toggle: () => void
+  open: () => void
+  close: () => void
+  isMobile: boolean
 }
 
-const SidebarContext = createContext<SidebarContextType | null>(null);
+const SidebarContext = createContext<SidebarContextType | null>(null)
 
-export function SidebarProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const isMobile = useMediaQuery("(max-width: 768px)") ?? false;
+export function SidebarProvider({ children }: { children: React.ReactNode }) {
+  const isMobile = useMediaQuery('(max-width: 768px)') ?? false
 
   // Desktop remembers its state
-  const [desktopOpened, setDesktopOpened] = useState(true);
+  const [desktopOpened, setDesktopOpened] = useState(true)
 
   // Mobile starts closed
-  const [mobileOpened, setMobileOpened] = useState(false);
+  const [mobileOpened, setMobileOpened] = useState(false)
 
-  const opened = isMobile ? mobileOpened : desktopOpened;
+  const opened = isMobile ? mobileOpened : desktopOpened
 
   const toggle = useCallback(() => {
     if (isMobile) {
-      setMobileOpened((v) => !v);
+      setMobileOpened(v => !v)
     } else {
-      setDesktopOpened((v) => !v);
+      setDesktopOpened(v => !v)
     }
-  }, [isMobile]);
+  }, [isMobile])
 
   const open = useCallback(() => {
     if (isMobile) {
-      setMobileOpened(true);
+      setMobileOpened(true)
     } else {
-      setDesktopOpened(true);
+      setDesktopOpened(true)
     }
-  }, [isMobile]);
+  }, [isMobile])
 
   const close = useCallback(() => {
     if (isMobile) {
-      setMobileOpened(false);
+      setMobileOpened(false)
     } else {
-      setDesktopOpened(false);
+      setDesktopOpened(false)
     }
-  }, [isMobile]);
+  }, [isMobile])
 
   return (
     <SidebarContext.Provider
@@ -64,22 +55,20 @@ export function SidebarProvider({
         toggle,
         open,
         close,
-        isMobile,
+        isMobile
       }}
     >
       {children}
     </SidebarContext.Provider>
-  );
+  )
 }
 
 export function useSidebar() {
-  const ctx = useContext(SidebarContext);
+  const ctx = useContext(SidebarContext)
 
   if (!ctx) {
-    throw new Error(
-      "useSidebar must be used within SidebarProvider"
-    );
+    throw new Error('useSidebar must be used within SidebarProvider')
   }
 
-  return ctx;
+  return ctx
 }

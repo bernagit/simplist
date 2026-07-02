@@ -2,7 +2,6 @@ import { defineConfig } from 'drizzle-kit'
 import appConfig from './src/config/env'
 
 const getUrl = () => {
-  console.log('Database URL:', appConfig.databaseUrl) // Log the database URL for debugging
   if (!appConfig.databaseUrl) {
     throw new Error('DATABASE_URL environment variable is not set')
   }

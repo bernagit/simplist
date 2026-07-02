@@ -1,26 +1,28 @@
-'use client';
+'use client'
 
-import { getPriorityColor } from "@/utils/color";
-import { PRIORITY_OPTIONS } from "@/utils/constants";
-import { Box, Button, Group, Popover, Stack, Text } from "@mantine/core";
-import { IconFlag, IconX } from "@tabler/icons-react";
-import { useMemo, useState } from "react";
+import { getPriorityColor } from '@/utils/color'
+import { PRIORITY_OPTIONS } from '@/utils/constants'
+import { Box, Button, Group, Popover, Stack, Text } from '@mantine/core'
+import { IconFlag, IconX } from '@tabler/icons-react'
+import { useMemo, useState } from 'react'
 
 type PrioritySelectorProps = {
-  selectedPriority: string | null;
-  setSelectedPriority: (priority: string | null) => void;
-};
+  selectedPriority: string | null
+  setSelectedPriority: (priority: string | null) => void
+}
 
-
-export default function PrioritySelector({ selectedPriority, setSelectedPriority }: PrioritySelectorProps) {
-  const colorMemo = useMemo(() => getPriorityColor(selectedPriority), [selectedPriority]);
-  const isPrioritySelected = selectedPriority !== null;
-  const [open, setOpen] = useState(false);
+export default function PrioritySelector({
+  selectedPriority,
+  setSelectedPriority
+}: PrioritySelectorProps) {
+  const colorMemo = useMemo(() => getPriorityColor(selectedPriority), [selectedPriority])
+  const isPrioritySelected = selectedPriority !== null
+  const [open, setOpen] = useState(false)
 
   const handlePrioritySelect = (priority: string | null) => {
-    setSelectedPriority(priority);
-    setOpen(false);
-  };
+    setSelectedPriority(priority)
+    setOpen(false)
+  }
 
   return (
     <Group gap={0}>
@@ -28,7 +30,7 @@ export default function PrioritySelector({ selectedPriority, setSelectedPriority
         <Popover.Target>
           <Button
             variant="outline"
-            color={"gray"}
+            color={'gray'}
             c={colorMemo}
             mt="xs"
             h={30}
@@ -37,31 +39,22 @@ export default function PrioritySelector({ selectedPriority, setSelectedPriority
             style={{
               fontSize: 13,
               fontWeight: 500,
-              width: "fit-content",
-              borderRadius: selectedPriority !== null ? "4px 0px 0px 4px" : 4,
+              width: 'fit-content',
+              borderRadius: selectedPriority !== null ? '4px 0px 0px 4px' : 4
             }}
-            leftSection={
-              <IconFlag
-                size={16}
-                color={
-                  colorMemo
-                }
-              />
-            }
-            onClick={() => setOpen((o) => !o)}
+            leftSection={<IconFlag size={16} color={colorMemo} />}
+            onClick={() => setOpen(o => !o)}
           >
-            <Text
-              mt={4}
-              size={"13px"}
-              fw={isPrioritySelected ? 600 : 500}
-            >
-              {isPrioritySelected ? PRIORITY_OPTIONS.find((option) => option.value === selectedPriority)?.label : "Priority"}
+            <Text mt={4} size={'13px'} fw={isPrioritySelected ? 600 : 500}>
+              {isPrioritySelected
+                ? PRIORITY_OPTIONS.find(option => option.value === selectedPriority)?.label
+                : 'Priority'}
             </Text>
           </Button>
         </Popover.Target>
         <Popover.Dropdown p={0}>
           <Stack gap={0} p={0}>
-            {PRIORITY_OPTIONS.map((option) => (
+            {PRIORITY_OPTIONS.map(option => (
               <Button
                 key={option.value}
                 variant="subtle"
@@ -69,22 +62,19 @@ export default function PrioritySelector({ selectedPriority, setSelectedPriority
                 onClick={() => handlePrioritySelect(option.value)}
                 leftSection={
                   <Box>
-                    <IconFlag
-                      size={16}
-                      color={getPriorityColor(option.value)}
-                    />
+                    <IconFlag size={16} color={getPriorityColor(option.value)} />
                   </Box>
                 }
                 styles={{
                   root: {
-                    justifyContent: "flex-start",
+                    justifyContent: 'flex-start',
                     paddingLeft: 8,
                     paddingRight: 8,
-                    borderRadius: 0,
+                    borderRadius: 0
                   },
                   inner: {
-                    justifyContent: "flex-start",
-                  },
+                    justifyContent: 'flex-start'
+                  }
                 }}
               >
                 {option.label}
@@ -102,19 +92,17 @@ export default function PrioritySelector({ selectedPriority, setSelectedPriority
           px={4}
           radius={4}
           style={{
-            borderRadius: "0px 4px 4px 0px",
+            borderRadius: '0px 4px 4px 0px',
             borderLeft: 0,
             fontSize: 13,
             fontWeight: 500,
-            width: "fit-content",
+            width: 'fit-content'
           }}
           onClick={() => setSelectedPriority(null)}
         >
           <IconX size={16} />
         </Button>
-      )
-      }
+      )}
     </Group>
-
   )
 }

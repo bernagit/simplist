@@ -14,7 +14,7 @@
     "clean": "yarn workspaces foreach -A run clean",
     "lint": "eslint . --ext .ts,.tsx --debug",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
-    "format": "prettier --write ."
+    "format": "prettier --write ./apps"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

@@ -1,20 +1,13 @@
-"use client";
+'use client'
 
-import { useSidebar } from "@/providers/SidebarProvider";
-import { useTopbar } from "@/providers/TopbarProvider";
-import {
-  Group,
-  ActionIcon,
-  Box,
-  Breadcrumbs,
-  Anchor,
-  Text,
-} from "@mantine/core";
-import { IconLayoutSidebar } from "@tabler/icons-react";
+import { useSidebar } from '@/providers/SidebarProvider'
+import { useTopbar } from '@/providers/TopbarProvider'
+import { Group, ActionIcon, Box, Breadcrumbs, Anchor, Text } from '@mantine/core'
+import { IconLayoutSidebar } from '@tabler/icons-react'
 
 export function Topbar() {
-  const { toggle, opened } = useSidebar();
-  const { breadcrumbs } = useTopbar();
+  const { toggle, opened } = useSidebar()
+  const { breadcrumbs } = useTopbar()
 
   return (
     <Box h={50} style={{ flexShrink: 0 }}>
@@ -51,5 +44,5 @@ export function Topbar() {
         </Group>
       </Group>
     </Box>
-  );
+  )
 }

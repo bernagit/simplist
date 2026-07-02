@@ -1,20 +1,20 @@
-import { Button, Group, Popover, Text } from "@mantine/core";
-import { DatePicker } from "@mantine/dates";
-import { IconCalendar, IconX } from "@tabler/icons-react";
-import dayjs from "dayjs";
+import { Button, Group, Popover, Text } from '@mantine/core'
+import { DatePicker } from '@mantine/dates'
+import { IconCalendar, IconX } from '@tabler/icons-react'
+import dayjs from 'dayjs'
 
 type DateSelectorProps = {
-  selectedDate: string | null;
-  setSelectedDate: (date: string | null) => void;
-};
+  selectedDate: string | null
+  setSelectedDate: (date: string | null) => void
+}
 
 const formatDate = (date: string | null) => {
-  if (!date) return null;
-  return dayjs(date).format("D MMM");
+  if (!date) return null
+  return dayjs(date).format('D MMM')
 }
 
 export default function DateSelector({ selectedDate, setSelectedDate }: DateSelectorProps) {
-  const shortDate = formatDate(selectedDate);
+  const shortDate = formatDate(selectedDate)
 
   return (
     <Group gap={0}>
@@ -30,26 +30,18 @@ export default function DateSelector({ selectedDate, setSelectedDate }: DateSele
             style={{
               fontSize: 13,
               fontWeight: 500,
-              width: "fit-content",
-              borderRadius: selectedDate ? "4px 0px 0px 4px" : 4,
+              width: 'fit-content',
+              borderRadius: selectedDate ? '4px 0px 0px 4px' : 4
             }}
           >
             <IconCalendar size={16} style={{ marginRight: 4 }} />
-            <Text
-              mt={4}
-              size={"13px"}
-              fw={500}
-            >
-              {shortDate ? shortDate : "Date"}
+            <Text mt={4} size={'13px'} fw={500}>
+              {shortDate ? shortDate : 'Date'}
             </Text>
           </Button>
         </Popover.Target>
         <Popover.Dropdown>
-          <DatePicker
-            highlightToday
-            allowDeselect
-            onChange={(date) => setSelectedDate(date)}
-          />
+          <DatePicker highlightToday allowDeselect onChange={date => setSelectedDate(date)} />
         </Popover.Dropdown>
       </Popover>
       {selectedDate && (
@@ -61,11 +53,11 @@ export default function DateSelector({ selectedDate, setSelectedDate }: DateSele
           px={4}
           radius={4}
           style={{
-            borderRadius: "0px 4px 4px 0px",
+            borderRadius: '0px 4px 4px 0px',
             borderLeft: 0,
             fontSize: 13,
             fontWeight: 500,
-            width: "fit-content",
+            width: 'fit-content'
           }}
           onClick={() => setSelectedDate(null)}
         >

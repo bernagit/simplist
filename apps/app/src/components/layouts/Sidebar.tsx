@@ -1,4 +1,4 @@
-"use client";
+'use client'
 import {
   Stack,
   Text,
@@ -12,7 +12,7 @@ import {
   ActionIcon,
   UnstyledButton,
   Tooltip
-} from "@mantine/core";
+} from '@mantine/core'
 import {
   IconHome2,
   IconCalendar,
@@ -25,72 +25,71 @@ import {
   IconUserCircle,
   IconLayoutSidebar,
   IconChevronRight,
-  IconHelp,
-} from "@tabler/icons-react";
-import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
-import { spotlight } from "@mantine/spotlight";
-import { useMe } from "@/queries/auth";
-import { useLists } from "@/queries/lists";
-import { useSidebar } from "@/providers/SidebarProvider";
-import { useColorScheme } from "@mantine/hooks";
-import { useTopbar } from "@/providers/TopbarProvider";
-import { modals } from "@mantine/modals";
+  IconHelp
+} from '@tabler/icons-react'
+import { usePathname, useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { spotlight } from '@mantine/spotlight'
+import { useMe } from '@/queries/auth'
+import { useLists } from '@/queries/lists'
+import { useSidebar } from '@/providers/SidebarProvider'
+import { useColorScheme } from '@mantine/hooks'
+import { useTopbar } from '@/providers/TopbarProvider'
+import { modals } from '@mantine/modals'
 
-const SIDEBAR_WIDTH = 280;
-const MY_LISTS_TEXT = "My Lists";
+const SIDEBAR_WIDTH = 280
+const MY_LISTS_TEXT = 'My Lists'
 
 export function Sidebar() {
-  const { toggle, opened, isMobile } = useSidebar();
-  const [listsOpen, setListsOpen] = useState(true);
-  const router = useRouter();
-  const pathname = usePathname();
-  const colorScheme = useColorScheme();
-  const { setBreadcrumbs } = useTopbar();
+  const { toggle, opened, isMobile } = useSidebar()
+  const [listsOpen, setListsOpen] = useState(true)
+  const router = useRouter()
+  const pathname = usePathname()
+  const colorScheme = useColorScheme()
+  const { setBreadcrumbs } = useTopbar()
 
-  const { data: me, isLoading: meLoading } = useMe();
-  const { data: lists } = useLists();
+  const { data: me, isLoading: meLoading } = useMe()
+  const { data: lists } = useLists()
 
   const handleNavigate = (href: string, title?: string) => {
     setBreadcrumbs([
       {
-        label: title ?? "",
+        label: title ?? '',
         href: href
       }
-    ]);
+    ])
 
-    router.push(href);
+    router.push(href)
 
     if (isMobile) {
-      toggle();
+      toggle()
     }
-  };
+  }
 
   const handleAddList = () => {
-    console.log("Opening add list modal");
     modals.openContextModal({
-      modal: "addList",
-      title: "Add List",
+      modal: 'addList',
+      title: 'Add List',
       innerProps: undefined
-    });
-  };
+    })
+  }
 
-  if (!opened) return null;
+  if (!opened) return null
 
   return (
     <Box
       w={SIDEBAR_WIDTH}
-      h={isMobile ? "100dvh" : "100%"}
-      pos={isMobile ? "fixed" : "relative"}
+      h={isMobile ? '100dvh' : '100%'}
+      pos={isMobile ? 'fixed' : 'relative'}
       style={{
         top: isMobile ? 0 : undefined,
         left: isMobile ? 0 : undefined,
         zIndex: isMobile ? 300 : undefined,
         flexShrink: 0,
-        overflow: "hidden",
-        transition: "width 200ms ease"
+        overflow: 'hidden',
+        transition: 'width 200ms ease'
       }}
-      bg={colorScheme === "dark" ? "var(--mantine-color-dark-7)" : "var(--mantine-color-gray-0)"}
+      bg={colorScheme === 'dark' ? 'var(--mantine-color-dark-7)' : 'var(--mantine-color-gray-0)'}
     >
       <Stack gap={0} h="100%">
         <Menu shadow="md" width={SIDEBAR_WIDTH + 10} position="bottom-start">
@@ -98,8 +97,8 @@ export function Sidebar() {
             <Group gap="sm" wrap="nowrap" ml={0} m="xs">
               <UnstyledButton
                 style={{
-                  width: "100%",
-                  borderRadius: "var(--mantine-radius-md)",
+                  width: '100%',
+                  borderRadius: 'var(--mantine-radius-md)'
                 }}
               >
                 <Group gap="sm" wrap="nowrap" px="md" py="xs">
@@ -109,7 +108,7 @@ export function Sidebar() {
 
                   <Box>
                     <Text size="sm" fw={500} truncate>
-                      {meLoading ? "Loading..." : me?.name}
+                      {meLoading ? 'Loading...' : me?.name}
                     </Text>
 
                     <Text size="xs" c="dimmed" truncate>
@@ -135,10 +134,16 @@ export function Sidebar() {
             </Group>
           </Menu.Target>
           <Menu.Dropdown>
-            <Menu.Item leftSection={<IconUserCircle size={16} />} onClick={() => handleNavigate("/profile")}>
+            <Menu.Item
+              leftSection={<IconUserCircle size={16} />}
+              onClick={() => handleNavigate('/profile')}
+            >
               Profile
             </Menu.Item>
-            <Menu.Item leftSection={<IconSettings size={16} />} onClick={() => handleNavigate("/settings")}>
+            <Menu.Item
+              leftSection={<IconSettings size={16} />}
+              onClick={() => handleNavigate('/settings')}
+            >
               Settings
             </Menu.Item>
             <Menu.Divider />
@@ -154,31 +159,37 @@ export function Sidebar() {
             <NavLink
               label="Home"
               leftSection={<IconHome2 size={18} />}
-              active={pathname === "/"}
-              onClick={() => handleNavigate("/")}
-              style={{ borderRadius: "var(--mantine-radius-md)" }}
+              active={pathname === '/'}
+              onClick={() => handleNavigate('/')}
+              style={{ borderRadius: 'var(--mantine-radius-md)' }}
             />
             <NavLink
               label="Calendar"
               leftSection={<IconCalendar size={18} />}
-              active={pathname === "/calendar"}
-              onClick={() => handleNavigate("/calendar")}
-              style={{ borderRadius: "var(--mantine-radius-md)" }}
+              active={pathname === '/calendar'}
+              onClick={() => handleNavigate('/calendar')}
+              style={{ borderRadius: 'var(--mantine-radius-md)' }}
             />
             <NavLink
               label="Search"
               leftSection={<IconSearch size={18} />}
-              active={pathname === "/search"}
+              active={pathname === '/search'}
               onClick={() => spotlight.open()}
-              style={{ borderRadius: "var(--mantine-radius-md)" }}
+              style={{ borderRadius: 'var(--mantine-radius-md)' }}
             />
 
             <Divider my="xs" />
 
             <NavLink
               label={
-                <Group justify="space-between" align="center" style={{ width: "100%" }}>
-                  <Text size="xs" fw={600} tt="uppercase" c="dimmed" style={{ letterSpacing: "0.06em" }}>
+                <Group justify="space-between" align="center" style={{ width: '100%' }}>
+                  <Text
+                    size="xs"
+                    fw={600}
+                    tt="uppercase"
+                    c="dimmed"
+                    style={{ letterSpacing: '0.06em' }}
+                  >
                     {MY_LISTS_TEXT}
                   </Text>
                   <Tooltip label="Add list" position="right" withArrow>
@@ -186,9 +197,9 @@ export function Sidebar() {
                       variant="subtle"
                       color="gray"
                       size="xs"
-                      onClick={(e) => {
-                        handleAddList();
-                        e.stopPropagation();
+                      onClick={e => {
+                        handleAddList()
+                        e.stopPropagation()
                       }}
                       aria-label="Add list"
                     >
@@ -203,11 +214,11 @@ export function Sidebar() {
                     variant="subtle"
                     color="gray"
                     size="xs"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setListsOpen((o) => !o);
+                    onClick={e => {
+                      e.stopPropagation()
+                      setListsOpen(o => !o)
                     }}
-                    aria-label={listsOpen ? "Collapse lists" : "Expand lists"}
+                    aria-label={listsOpen ? 'Collapse lists' : 'Expand lists'}
                   >
                     <IconChevronRight size={14} />
                   </ActionIcon>
@@ -215,36 +226,32 @@ export function Sidebar() {
               }
               opened={listsOpen}
               onChange={setListsOpen}
-              style={{ borderRadius: "var(--mantine-radius-md)" }}
+              style={{ borderRadius: 'var(--mantine-radius-md)' }}
             >
-              {lists?.data.owned.map((list) => (
+              {lists?.data.owned.map(list => (
                 <NavLink
                   key={list.id}
                   label={list.title}
                   leftSection={
                     <IconPoint
                       size={18}
-                      color={
-                        list.color
-                          ? `${list.color}`
-                          : "var(--mantine-color-gray-6)"
-                      }
-                      fill={
-                        list.color
-                          ? `${list.color}`
-                          : "var(--mantine-color-gray-6)"
-                      }
+                      color={list.color ? `${list.color}` : 'var(--mantine-color-gray-6)'}
+                      fill={list.color ? `${list.color}` : 'var(--mantine-color-gray-6)'}
                     />
                   }
                   active={pathname === `/lists/${list.id}`}
                   onClick={() => handleNavigate(`/lists/${list.id}`, MY_LISTS_TEXT)}
-                  style={{ borderRadius: "var(--mantine-radius-md)" }}
+                  style={{ borderRadius: 'var(--mantine-radius-md)' }}
                 />
               ))}
               <NavLink
-                label={<Text mt={4} size="sm" c="dimmed">Add list</Text>}
+                label={
+                  <Text mt={4} size="sm" c="dimmed">
+                    Add list
+                  </Text>
+                }
                 leftSection={<IconPlus size={14} />}
-                style={{ borderRadius: "var(--mantine-radius-md)" }}
+                style={{ borderRadius: 'var(--mantine-radius-md)' }}
                 onClick={handleAddList}
               />
             </NavLink>
@@ -257,10 +264,10 @@ export function Sidebar() {
           <NavLink
             label="Help & Support"
             leftSection={<IconHelp size={18} />}
-            style={{ borderRadius: "var(--mantine-radius-md)" }}
+            style={{ borderRadius: 'var(--mantine-radius-md)' }}
           />
         </Box>
       </Stack>
     </Box>
-  );
+  )
 }

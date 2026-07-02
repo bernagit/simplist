@@ -8,7 +8,7 @@ declare global {
         body?: unknown
         params?: unknown
         query?: unknown
-      },
+      }
       user?: User
     }
   }

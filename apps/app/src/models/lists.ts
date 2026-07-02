@@ -1,46 +1,46 @@
-import { Section } from "./section";
-import { Task } from "./task";
+import { Section } from './section'
+import { Task } from './task'
 
 export type List = {
-  id: string;
-  ownerId: string;
-  title: string;
-  description: string | null;
-  color: string | null;
-  icon: string | null;
-  archivedAt: Date | null;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date | null;
+  id: string
+  ownerId: string
+  title: string
+  description: string | null
+  color: string | null
+  icon: string | null
+  archivedAt: Date | null
+  createdAt: Date
+  updatedAt: Date
+  deletedAt: Date | null
 }
 
 export type AllList = {
-  owned: List[];
-  shared: List[];
+  owned: List[]
+  shared: List[]
 }
 
 export type ListMember = {
-  id: string;
-  listId: string;
-  userId: string;
-  role: "owner" | "editor" | "viewer";
-  joinedAt: Date;
+  id: string
+  listId: string
+  userId: string
+  role: 'owner' | 'editor' | 'viewer'
+  joinedAt: Date
 }
 
 export type CompleteList = List & {
-  members: ListMember[];
-  sections: Section[];
-  tasks: Task[];
-  defaultSectionId: string | null;
+  members: ListMember[]
+  sections: Section[]
+  tasks: Task[]
+  defaultSectionId: string | null
 }
 
 export type CreateListInput = {
-  title: string;
-  description?: string;
-  color?: string;
-  icon?: string;
+  title: string
+  description?: string
+  color?: string
+  icon?: string
 }
 
 export type UpdateListInput = CreateListInput & {
-  id: string;
+  id: string
 }

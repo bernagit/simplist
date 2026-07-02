@@ -1,23 +1,23 @@
 export type Task = {
-  id: string;
-  listId: string;
-  sectionId: string | null;
-  title: string;
-  description: string | null;
-  completed: boolean;
-  dueDate: Date | null;
-  priority: string | null;
-  order: number;
-  createdAt: Date;
-  updatedAt: Date;
+  id: string
+  listId: string
+  sectionId: string | null
+  title: string
+  description: string | null
+  completed: boolean
+  dueDate: Date | null
+  priority: string | null
+  order: number
+  createdAt: Date
+  updatedAt: Date
 }
 
 export type CreateTaskInput = {
-  listId: string;
-  sectionId: string | null;
-  title: string;
-  description: string | null;
-  dueDate: Date | null;
-  priority: string | null;
-  order?: number;
+  listId: string
+  sectionId: string | null
+  title: string
+  description: string | null
+  dueDate: Date | null
+  priority: string | null
+  order?: number
 }
