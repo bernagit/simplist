@@ -78,7 +78,7 @@ export default function LoginPage() {
         <Container size="xs" py="xl">
             <Paper radius="md" p="lg" withBorder>
                 <Text size="lg" fw={500} mb={50}>
-                    Welcome to LinkTine
+                    Welcome to Simplist
                 </Text>
 
                 <form onSubmit={form.onSubmit(() => handleSubmit())}>

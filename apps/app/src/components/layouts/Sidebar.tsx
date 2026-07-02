@@ -33,8 +33,10 @@ import { useMe } from "@/queries/auth";
 import { useLists } from "@/queries/lists";
 import { useSidebar } from "@/providers/SidebarProvider";
 import { useColorScheme } from "@mantine/hooks";
+import { useTopbar } from "@/providers/TopbarProvider";
 
 const SIDEBAR_WIDTH = 280;
+const MY_PROJECTS_TEXT = "My Projects";
 
 export function Sidebar() {
   const { toggle, opened, isMobile } = useSidebar();
@@ -42,13 +44,19 @@ export function Sidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const colorScheme = useColorScheme();
-
-  console.log("Sidebar opened:", opened, "isMobile:", isMobile, "colorScheme:", colorScheme);
+  const { setBreadcrumbs } = useTopbar();
 
   const { data: me, isLoading: meLoading } = useMe();
   const { data: lists } = useLists();
 
-  const handleNavigate = (href: string) => {
+  const handleNavigate = (href: string, title?: string) => {
+    setBreadcrumbs([
+      {
+        label: title ?? "",
+        href: href
+      }
+    ]);
+
     router.push(href);
 
     if (isMobile) {
@@ -160,7 +168,7 @@ export function Sidebar() {
               label={
                 <Group justify="space-between" align="center" style={{ width: "100%" }}>
                   <Text size="xs" fw={600} tt="uppercase" c="dimmed" style={{ letterSpacing: "0.06em" }}>
-                    My Projects
+                    {MY_PROJECTS_TEXT}
                   </Text>
                   <ActionIcon
                     variant="subtle"
@@ -216,7 +224,7 @@ export function Sidebar() {
                     />
                   }
                   active={pathname === `/lists/${list.id}`}
-                  onClick={() => handleNavigate(`/lists/${list.id}`)}
+                  onClick={() => handleNavigate(`/lists/${list.id}`, MY_PROJECTS_TEXT)}
                   style={{ borderRadius: "var(--mantine-radius-md)" }}
                 />
               ))}

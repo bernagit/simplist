@@ -6,6 +6,7 @@ import AppLayout from "@/components/layouts/AppLayout";
 import "@mantine/core/styles.layer.css";
 import "@mantine/notifications/styles.css";
 import "@mantine/spotlight/styles.css";
+import '@mantine/dates/styles.css';
 import "./layout.css";
 
 export const metadata: Metadata = {
@@ -19,7 +20,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     const theme = createTheme({
-        primaryColor: "gray",
+        primaryColor: "pink",
         defaultRadius: "md",
     });
 

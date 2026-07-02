@@ -1,20 +1,21 @@
 "use client";
-import { useDebouncedValue } from "@mantine/hooks";
+// import { useDebouncedValue } from "@mantine/hooks";
 import { usePathname } from "next/navigation";
 import { Spotlight, SpotlightActionData } from "@mantine/spotlight";
 import { useState } from "react";
 import { ModalsProvider } from "@mantine/modals";
 import { Box } from "@mantine/core";
 import { Sidebar } from "./Sidebar";
-import { Header } from "./Header";
+import { Topbar } from "./Topbar";
 import { MobileOverlay } from "./MobileOverlay";
 import { HotkeyProvider } from "@/providers/HotKeysProvider";
 import { SidebarProvider } from "@/providers/SidebarProvider";
 import { QueryProvider } from "@/providers/QueryProvider";
+import { TopbarProvider } from "@/providers/TopbarProvider";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const [query, setQuery] = useState<string>("");
-  const [debouncedQuery] = useDebouncedValue(query, 200);
+  // const [query, setQuery] = useState<string>("");
+  // const [debouncedQuery] = useDebouncedValue(query, 200);
   const [actions, setActions] = useState<SpotlightActionData[]>([]);
   const pathname = usePathname();
 
@@ -27,38 +28,40 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <QueryProvider>
       <HotkeyProvider>
         <ModalsProvider modals={{}}>
-          <SidebarProvider>
-            <Spotlight
-              actions={actions}
-              onQueryChange={setQuery}
-              onSpotlightClose={() => setActions([])}
-            />
+          <TopbarProvider>
+            <SidebarProvider>
+              <Spotlight
+                actions={actions}
+                // onQueryChange={setQuery}
+                onSpotlightClose={() => setActions([])}
+              />
 
-            <Box display="flex" h="100dvh" style={{ overflow: "hidden" }}>
-              <Sidebar />
-              <MobileOverlay />
+              <Box display="flex" h="100dvh" style={{ overflow: "hidden" }}>
+                <Sidebar />
+                <MobileOverlay />
 
-              <Box flex={1} display="flex" style={{ flexDirection: "column", overflow: "hidden", minWidth: 0 }}>
-                <Header />
-                <Box
-                  component="main"
-                  flex={1}
-                  style={{
-                    overflowY: "auto",
-                    display: "flex",
-                    justifyContent: "center",
-                  }}
-                >
+                <Box flex={1} display="flex" style={{ flexDirection: "column", overflow: "hidden", minWidth: 0 }}>
+                  <Topbar />
                   <Box
-                    w={{ base: "100%", lg: "60%" }}
-                    p="xl"
+                    component="main"
+                    flex={1}
+                    style={{
+                      overflowY: "auto",
+                      display: "flex",
+                      justifyContent: "center",
+                    }}
                   >
-                    {children}
+                    <Box
+                      w={{ base: "100%", lg: "60%" }}
+                      p="md"
+                    >
+                      {children}
+                    </Box>
                   </Box>
                 </Box>
               </Box>
-            </Box>
-          </SidebarProvider>
+            </SidebarProvider>
+          </TopbarProvider>
         </ModalsProvider>
       </HotkeyProvider>
     </QueryProvider>
