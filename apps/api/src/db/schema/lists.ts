@@ -5,7 +5,7 @@ export const lists = pgTable('lists', {
   id: uuid().primaryKey().defaultRandom(),
   ownerId: uuid('owner_id')
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, { onDelete: 'cascade' }),
 
   title: text('title').notNull(),
   description: text('description'),

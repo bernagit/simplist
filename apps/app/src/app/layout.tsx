@@ -11,7 +11,7 @@ import "./layout.css";
 
 export const metadata: Metadata = {
     title: "Simplist",
-    description: "Manage your tasks and projects with ease using Simplist.",
+    description: "Manage your tasks and lists with ease using Simplist.",
 };
 
 export default function RootLayout({

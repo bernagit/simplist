@@ -10,7 +10,8 @@ import {
   Avatar,
   Menu,
   ActionIcon,
-  UnstyledButton
+  UnstyledButton,
+  Tooltip
 } from "@mantine/core";
 import {
   IconHome2,
@@ -34,13 +35,14 @@ import { useLists } from "@/queries/lists";
 import { useSidebar } from "@/providers/SidebarProvider";
 import { useColorScheme } from "@mantine/hooks";
 import { useTopbar } from "@/providers/TopbarProvider";
+import { modals } from "@mantine/modals";
 
 const SIDEBAR_WIDTH = 280;
-const MY_PROJECTS_TEXT = "My Projects";
+const MY_LISTS_TEXT = "My Lists";
 
 export function Sidebar() {
   const { toggle, opened, isMobile } = useSidebar();
-  const [projectsOpen, setProjectsOpen] = useState(true);
+  const [listsOpen, setListsOpen] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
   const colorScheme = useColorScheme();
@@ -62,6 +64,15 @@ export function Sidebar() {
     if (isMobile) {
       toggle();
     }
+  };
+
+  const handleAddList = () => {
+    console.log("Opening add list modal");
+    modals.openContextModal({
+      modal: "addList",
+      title: "Add List",
+      innerProps: undefined
+    });
   };
 
   if (!opened) return null;
@@ -168,20 +179,22 @@ export function Sidebar() {
               label={
                 <Group justify="space-between" align="center" style={{ width: "100%" }}>
                   <Text size="xs" fw={600} tt="uppercase" c="dimmed" style={{ letterSpacing: "0.06em" }}>
-                    {MY_PROJECTS_TEXT}
+                    {MY_LISTS_TEXT}
                   </Text>
-                  <ActionIcon
-                    variant="subtle"
-                    color="gray"
-                    size="xs"
-                    onClick={(e) => {
-                      e.stopPropagation();
-
-                    }}
-                    aria-label="Add project"
-                  >
-                    <IconPlus size={14} />
-                  </ActionIcon>
+                  <Tooltip label="Add list" position="right" withArrow>
+                    <ActionIcon
+                      variant="subtle"
+                      color="gray"
+                      size="xs"
+                      onClick={(e) => {
+                        handleAddList();
+                        e.stopPropagation();
+                      }}
+                      aria-label="Add list"
+                    >
+                      <IconPlus size={14} />
+                    </ActionIcon>
+                  </Tooltip>
                 </Group>
               }
               rightSection={
@@ -192,16 +205,16 @@ export function Sidebar() {
                     size="xs"
                     onClick={(e) => {
                       e.stopPropagation();
-                      setProjectsOpen((o) => !o);
+                      setListsOpen((o) => !o);
                     }}
-                    aria-label={projectsOpen ? "Collapse projects" : "Expand projects"}
+                    aria-label={listsOpen ? "Collapse lists" : "Expand lists"}
                   >
                     <IconChevronRight size={14} />
                   </ActionIcon>
                 </Group>
               }
-              opened={projectsOpen}
-              onChange={setProjectsOpen}
+              opened={listsOpen}
+              onChange={setListsOpen}
               style={{ borderRadius: "var(--mantine-radius-md)" }}
             >
               {lists?.data.owned.map((list) => (
@@ -213,25 +226,26 @@ export function Sidebar() {
                       size={18}
                       color={
                         list.color
-                          ? `var(--mantine-color-${list.color}-6)`
+                          ? `${list.color}`
                           : "var(--mantine-color-gray-6)"
                       }
                       fill={
                         list.color
-                          ? `var(--mantine-color-${list.color}-6)`
+                          ? `${list.color}`
                           : "var(--mantine-color-gray-6)"
                       }
                     />
                   }
                   active={pathname === `/lists/${list.id}`}
-                  onClick={() => handleNavigate(`/lists/${list.id}`, MY_PROJECTS_TEXT)}
+                  onClick={() => handleNavigate(`/lists/${list.id}`, MY_LISTS_TEXT)}
                   style={{ borderRadius: "var(--mantine-radius-md)" }}
                 />
               ))}
               <NavLink
-                label={<Text size="sm" c="dimmed">Add project</Text>}
-                leftSection={<IconPlus size={16} />}
+                label={<Text mt={4} size="sm" c="dimmed">Add list</Text>}
+                leftSection={<IconPlus size={14} />}
                 style={{ borderRadius: "var(--mantine-radius-md)" }}
+                onClick={handleAddList}
               />
             </NavLink>
           </Stack>

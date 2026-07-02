@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { listsService } from '@/services/lists';
-import { CompleteList, UpdateListInput } from '@/models/lists';
+import { AllList, CompleteList, CreateListInput, UpdateListInput } from '@/models/lists';
 import { Resp } from '@/models/base';
 import { showNotification } from '@mantine/notifications';
 
@@ -22,6 +22,57 @@ export function useListById(id: string) {
     queryKey: listKeys.detail(id),
     queryFn: () => listsService.getListById(id),
     staleTime: 5 * 60 * 1000,
+  });
+}
+
+
+export function useCreateList() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: CreateListInput) => {
+      console.log("Creating list with input:", input); // Debugging line
+      return listsService.createList(input);
+    },
+    onMutate: async (newList) => {
+      console.log("Optimistically updating lists with new list:", newList);
+      await queryClient.cancelQueries({
+        queryKey: listKeys.all,
+      });
+
+      const previousLists = queryClient.getQueryData(listKeys.all);
+      queryClient.setQueryData(
+        listKeys.all,
+        (old: Resp<AllList> | undefined) => {
+          if (!old) return old;
+
+          return {
+            ...old,
+            data: {
+              ...old.data,
+              owned: [...old.data.owned, newList],
+            },
+          };
+        }
+      );
+
+      return { previousLists };
+    },
+    onError: (_error, _variables, context) => {
+      showNotification({
+        title: 'Error',
+        message: 'Failed to create list. Please try again.',
+        color: 'red',
+      });
+      if (context?.previousLists) {
+        queryClient.setQueryData(listKeys.all, context.previousLists);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: listKeys.all,
+      });
+    },
   });
 }
 

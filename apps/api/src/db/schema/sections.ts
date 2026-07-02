@@ -5,7 +5,7 @@ export const sections = pgTable('sections', {
   id: uuid().primaryKey().defaultRandom(),
   listId: uuid('list_id')
     .notNull()
-    .references(() => lists.id),
+    .references(() => lists.id, { onDelete: 'cascade' }),
 
   title: text('title').notNull(),
   order: integer('order').notNull().default(0),

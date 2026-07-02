@@ -12,6 +12,7 @@ import { HotkeyProvider } from "@/providers/HotKeysProvider";
 import { SidebarProvider } from "@/providers/SidebarProvider";
 import { QueryProvider } from "@/providers/QueryProvider";
 import { TopbarProvider } from "@/providers/TopbarProvider";
+import AddList from "../modals/AddList";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   // const [query, setQuery] = useState<string>("");
@@ -27,7 +28,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <QueryProvider>
       <HotkeyProvider>
-        <ModalsProvider modals={{}}>
+        <ModalsProvider
+          modals={{
+            addList: AddList,
+          }}
+          modalProps={{
+            withinPortal: true,
+            zIndex: 400,
+            closeOnClickOutside: false
+          }}>
           <TopbarProvider>
             <SidebarProvider>
               <Spotlight

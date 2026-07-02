@@ -34,7 +34,13 @@ export type CompleteList = List & {
   defaultSectionId: string | null;
 }
 
-export type UpdateListInput = {
-  id: string;
+export type CreateListInput = {
   title: string;
+  description?: string;
+  color?: string;
+  icon?: string;
+}
+
+export type UpdateListInput = CreateListInput & {
+  id: string;
 }
