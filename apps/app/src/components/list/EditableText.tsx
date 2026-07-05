@@ -66,9 +66,9 @@ export function EditableTitle({ value, onSave }: EditableTitleProps) {
             height: 'auto',
             minHeight: 0,
 
-            fontSize: 'var(--mantine-h1-font-size)',
-            fontWeight: 'var(--mantine-h1-font-weight)',
-            lineHeight: 'var(--mantine-h1-line-height)',
+            fontSize: 'var(--mantine-h2-font-size)',
+            fontWeight: 'var(--mantine-h2-font-weight)',
+            lineHeight: 'var(--mantine-h2-line-height)',
 
             fontFamily: 'inherit',
 

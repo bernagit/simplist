@@ -28,15 +28,27 @@ export const updateListSchema = z.object({
   })
 })
 
-export const shareListSchema = z.object({
+export const addMemberSchema = z.object({
+  params: z.object({
+    id: z.uuid()
+  }),
   body: z.object({
-    listId: z.uuid(),
     shareWithEmail: z.email(),
     role: z.enum(['viewer', 'editor'])
+  })
+})
+
+export const removeMemberSchema = z.object({
+  params: z.object({
+    id: z.uuid()
+  }),
+  body: z.object({
+    memberId: z.uuid()
   })
 })
 
 export type ListCreateInput = z.infer<typeof createListSchema>['body']
 export type ListIdInput = z.infer<typeof listIdSchema>['params']
 export type ListUpdateInput = z.infer<typeof updateListSchema>['body']
-export type ListShareInput = z.infer<typeof shareListSchema>['body']
+export type ListAddMemberInput = z.infer<typeof addMemberSchema>['body']
+export type ListRemoveMemberInput = z.infer<typeof removeMemberSchema>['body']

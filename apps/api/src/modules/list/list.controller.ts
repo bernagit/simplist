@@ -1,6 +1,12 @@
 import { NextFunction, Request, Response } from 'express'
 import { ListService } from './list.service'
-import { ListCreateInput, ListIdInput, ListShareInput, ListUpdateInput } from './list.schema'
+import {
+  ListCreateInput,
+  ListIdInput,
+  ListAddMemberInput,
+  ListUpdateInput,
+  ListRemoveMemberInput
+} from './list.schema'
 import { HTTP_STATUS } from '../../types/http'
 
 export class ListController {
@@ -105,14 +111,31 @@ export class ListController {
   }
 
   share = async (req: Request, res: Response, next: NextFunction) => {
-    const body = req.validated!.body as ListShareInput
     const { id: userId } = req.user!
+    const params = req.validated!.params as ListIdInput
+    const body = req.validated!.body as ListAddMemberInput
 
     try {
-      await this.service.share(userId, body)
+      await this.service.share(userId, params.id, body)
 
       res.status(HTTP_STATUS.OK).json({
         message: 'List shared successfully'
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  removeMember = async (req: Request, res: Response, next: NextFunction) => {
+    const { id: userId } = req.user!
+    const params = req.validated!.params as ListIdInput
+    const body = req.validated!.body as ListRemoveMemberInput
+
+    try {
+      await this.service.removeMember(params.id, userId, body.memberId)
+
+      res.status(HTTP_STATUS.OK).json({
+        message: 'Member removed successfully'
       })
     } catch (error) {
       next(error)

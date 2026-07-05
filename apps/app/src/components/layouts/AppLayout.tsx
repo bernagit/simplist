@@ -13,6 +13,7 @@ import { SidebarProvider } from '@/providers/SidebarProvider'
 import { QueryProvider } from '@/providers/QueryProvider'
 import { TopbarProvider } from '@/providers/TopbarProvider'
 import AddList from '../modals/AddList'
+import ShareList from '../modals/ShareList'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   // const [query, setQuery] = useState<string>("");
@@ -29,7 +30,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <HotkeyProvider>
         <ModalsProvider
           modals={{
-            addList: AddList
+            addList: AddList,
+            shareList: ShareList
           }}
           modalProps={{
             withinPortal: true,
@@ -52,19 +54,23 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <Box
                   flex={1}
                   display="flex"
-                  style={{ flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}
+                  style={{
+                    flexDirection: 'column',
+                    overflow: 'hidden',
+                    minWidth: 0
+                  }}
                 >
                   <Topbar />
                   <Box
                     component="main"
                     flex={1}
                     style={{
-                      overflowY: 'auto',
                       display: 'flex',
-                      justifyContent: 'center'
+                      justifyContent: 'center',
+                      overflow: 'hidden'
                     }}
                   >
-                    <Box w={{ base: '100%', lg: '60%' }} p="md">
+                    <Box w={{ base: '100%', lg: '60%' }} p="md" h="100%">
                       {children}
                     </Box>
                   </Box>

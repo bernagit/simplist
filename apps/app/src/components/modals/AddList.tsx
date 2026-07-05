@@ -43,25 +43,17 @@ export default function AddList({
 }: ContextModalProps<{ listId?: string; data?: CreateListInput }>) {
   const listId = innerProps?.listId
   const isUpdateMode = !!listId
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [color, setColor] = useState(defaultColor)
+  const [title, setTitle] = useState(innerProps?.data?.title || '')
+  const [description, setDescription] = useState(innerProps?.data?.description || '')
+  const [color, setColor] = useState(innerProps?.data?.color || defaultColor)
   const createList = useCreateList()
   const updateList = useUpdateList()
 
   const [colorPickerOpened, setColorPickerOpened] = useState(false)
 
-  // const loadComponent = useCallback(() => {
-  //   if (innerProps?.data) {
-  //     setTitle(innerProps.data.title || "");
-  //     setDescription(innerProps.data.description || "");
-  //   }
-  // }, [innerProps]);
-
   const buttonLabel = isUpdateMode ? 'Update List' : 'Create List'
 
   const handleSaveList = useCallback(() => {
-    console.log('Saving list with title:', title, 'description:', description, 'color:', color) // Debugging line
     if (isUpdateMode && listId) {
       updateList.mutate({ id: listId, title, description, color })
     } else {

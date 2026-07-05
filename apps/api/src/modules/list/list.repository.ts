@@ -4,6 +4,7 @@ import db from '../../infrastructure/database/db'
 import { ListCreateInput, ListUpdateInput } from './list.schema'
 import { ListMemberRole, listMembers } from '../../db/schema/listMember'
 import { tasks } from '../../db/schema/tasks'
+import { users } from '../../db/schema/users'
 
 export class ListRepository {
   constructor() {}
@@ -170,8 +171,28 @@ export class ListRepository {
     return sharedList
   }
 
+  async removeMember(listId: string, listMemberId: string) {
+    const [removedMember] = await db
+      .delete(listMembers)
+      .where(and(eq(listMembers.listId, listId), eq(listMembers.id, listMemberId)))
+      .returning()
+
+    return removedMember
+  }
+
   async getMembers(listId: string) {
-    const query = db.select().from(listMembers).where(eq(listMembers.listId, listId))
+    const query = db
+      .select({
+        id: listMembers.id,
+        role: listMembers.role,
+        userId: users.id,
+        email: users.email,
+        name: users.name,
+        joinedAt: listMembers.joinedAt
+      })
+      .from(listMembers)
+      .leftJoin(users, eq(listMembers.userId, users.id))
+      .where(eq(listMembers.listId, listId))
 
     const result = await query.execute()
     return result

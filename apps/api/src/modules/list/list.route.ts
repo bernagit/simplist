@@ -1,6 +1,12 @@
 import { Router } from 'express'
 import { validate } from '../../infrastructure/middleware/validate'
-import { createListSchema, listIdSchema, shareListSchema, updateListSchema } from './list.schema'
+import {
+  createListSchema,
+  listIdSchema,
+  addMemberSchema,
+  updateListSchema,
+  removeMemberSchema
+} from './list.schema'
 import { ListController } from './list.controller'
 import { requireAuth } from '../../infrastructure/middleware/auth'
 
@@ -14,7 +20,8 @@ route.get('/', controller.getAll)
 route.get('/:id', validate(listIdSchema), controller.getById)
 route.put('/:id', validate(updateListSchema), controller.update)
 route.delete('/:id', validate(listIdSchema), controller.delete)
-route.post('/share', validate(shareListSchema), controller.share)
+route.post('/:id/share', validate(addMemberSchema), controller.share)
+route.delete('/:id/share', validate(removeMemberSchema), controller.removeMember)
 route.patch('/:id/archive', validate(listIdSchema), controller.archive)
 
 export default route

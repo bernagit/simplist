@@ -1,8 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { listsService } from '@/services/lists'
 import { AllList, CompleteList, CreateListInput, UpdateListInput } from '@/models/lists'
-import { Resp } from '@/models/base'
+import { ErrorResponse, Resp } from '@/models/base'
 import { showNotification } from '@mantine/notifications'
+import { HTTPError } from 'ky'
 
 export const listKeys = {
   all: ['lists'] as const,
@@ -30,11 +31,9 @@ export function useCreateList() {
 
   return useMutation({
     mutationFn: (input: CreateListInput) => {
-      console.log('Creating list with input:', input) // Debugging line
       return listsService.createList(input)
     },
     onMutate: async newList => {
-      console.log('Optimistically updating lists with new list:', newList)
       await queryClient.cancelQueries({
         queryKey: listKeys.all
       })
@@ -118,6 +117,93 @@ export function useUpdateList() {
 
       queryClient.invalidateQueries({
         queryKey: listKeys.all
+      })
+    }
+  })
+}
+
+export function useShareList() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({
+      listId,
+      shareWithEmail,
+      role
+    }: {
+      listId: string
+      shareWithEmail: string
+      role: 'editor' | 'viewer'
+    }) => listsService.shareList(listId, { shareWithEmail, role }),
+
+    onError: async error => {
+      let message = 'Something went wrong. Please try again.'
+
+      if (error instanceof HTTPError) {
+        try {
+          const body = await error.response.json<ErrorResponse>()
+          message = body.message
+        } catch {
+          // Ignore JSON parsing errors
+        }
+      }
+
+      showNotification({
+        title: 'Unable to share list',
+        message,
+        color: 'red'
+      })
+    },
+
+    onSuccess: (_data, variables) => {
+      // reload the list details to get the updated members
+      queryClient.invalidateQueries({
+        queryKey: listKeys.detail(variables.listId)
+      })
+      showNotification({
+        title: 'Success',
+        message: `List shared with ${variables.shareWithEmail} as ${variables.role}.`,
+        color: 'green'
+      })
+    }
+  })
+}
+
+export const useDeleteListMember = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ listId, memberId }: { listId: string; memberId: string }) =>
+      listsService.deleteListMember(listId, memberId),
+
+    onError: async error => {
+      let message = 'Something went wrong. Please try again.'
+
+      if (error instanceof HTTPError) {
+        try {
+          const body = await error.response.json<ErrorResponse>()
+          message = body.message
+        } catch {
+          // Ignore JSON parsing errors
+        }
+      }
+
+      showNotification({
+        title: 'Unable to remove member',
+        message,
+        color: 'red'
+      })
+    },
+
+    onSuccess: (_data, variables) => {
+      // reload the list details to get the updated members
+      queryClient.invalidateQueries({
+        queryKey: listKeys.detail(variables.listId)
+      })
+      showNotification({
+        title: 'Success',
+        message: `Member removed from the list.`,
+        color: 'green'
       })
     }
   })

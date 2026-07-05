@@ -31,7 +31,7 @@ export default function RootLayout({
       </head>
       <body className="vsc-initialized">
         <MantineProvider defaultColorScheme="auto" theme={theme}>
-          <Notifications />
+          <Notifications zIndex={1000} />
           <AppLayout>{children}</AppLayout>
         </MantineProvider>
       </body>

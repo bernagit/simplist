@@ -34,9 +34,9 @@ import { useMe } from '@/queries/auth'
 import { useLists } from '@/queries/lists'
 import { useSidebar } from '@/providers/SidebarProvider'
 import { useColorScheme } from '@mantine/hooks'
-import { useTopbar } from '@/providers/TopbarProvider'
 import { modals } from '@mantine/modals'
 
+export const MENU_WIDTH = 290
 const SIDEBAR_WIDTH = 280
 const MY_LISTS_TEXT = 'My Lists'
 
@@ -46,19 +46,11 @@ export function Sidebar() {
   const router = useRouter()
   const pathname = usePathname()
   const colorScheme = useColorScheme()
-  const { setBreadcrumbs } = useTopbar()
 
   const { data: me, isLoading: meLoading } = useMe()
   const { data: lists } = useLists()
 
-  const handleNavigate = (href: string, title?: string) => {
-    setBreadcrumbs([
-      {
-        label: title ?? '',
-        href: href
-      }
-    ])
-
+  const handleNavigate = (href: string) => {
     router.push(href)
 
     if (isMobile) {
@@ -92,7 +84,7 @@ export function Sidebar() {
       bg={colorScheme === 'dark' ? 'var(--mantine-color-dark-7)' : 'var(--mantine-color-gray-0)'}
     >
       <Stack gap={0} h="100%">
-        <Menu shadow="md" width={SIDEBAR_WIDTH + 10} position="bottom-start">
+        <Menu shadow="md" width={MENU_WIDTH} position="bottom-start">
           <Menu.Target>
             <Group gap="sm" wrap="nowrap" ml={0} m="xs">
               <UnstyledButton
@@ -240,7 +232,7 @@ export function Sidebar() {
                     />
                   }
                   active={pathname === `/lists/${list.id}`}
-                  onClick={() => handleNavigate(`/lists/${list.id}`, MY_LISTS_TEXT)}
+                  onClick={() => handleNavigate(`/lists/${list.id}`)}
                   style={{ borderRadius: 'var(--mantine-radius-md)' }}
                 />
               ))}

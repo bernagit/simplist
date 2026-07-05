@@ -3,7 +3,7 @@ import { SectionRepository } from '../section/section.repository'
 import { TaskRepository } from '../task/task.repository'
 import { UserRepository } from '../user/user.repository'
 import { ListRepository } from './list.repository'
-import { ListCreateInput, ListShareInput, ListUpdateInput } from './list.schema'
+import { ListAddMemberInput, ListCreateInput, ListUpdateInput } from './list.schema'
 
 export class ListService {
   private readonly repository: ListRepository = new ListRepository()
@@ -97,8 +97,8 @@ export class ListService {
     return await this.repository.delete(listId)
   }
 
-  async share(userId: string, data: ListShareInput) {
-    const { listId, shareWithEmail, role } = data
+  async share(userId: string, listId: string, data: ListAddMemberInput) {
+    const { shareWithEmail, role } = data
 
     // Check if the user has permission to view the list
     const canUpdate = await this.repository.canUpdate(listId, userId)
@@ -117,6 +117,30 @@ export class ListService {
     }
 
     return await this.repository.addMember(listId, userShare.id, role)
+  }
+
+  async removeMember(listId: string, userId: string, memberId: string) {
+    // Check if the user has permission to view the list
+    const canUpdate = await this.repository.canUpdate(listId, userId)
+    if (!canUpdate) {
+      throw Errors.forbidden('You do not have permission to remove members from this list')
+    }
+
+    // Check if the member to be removed exists
+    const members = await this.repository.getMembers(listId)
+    const memberExists = members.some(member => member.id === memberId)
+
+    if (!memberExists) {
+      throw Errors.notFound('Member not found in this list')
+    }
+
+    // Prevent the owner from being removed
+    const owner = members.find(member => member.role === 'owner')
+    if (owner && owner.userId === memberId) {
+      throw Errors.badRequest('You cannot remove the owner of the list')
+    }
+
+    return await this.repository.removeMember(listId, memberId)
   }
 
   async archive(listId: string, userId: string) {

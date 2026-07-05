@@ -21,9 +21,10 @@ export type AllList = {
 
 export type ListMember = {
   id: string
-  listId: string
   userId: string
-  role: 'owner' | 'editor' | 'viewer'
+  role: 'owner' | 'editor' | 'viewer',
+  email: string
+  name: string | null
   joinedAt: Date
 }
 
@@ -43,4 +44,9 @@ export type CreateListInput = {
 
 export type UpdateListInput = CreateListInput & {
   id: string
+}
+
+export type ShareListInput = {
+  shareWithEmail: string
+  role: 'editor' | 'viewer'
 }
