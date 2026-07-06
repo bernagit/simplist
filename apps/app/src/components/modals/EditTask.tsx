@@ -22,16 +22,18 @@ import { formatDate } from '@/utils/date'
 import { DatePicker } from '@mantine/dates'
 import { useColorScheme } from '@mantine/hooks'
 import { PRIORITY_OPTIONS } from '@/utils/constants'
+import { useToggleTask } from '@/queries/task'
 
 type EditTaskProps = {
   task: Task
-  onToggle?: (task: Task) => void | Promise<void>
+  canEdit: boolean | undefined
   onUpdate?: (taskId: string, updates: Partial<Task>) => void | Promise<void>
 }
 
-export default function EditTask({ task, onToggle, onUpdate }: EditTaskProps) {
+export default function EditTask({ task, canEdit, onUpdate }: EditTaskProps) {
   const { isMobile } = useSidebar()
   const colorScheme = useColorScheme()
+  const toggleTask = useToggleTask()
   const colorMemo = useMemo(() => getPriorityColor(task.priority), [task.priority])
   const [isEditing, setIsEditing] = useState(false)
   const [title, setTitle] = useState(task.title)
@@ -44,6 +46,11 @@ export default function EditTask({ task, onToggle, onUpdate }: EditTaskProps) {
   const priorityLabel = selectedPriority
     ? (PRIORITY_OPTIONS.find(option => option.value === selectedPriority)?.label ?? 'Priority')
     : 'Priority'
+
+  const handleToggleTask = async (task: Task) => {
+    if (!task.listId) return
+    await toggleTask.mutateAsync({ listId: task.listId, taskId: task.id })
+  }
 
   const handlePrioritySelect = (priority: string | null) => {
     setSelectedPriority(priority)
@@ -66,7 +73,8 @@ export default function EditTask({ task, onToggle, onUpdate }: EditTaskProps) {
     setIsEditing(false)
   }
 
-  const handleCancelEdit = () => {
+  const handleCancelEdit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
     setTitle(task.title)
     setDescription(task.description ?? '')
     setIsEditing(false)
@@ -78,6 +86,7 @@ export default function EditTask({ task, onToggle, onUpdate }: EditTaskProps) {
         borderTop: '1px solid var(--mantine-color-gray-4)'
       }}
       py={isMobile ? 'sm' : 'md'}
+      h={'100%'}
     >
       <Group align="start">
         <Checkbox
@@ -85,8 +94,9 @@ export default function EditTask({ task, onToggle, onUpdate }: EditTaskProps) {
           checked={task.completed}
           mt={task.description ? 10 : 0}
           onChange={() => {
-            onToggle?.(task)
+            handleToggleTask(task)
           }}
+          disabled={!canEdit}
           color={colorMemo}
           styles={{
             root: {
@@ -109,7 +119,7 @@ export default function EditTask({ task, onToggle, onUpdate }: EditTaskProps) {
             borderRadius: 6,
             padding: isEditing ? 8 : 0
           }}
-          onClick={() => !task.completed && setIsEditing(true)}
+          onClick={() => canEdit && !task.completed && setIsEditing(true)}
         >
           {isEditing ? (
             <>
@@ -157,7 +167,7 @@ export default function EditTask({ task, onToggle, onUpdate }: EditTaskProps) {
           )}
         </Stack>
       </Group>
-      <Popover position="bottom-start" shadow="md" >
+      <Popover disabled={!canEdit} position="bottom-start" shadow="md" >
         <Popover.Target>
           <Box
             onMouseEnter={e => {
@@ -189,6 +199,7 @@ export default function EditTask({ task, onToggle, onUpdate }: EditTaskProps) {
                   color="gray"
                   size="xs"
                   onClick={(e) => {
+                    if (!canEdit) return
                     e.stopPropagation()
                     handleDateSelect(null)
                   }}
@@ -203,7 +214,7 @@ export default function EditTask({ task, onToggle, onUpdate }: EditTaskProps) {
           <DatePicker highlightToday allowDeselect onChange={handleDateSelect} />
         </Popover.Dropdown>
       </Popover>
-      <Popover position="bottom-start" shadow="md">
+      <Popover disabled={!canEdit} position="bottom-start" shadow="md">
         <Popover.Target>
           <Box
             onMouseEnter={e => {
@@ -239,7 +250,10 @@ export default function EditTask({ task, onToggle, onUpdate }: EditTaskProps) {
                 key={option.value}
                 variant="subtle"
                 color="gray"
-                onClick={() => handlePrioritySelect(option.value)}
+                onClick={() => {
+                  if (!canEdit) return
+                  handlePrioritySelect(option.value)
+                }}
                 leftSection={
                   <Box>
                     <IconFlag size={16} color={getPriorityColor(option.value)} />

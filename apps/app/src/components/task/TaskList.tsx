@@ -27,12 +27,12 @@ import EditTask from '../modals/EditTask'
 type TaskListProps = {
   title: string
   data: Task[]
+  canEdit?: boolean
   onReorder?: (tasks: Task[]) => void | Promise<void>
-  onToggle: (task: Task) => void | Promise<void>
   onUpdate: (taskId: string, updates: Partial<Task>) => void | Promise<void>
 }
 
-export default function TaskList({ title, data, onReorder, onToggle, onUpdate }: TaskListProps) {
+export default function TaskList({ title, data, canEdit, onReorder, onUpdate }: TaskListProps) {
   const { isMobile } = useSidebar()
   const tasks = useMemo(() => [...data].sort((a, b) => a.order - b.order), [data])
   const [opened, { open, close }] = useDisclosure(false)
@@ -90,7 +90,7 @@ export default function TaskList({ title, data, onReorder, onToggle, onUpdate }:
         <SortableContext items={ids} strategy={verticalListSortingStrategy}>
           <Stack gap={0}>
             {tasks.map(task => (
-              <TaskRow key={task.id} task={task} onToggle={onToggle} onClick={taskClickHandler} />
+              <TaskRow key={task.id} task={task} onClick={taskClickHandler} canEdit={canEdit} />
             ))}
           </Stack>
         </SortableContext>
@@ -108,7 +108,7 @@ export default function TaskList({ title, data, onReorder, onToggle, onUpdate }:
           }
           p={0}
         >
-          <EditTask task={task} onToggle={onToggle} onUpdate={onUpdate} />
+          <EditTask task={task} onUpdate={onUpdate} canEdit={canEdit} />
         </Modal>
       )}
     </>

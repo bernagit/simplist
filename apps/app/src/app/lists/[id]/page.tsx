@@ -18,16 +18,17 @@ import {
 } from '@mantine/core'
 import { EditableTitle } from '@/components/list/EditableText'
 import AddTask from '@/components/list/AddTask'
-import { CreateTaskInput, Task } from '@/models/task'
-import { useCreateTask, useToggleCompleteTask, useUpdateTask } from '@/queries/task'
+import { CreateTaskInput } from '@/models/task'
+import { useCreateTask, useUpdateTask } from '@/queries/task'
 import TaskList from '@/components/task/TaskList'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { IconChevronDown, IconChevronRight } from '@tabler/icons-react'
 import AddSection from '@/components/list/AddSection'
 import { useCreateSection } from '@/queries/section'
 import { useTopbar } from '@/providers/TopbarProvider'
+import { useMe } from '@/queries/auth'
 
-export default function ListPage() {
+export default function Page() {
   const params = useParams()
   const lastCrossedRef = useRef<boolean>(false)
   const { setTitle, setDescription, setShowTitle, showTitle: showTopbarTitle } = useTopbar()
@@ -37,11 +38,17 @@ export default function ListPage() {
   const updateList = useUpdateList()
   const createTask = useCreateTask()
   const createSection = useCreateSection()
-  const toggleTask = useToggleCompleteTask()
   const updateTask = useUpdateTask()
-  // const reorderTasks = useReorderTasks();
+  const { data: me } = useMe()
 
   const list = data?.data
+
+  const canEdit = useMemo(() => {
+    if (!list) return false
+    // check if the user is the owner or has edit permissions
+    const member = list.members.find(m => m.userId === me?.id)
+    return member ? member.role === 'owner' || member.role === 'editor' : false
+  }, [list, me])
 
   const orderedSections = useMemo(() => {
     if (!list) return []
@@ -63,11 +70,6 @@ export default function ListPage() {
 
   const handleAddSection = async (listId: string, title: string, order: number | undefined) => {
     await createSection.mutateAsync({ listId, title, order })
-  }
-
-  const handleToggleTask = async (task: Task) => {
-    if (!list) return
-    await toggleTask.mutateAsync({ listId: list.id, taskId: task.id })
   }
 
   const handleUpdateTask = async (taskId: string, updates: Partial<CreateTaskInput>) => {
@@ -145,28 +147,32 @@ export default function ListPage() {
           </Box>
           {orderedSections.length > 0 && (
             <Stack gap={'xs'}>
-              {orderedSections.map(section => {
+              {orderedSections.map((section, index) => {
                 if (section.id === list.defaultSectionId) {
                   return (
                     <div key={section.id}>
                       <TaskList
                         title={list.title}
                         data={list.tasks.filter(task => task.sectionId === list.defaultSectionId)}
-                        onToggle={handleToggleTask}
+                        canEdit={canEdit}
                         onUpdate={handleUpdateTask}
                       />
-                      <AddTask
-                        ml={38}
-                        listId={list.id}
-                        sectionId={list.defaultSectionId}
-                        onSave={handleAddTask}
-                      />
-                      <AddSection
-                        order={2}
-                        listId={list.id}
-                        key={section.id}
-                        onSave={handleAddSection}
-                      />
+                      {canEdit && (
+                        <AddTask
+                          ml={38}
+                          listId={list.id}
+                          sectionId={list.defaultSectionId}
+                          onSave={handleAddTask}
+                        />
+                      )}
+                      {canEdit && index === orderedSections.length - 1 && (
+                        <AddSection
+                          order={2}
+                          listId={list.id}
+                          key={section.id}
+                          onSave={handleAddSection}
+                        />
+                      )}
                     </div>
                   )
                 } else {
@@ -200,24 +206,28 @@ export default function ListPage() {
                       <Divider ml={28} mr={8} />
                       <Collapse expanded={sectionExpanded[section.id] ?? true}>
                         <TaskList
+                          canEdit={canEdit}
                           title={`${list.title} / ${section.title}`}
                           data={list.tasks.filter(task => task.sectionId === section.id)}
-                          onToggle={handleToggleTask}
                           onUpdate={handleUpdateTask}
                         />
-                        <AddTask
-                          ml={38}
-                          listId={list.id}
-                          sectionId={section.id}
-                          onSave={handleAddTask}
-                        />
+                        {canEdit && (
+                          <AddTask
+                            ml={38}
+                            listId={list.id}
+                            sectionId={section.id}
+                            onSave={handleAddTask}
+                          />
+                        )}
                       </Collapse>
-                      <AddSection
-                        order={section.order}
-                        listId={list.id}
-                        key={section.id}
-                        onSave={handleAddSection}
-                      />
+                      {canEdit && index === orderedSections.length - 1 && (
+                        <AddSection
+                          order={section.order}
+                          listId={list.id}
+                          key={section.id}
+                          onSave={handleAddSection}
+                        />
+                      )}
                     </div>
                   )
                 }

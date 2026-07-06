@@ -22,10 +22,12 @@ import { modals } from '@mantine/modals'
 import { IconDots, IconEdit, IconLayoutSidebar, IconUserShare } from '@tabler/icons-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { usePathname } from 'next/navigation'
-import { useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { MENU_WIDTH } from './Sidebar'
 
 export const TOPBAR_HEIGHT = 50
+
+const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 
 export function Topbar() {
   const { toggle, opened } = useSidebar()
@@ -41,22 +43,35 @@ export function Topbar() {
 
   const localBreadcrumbs = useMemo(() => {
     if (path === '/') return []
-
-    const listRegex = /^\/lists\/([a-zA-Z0-9-]+)$/
-
-    if (listRegex.test(path)) {
-      return [{ label: 'My Lists', href: '/lists' }]
-    }
-
-    return [
-      {
-        label: path.replace('/', ''),
-        href: path
+    const segments = path.split('/').filter(Boolean)
+    switch (segments[0]) {
+      case 'lists': {
+        // /lists
+        if (segments.length === 1) {
+          return [{ label: 'My Lists', href: '/lists' }]
+        }
+        // /lists/shared
+        if (segments[1] === 'shared') {
+          return [{ label: 'Shared', href: '/lists/shared' }]
+        }
+        // /lists/:id
+        if (segments.length === 2) {
+          return [{ label: 'My Lists', href: '/lists' }]
+        }
+        break
       }
-    ]
+      default:
+        return [
+          {
+            label: capitalize(segments.join(' ')),
+            href: path,
+          },
+        ]
+    }
+    return []
   }, [path])
 
-  const handleEdit = () => {
+  const handleEdit = useCallback(() => {
     if (!listId) return
     const cachedData = queryClient.getQueryData<Resp<CompleteList>>(listKeys.detail(listId))
     const list = cachedData?.data
@@ -77,9 +92,9 @@ export function Topbar() {
         }
       }
     })
-  }
+  }, [listId, queryClient])
 
-  const handleShare = () => {
+  const handleShare = useCallback(() => {
     if (!listId) return
 
     modals.openContextModal({
@@ -94,7 +109,7 @@ export function Topbar() {
         listId
       }
     })
-  }
+  }, [listId])
 
   useEffect(() => {
     setBreadcrumbs(localBreadcrumbs)

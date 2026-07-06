@@ -19,8 +19,13 @@ async function updateTask(taskId: string, input: Partial<CreateTaskInput>): Prom
   return await api.put(`tasks/${taskId}`, { json: input }).json()
 }
 
+async function deleteTask(taskId: string): Promise<null> {
+  return await api.delete(`tasks/${taskId}`).json()
+}
+
 export const tasksService = {
   createTask,
   toggleCompleteTask,
-  updateTask
+  updateTask,
+  deleteTask
 }

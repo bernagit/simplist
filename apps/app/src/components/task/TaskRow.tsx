@@ -2,28 +2,65 @@
 
 import { Task } from '@/models/task'
 import { ActionIcon, Checkbox, Group, Stack, Text } from '@mantine/core'
-import { IconCalendar, IconDots, IconGripVertical } from '@tabler/icons-react'
+import { IconCalendar, IconEdit, IconGripVertical, IconTrash } from '@tabler/icons-react'
 import { CSS } from '@dnd-kit/utilities'
 import { useSortable } from '@dnd-kit/sortable'
 import dayjs from 'dayjs'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { getPriorityColor } from '@/utils/color'
 import { useSidebar } from '@/providers/SidebarProvider'
+import { useDeleteTask, useToggleTask } from '@/queries/task'
+import { useContextMenu } from 'mantine-contextmenu'
 
 type TaskRowProps = {
   task: Task
-  onToggle?: (task: Task) => void | Promise<void>
+  canEdit: boolean | undefined
   onClick?: (task: Task) => void | Promise<void>
 }
 
-export default function TaskRow({ task, onToggle, onClick }: TaskRowProps) {
+export default function TaskRow({ task, canEdit, onClick }: TaskRowProps) {
   const { isMobile } = useSidebar()
-  const [hovered, setHovered] = useState(false)
   const colorMemo = useMemo(() => getPriorityColor(task.priority), [task.priority])
+  const toggleTask = useToggleTask()
+  const deleteTask = useDeleteTask()
+  const { showContextMenu } = useContextMenu();
+
+  const handleToggleTask = async (task: Task) => {
+    if (!task.listId) return
+    await toggleTask.mutateAsync({ listId: task.listId, taskId: task.id })
+  }
+
+  const handleDeleteTask = async (task: Task) => {
+    if (!canEdit) return
+    if (!task.listId) return
+    await deleteTask.mutateAsync({ listId: task.listId, taskId: task.id })
+  }
 
   const { attributes, listeners, setNodeRef, transform, isDragging } = useSortable({
     id: task.id
   })
+
+  const menuOptions = [
+    {
+      key: 'edit',
+      icon: <IconEdit size={14} />,
+      title: 'Edit',
+      onClick: () => {
+        onClick?.(task)
+      },
+      disabled: !canEdit
+    },
+    {
+      key: 'delete',
+      icon: <IconTrash size={14} />,
+      title: 'Delete',
+      color: 'red',
+      onClick: () => {
+        handleDeleteTask(task)
+      },
+      disabled: !canEdit
+    }
+  ]
 
   return (
     <Group
@@ -33,8 +70,6 @@ export default function TaskRow({ task, onToggle, onClick }: TaskRowProps) {
       align="center"
       px="xs"
       py={8}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
       style={{
         borderRadius: 6,
         cursor: 'default',
@@ -64,7 +99,7 @@ export default function TaskRow({ task, onToggle, onClick }: TaskRowProps) {
           color="gray"
           size="sm"
           style={{
-            opacity: isMobile || hovered ? 1 : 0,
+            opacity: isMobile ? 1 : 0,
             cursor: 'grab',
             transition: 'opacity 120ms',
             marginTop: 2
@@ -76,19 +111,17 @@ export default function TaskRow({ task, onToggle, onClick }: TaskRowProps) {
         <Group
           style={{ flex: 1, minWidth: 0 }}
           onClick={e => {
-            // filter out clicks on the checkbox and the action icon
             if ((e.target as HTMLElement).closest('input[type="checkbox"]')) return
             if ((e.target as HTMLElement).closest('button')) return
-            console.log('task click', task)
             onClick?.(task)
           }}
         >
           <Checkbox
             radius="xl"
             checked={task.completed}
+            disabled={!canEdit}
             onChange={() => {
-              console.log('task toggle', task)
-              onToggle?.(task)
+              handleToggleTask(task)
             }}
             color={colorMemo}
             styles={{
@@ -103,7 +136,11 @@ export default function TaskRow({ task, onToggle, onClick }: TaskRowProps) {
             }}
           />
 
-          <Stack gap={2} flex={1}>
+          <Stack
+            gap={2}
+            flex={1}
+            onContextMenu={showContextMenu(menuOptions)}
+          >
             <Text
               size="sm"
               fw={500}
@@ -133,18 +170,6 @@ export default function TaskRow({ task, onToggle, onClick }: TaskRowProps) {
             </Text>
           </Group>
         )}
-
-        <ActionIcon
-          variant="subtle"
-          color="gray"
-          size="sm"
-          style={{
-            opacity: isMobile || hovered ? 1 : 0,
-            transition: 'opacity 120ms'
-          }}
-        >
-          <IconDots size={16} />
-        </ActionIcon>
       </Group>
     </Group>
   )

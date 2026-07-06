@@ -35,6 +35,7 @@ import { useMe } from '@/queries/auth'
 import { useLists } from '@/queries/lists'
 import { useSidebar } from '@/providers/SidebarProvider'
 import { modals } from '@mantine/modals'
+import { authService } from '@/services/auth'
 
 export const MENU_WIDTH = 290
 const SIDEBAR_WIDTH = 280
@@ -43,12 +44,18 @@ const SHARED_LISTS_TEXT = 'Shared Lists'
 
 export function Sidebar() {
   const { toggle, opened, isMobile } = useSidebar()
-  const [listsOpen, setListsOpen] = useState(true)
+  const [ownedListsOpen, setOwnedListsOpen] = useState(true)
+  const [sharedListsOpen, setSharedListsOpen] = useState(true)
   const router = useRouter()
   const pathname = usePathname()
 
   const { data: me, isLoading: meLoading } = useMe()
   const { data: lists } = useLists()
+
+  const handleLogout = async () => {
+    await authService.logout()
+    router.push('/login')
+  }
 
   const handleNavigate = (href: string) => {
     router.push(href)
@@ -140,7 +147,11 @@ export function Sidebar() {
               Settings
             </Menu.Item>
             <Menu.Divider />
-            <Menu.Item color="red" leftSection={<IconLogout size={16} />}>
+            <Menu.Item
+              color="red"
+              leftSection={<IconLogout size={16} />}
+              onClick={handleLogout}
+            >
               Log out
             </Menu.Item>
           </Menu.Dropdown>
@@ -208,17 +219,22 @@ export function Sidebar() {
                     color="gray"
                     size="xs"
                     onClick={e => {
+                      e.preventDefault()
                       e.stopPropagation()
-                      setListsOpen(o => !o)
+                      setOwnedListsOpen(o => !o)
                     }}
-                    aria-label={listsOpen ? 'Collapse lists' : 'Expand lists'}
+                    aria-label={ownedListsOpen ? 'Collapse lists' : 'Expand lists'}
                   >
                     <IconChevronRight size={14} />
                   </ActionIcon>
                 </Group>
               }
-              opened={listsOpen}
-              onChange={setListsOpen}
+              opened={ownedListsOpen}
+              onClick={(e) => {
+                handleNavigate('/lists')
+                e.stopPropagation()
+              }}
+              active={pathname === '/lists'}
               style={{ borderRadius: 'var(--mantine-radius-md)' }}
             >
               {lists?.data.owned.map(list => (
@@ -261,6 +277,29 @@ export function Sidebar() {
                   {SHARED_LISTS_TEXT}
                 </Text>
               }
+              rightSection={
+                <Group wrap="nowrap" gap={4} flex={1}>
+                  <ActionIcon
+                    variant="subtle"
+                    color="gray"
+                    size="xs"
+                    onClick={e => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      setSharedListsOpen(o => !o)
+                    }}
+                    aria-label={sharedListsOpen ? 'Collapse lists' : 'Expand lists'}
+                  >
+                    <IconChevronRight size={14} />
+                  </ActionIcon>
+                </Group>
+              }
+              opened={sharedListsOpen}
+              onClick={(e) => {
+                handleNavigate(`/lists/shared`)
+                e.stopPropagation()
+              }}
+              active={pathname === '/lists/shared'}
               style={{ borderRadius: 'var(--mantine-radius-md)' }}
             >
               {lists?.data.shared.map(list => (

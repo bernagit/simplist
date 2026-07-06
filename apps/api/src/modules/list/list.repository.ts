@@ -59,12 +59,12 @@ export class ListRepository {
     const query = db
       .select()
       .from(lists)
-      .leftJoin(listMembers, eq(lists.id, listMembers.listId))
+      .innerJoin(listMembers, eq(lists.id, listMembers.listId))
       .where(
         and(eq(listMembers.userId, userId), this.notDeleted(), not(eq(listMembers.role, 'owner')))
       )
     const result = await query.execute()
-    return result
+    return result.map(r => r.lists)
   }
 
   async getById(listId: string, userId: string) {

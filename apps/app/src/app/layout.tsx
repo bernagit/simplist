@@ -29,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en" {...mantineHtmlProps} className="vsc-initialized">
       <head>
-        <ColorSchemeScript defaultColorScheme="auto" />
+        <ColorSchemeScript defaultColorScheme="light" />
       </head>
       <body className="vsc-initialized">
         <MantineProvider defaultColorScheme="auto" theme={theme}>
