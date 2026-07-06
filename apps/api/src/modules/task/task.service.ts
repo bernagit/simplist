@@ -3,7 +3,7 @@ import { Errors } from '../../types/http'
 import { ListRepository } from '../list/list.repository'
 import { SectionRepository } from '../section/section.repository'
 import { TaskRepository } from './task.repository'
-import { CreateTaskInput } from './task.schema'
+import { CreateTaskInput, UpdateTaskInput } from './task.schema'
 
 export class TaskService {
   private readonly repository: TaskRepository = new TaskRepository()
@@ -14,7 +14,10 @@ export class TaskService {
   private readonly canEditRoles: ListMemberRole[] = ['owner', 'editor']
 
   // PRIVATE METHODS
-  private isMember = (members: { userId: string; role: ListMemberRole }[], userId: string) => {
+  private isMember = (
+    members: { userId: string | null; role: ListMemberRole }[],
+    userId: string
+  ) => {
     return members.some(
       member => member.userId === userId && this.canEditRoles.includes(member.role)
     )
@@ -43,6 +46,22 @@ export class TaskService {
 
     const task = await this.repository.create(userId, listId, sectionId, data)
     return task
+  }
+
+  async update(taskId: string, data: Partial<UpdateTaskInput>, userId: string) {
+    const task = await this.repository.getById(taskId)
+    if (!task) {
+      throw Errors.notFound('Task not found')
+    }
+
+    const members = await this.listRepository.getMembers(task.listId)
+
+    if (!this.isMember(members, userId)) {
+      throw Errors.forbidden('You do not have permission to update this task')
+    }
+
+    const updatedTask = await this.repository.update(taskId, data)
+    return updatedTask
   }
 
   async delete(taskId: string, userId: string) {

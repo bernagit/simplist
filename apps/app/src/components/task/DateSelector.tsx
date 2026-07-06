@@ -1,16 +1,11 @@
+import { formatDate } from '@/utils/date'
 import { Button, Group, Popover, Text } from '@mantine/core'
 import { DatePicker } from '@mantine/dates'
 import { IconCalendar, IconX } from '@tabler/icons-react'
-import dayjs from 'dayjs'
 
 type DateSelectorProps = {
   selectedDate: string | null
   setSelectedDate: (date: string | null) => void
-}
-
-const formatDate = (date: string | null) => {
-  if (!date) return null
-  return dayjs(date).format('D MMM')
 }
 
 export default function DateSelector({ selectedDate, setSelectedDate }: DateSelectorProps) {
@@ -41,7 +36,7 @@ export default function DateSelector({ selectedDate, setSelectedDate }: DateSele
           </Button>
         </Popover.Target>
         <Popover.Dropdown>
-          <DatePicker highlightToday allowDeselect onChange={date => setSelectedDate(date)} />
+          <DatePicker highlightToday allowDeselect onChange={setSelectedDate} />
         </Popover.Dropdown>
       </Popover>
       {selectedDate && (

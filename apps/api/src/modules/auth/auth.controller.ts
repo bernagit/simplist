@@ -60,7 +60,7 @@ export class AuthController {
       res.cookie(cfg.AUTH_COOKIE_NAME, tokens.accessToken, {
         httpOnly: true,
         secure: !appConfig.isDev,
-        sameSite: 'strict',
+        sameSite: 'lax',
         maxAge: cfg.COOKIE_MAX_AGE
       })
 
@@ -78,7 +78,7 @@ export class AuthController {
       res.clearCookie(cfg.AUTH_COOKIE_NAME, {
         httpOnly: true,
         secure: !appConfig.isDev,
-        sameSite: 'strict'
+        sameSite: 'lax'
       })
 
       res.status(HTTP_STATUS.OK).json({

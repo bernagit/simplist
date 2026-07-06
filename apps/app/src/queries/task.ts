@@ -1,4 +1,4 @@
-import { CreateTaskInput } from '@/models/task'
+import { CreateTaskInput, UpdateTaskInput } from '@/models/task'
 import { tasksService } from '@/services/task'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { listKeys } from './lists'
@@ -108,5 +108,65 @@ export function useToggleCompleteTask() {
         queryClient.setQueryData(listKeys.detail(listId), context.previousList)
       }
     }
+  })
+}
+
+type UpdateTaskVariables = {
+  taskId: string
+  listId: string
+  updates: Partial<UpdateTaskInput>
+}
+
+export function useUpdateTask() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ taskId, updates }: UpdateTaskVariables) =>
+      tasksService.updateTask(taskId, updates),
+
+    onMutate: async ({ taskId, listId, updates }) => {
+      await queryClient.cancelQueries({
+        queryKey: listKeys.detail(listId),
+      })
+
+      const previousList =
+        queryClient.getQueryData<Resp<CompleteList>>(
+          listKeys.detail(listId)
+        )
+
+      queryClient.setQueryData<Resp<CompleteList>>(
+        listKeys.detail(listId),
+        (old) => {
+          if (!old) return old
+
+          return {
+            ...old,
+            data: {
+              ...old.data,
+              tasks: old.data.tasks.map((task) =>
+                task.id === taskId
+                  ? {
+                      ...task,
+                      ...updates,
+                      updatedAt: new Date(),
+                    }
+                  : task
+              ),
+            },
+          }
+        }
+      )
+
+      return { previousList }
+    },
+
+    onError: (_error, { listId }, context) => {
+      if (context?.previousList) {
+        queryClient.setQueryData(
+          listKeys.detail(listId),
+          context.previousList
+        )
+      }
+    },
   })
 }

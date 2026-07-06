@@ -7,7 +7,7 @@ import { appInfo } from './config/appInfo'
 const logger = createModuleLogger('SERVER')
 
 async function startServer() {
-  const server = app.listen(appConfig.port, () => {
+  const server = app.listen(appConfig.port, '0.0.0.0', () => {
     logger.info(`${appInfo.name} v${appInfo.version} running on port ${appConfig.port}`)
   })
 

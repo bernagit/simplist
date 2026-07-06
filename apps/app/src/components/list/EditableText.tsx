@@ -61,7 +61,7 @@ export function EditableTitle({ value, onSave }: EditableTitleProps) {
           },
 
           input: {
-            padding: '2px 6px',
+            padding: '6px 6px 0px 6px',
             margin: 0,
             height: 'auto',
             minHeight: 0,
@@ -87,7 +87,7 @@ export function EditableTitle({ value, onSave }: EditableTitleProps) {
       style={{
         display: 'inline-block',
         cursor: 'text',
-        padding: '8px 0px 2px 6px',
+        padding: '6px 6px 0px 6px',
         borderRadius: 6,
         border: '1px solid transparent',
         transition: 'border-color 150ms'

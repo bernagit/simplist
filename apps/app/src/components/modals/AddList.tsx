@@ -13,7 +13,7 @@ import {
   Box
 } from '@mantine/core'
 import { ContextModalProps } from '@mantine/modals'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 const maxTitleLength = 200
 const maxDescriptionLength = 500
@@ -49,6 +49,10 @@ export default function AddList({
   const createList = useCreateList()
   const updateList = useUpdateList()
 
+  const isFormValid = useMemo(() => {
+    return title.trim().length > 0 && title.trim().length <= maxTitleLength
+  }, [title])
+  
   const [colorPickerOpened, setColorPickerOpened] = useState(false)
 
   const buttonLabel = isUpdateMode ? 'Update List' : 'Create List'
@@ -149,7 +153,9 @@ export default function AddList({
         >
           Cancel
         </Button>
-        <Button onClick={handleSaveList}>{buttonLabel}</Button>
+        <Button disabled={!isFormValid} onClick={handleSaveList}>
+          {buttonLabel}
+        </Button>
       </Group>
     </Stack>
   )

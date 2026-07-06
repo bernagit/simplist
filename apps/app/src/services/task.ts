@@ -15,7 +15,12 @@ async function toggleCompleteTask(taskId: string): Promise<null> {
   return await api.patch(`tasks/${taskId}/toggle`).json()
 }
 
+async function updateTask(taskId: string, input: Partial<CreateTaskInput>): Promise<Resp<Task>> {
+  return await api.put(`tasks/${taskId}`, { json: input }).json()
+}
+
 export const tasksService = {
   createTask,
-  toggleCompleteTask
+  toggleCompleteTask,
+  updateTask
 }

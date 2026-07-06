@@ -15,7 +15,8 @@ import {
   Title,
   Button,
   Tooltip,
-  Menu
+  Menu,
+  Stack
 } from '@mantine/core'
 import { modals } from '@mantine/modals'
 import { IconDots, IconEdit, IconLayoutSidebar, IconUserShare } from '@tabler/icons-react'
@@ -28,7 +29,8 @@ export const TOPBAR_HEIGHT = 50
 
 export function Topbar() {
   const { toggle, opened } = useSidebar()
-  const { breadcrumbs, setBreadcrumbs, showTitle, title } = useTopbar()
+  const { isMobile } = useSidebar()
+  const { breadcrumbs, setBreadcrumbs, showTitle, title, description } = useTopbar()
   const path = usePathname()
   const queryClient = useQueryClient()
 
@@ -82,10 +84,14 @@ export function Topbar() {
 
     modals.openContextModal({
       modal: 'shareList',
-      title: <Text size='xl' fw={600}>Share list</Text>,
+      title: (
+        <Text size="xl" fw={600}>
+          Share list
+        </Text>
+      ),
       centered: true,
       innerProps: {
-        listId,
+        listId
       }
     })
   }
@@ -96,7 +102,7 @@ export function Topbar() {
 
   return (
     <Box h={50} style={{ flexShrink: 0 }}>
-      <Group h="100%" px="md" justify="space-between">
+      <Group h="100%" px="md" justify="space-between" wrap="nowrap">
         <Group>
           {!opened && (
             <ActionIcon
@@ -129,23 +135,47 @@ export function Topbar() {
         </Group>
 
         {showTitle && (
-          <Group>
-            <Title order={3} mt="md" fw={600} style={{ display: showTitle ? 'block' : 'none' }}>
+          <Stack gap={0} align="center">
+            <Title
+              order={3}
+              mt="md"
+              fw={600}
+              style={{
+                display: showTitle ? 'block' : 'none',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                maxWidth: isMobile ? 150 : 300
+              }}
+            >
               {title}
             </Title>
-          </Group>
+            {description && (
+              <Text
+                size="sm"
+                c="dimmed"
+                style={{
+                  display: showTitle ? 'block' : 'none',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  maxWidth: isMobile ? 150 : 300
+                }}
+              >
+                {description}
+              </Text>
+            )}
+          </Stack>
         )}
         <Group gap={'xs'}>
           {listId && (
             <>
               <Tooltip label="Share list" openDelay={500}>
-                <Button
-                  variant="light"
-                  mt="sm"
-                  leftSection={<IconUserShare size={16} />}
-                  onClick={handleShare}
-                >
-                  Share
+                <Button variant="light" mt="sm" onClick={handleShare}>
+                  <Group>
+                    <IconUserShare size={16} />
+                    {isMobile ? null : 'Share'}
+                  </Group>
                 </Button>
               </Tooltip>
               <Menu shadow="md" width={MENU_WIDTH} position="bottom-end">

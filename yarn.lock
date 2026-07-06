@@ -2305,10 +2305,12 @@ __metadata:
     "@types/node": "npm:^20"
     "@types/react": "npm:^19"
     "@types/react-dom": "npm:^19"
+    clsx: "npm:^2.1.1"
     dayjs: "npm:^1.11.21"
     eslint: "npm:^9"
     eslint-config-next: "npm:16.2.9"
     ky: "npm:^2.0.2"
+    mantine-contextmenu: "npm:^9.3.1"
     next: "npm:16.2.9"
     postcss: "npm:^8.5.15"
     postcss-preset-mantine: "npm:^1.18.0"
@@ -5130,6 +5132,19 @@ __metadata:
   dependencies:
     yallist: "npm:^3.0.2"
   checksum: 10c0/89b2ef2ef45f543011e38737b8a8622a2f8998cddf0e5437174ef8f1f70a8b9d14a918ab3e232cb3ba343b7abddffa667f0b59075b2b80e6b4d63c3de6127482
+  languageName: node
+  linkType: hard
+
+"mantine-contextmenu@npm:^9.3.1":
+  version: 9.3.1
+  resolution: "mantine-contextmenu@npm:9.3.1"
+  peerDependencies:
+    "@mantine/core": ">=9"
+    "@mantine/hooks": ">=9"
+    clsx: ">=2"
+    react: ">=19"
+    react-dom: ">=19"
+  checksum: 10c0/7cb9686eeef4bcbdb1006b9eff6aeae5b0514e3c8da5c781a02614e0662dcee8f3bca6427c1b58b7794a7f57ccd5bcb4054d03e403903766608559e173705720
   languageName: node
   linkType: hard
 

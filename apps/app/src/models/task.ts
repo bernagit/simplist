@@ -21,3 +21,14 @@ export type CreateTaskInput = {
   priority: string | null
   order?: number
 }
+
+export type UpdateTaskInput = {
+  title?: string
+  description?: string | null
+  dueDate?: Date | null
+  priority?: string | null
+  listId?: string
+  sectionId?: string | null
+  completed?: boolean
+  order?: number
+}

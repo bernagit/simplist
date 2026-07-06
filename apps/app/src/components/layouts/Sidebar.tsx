@@ -1,4 +1,5 @@
 'use client'
+
 import {
   Stack,
   Text,
@@ -33,19 +34,18 @@ import { spotlight } from '@mantine/spotlight'
 import { useMe } from '@/queries/auth'
 import { useLists } from '@/queries/lists'
 import { useSidebar } from '@/providers/SidebarProvider'
-import { useColorScheme } from '@mantine/hooks'
 import { modals } from '@mantine/modals'
 
 export const MENU_WIDTH = 290
 const SIDEBAR_WIDTH = 280
 const MY_LISTS_TEXT = 'My Lists'
+const SHARED_LISTS_TEXT = 'Shared Lists'
 
 export function Sidebar() {
   const { toggle, opened, isMobile } = useSidebar()
   const [listsOpen, setListsOpen] = useState(true)
   const router = useRouter()
   const pathname = usePathname()
-  const colorScheme = useColorScheme()
 
   const { data: me, isLoading: meLoading } = useMe()
   const { data: lists } = useLists()
@@ -62,7 +62,8 @@ export function Sidebar() {
     modals.openContextModal({
       modal: 'addList',
       title: 'Add List',
-      innerProps: undefined
+      innerProps: undefined,
+      size: 'lg'
     })
   }
 
@@ -81,7 +82,7 @@ export function Sidebar() {
         overflow: 'hidden',
         transition: 'width 200ms ease'
       }}
-      bg={colorScheme === 'dark' ? 'var(--mantine-color-dark-7)' : 'var(--mantine-color-gray-0)'}
+      bg="var(--mantine-color-body)"
     >
       <Stack gap={0} h="100%">
         <Menu shadow="md" width={MENU_WIDTH} position="bottom-start">
@@ -246,6 +247,38 @@ export function Sidebar() {
                 style={{ borderRadius: 'var(--mantine-radius-md)' }}
                 onClick={handleAddList}
               />
+            </NavLink>
+            <Divider my="xs" />
+            <NavLink
+              label={
+                <Text
+                  size="xs"
+                  fw={600}
+                  tt="uppercase"
+                  c="dimmed"
+                  style={{ letterSpacing: '0.06em' }}
+                >
+                  {SHARED_LISTS_TEXT}
+                </Text>
+              }
+              style={{ borderRadius: 'var(--mantine-radius-md)' }}
+            >
+              {lists?.data.shared.map(list => (
+                <NavLink
+                  key={list.id}
+                  label={list.title}
+                  leftSection={
+                    <IconPoint
+                      size={18}
+                      color={list.color ? `${list.color}` : 'var(--mantine-color-gray-6)'}
+                      fill={list.color ? `${list.color}` : 'var(--mantine-color-gray-6)'}
+                    />
+                  }
+                  active={pathname === `/lists/${list.id}`}
+                  onClick={() => handleNavigate(`/lists/${list.id}`)}
+                  style={{ borderRadius: 'var(--mantine-radius-md)' }}
+                />
+              ))}
             </NavLink>
           </Stack>
         </ScrollArea>

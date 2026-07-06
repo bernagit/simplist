@@ -1,5 +1,17 @@
 import { useDeleteListMember, useListById, useShareList } from '@/queries/lists'
-import { ActionIcon, Avatar, Button, Container, Divider, Group, Select, Stack, Tabs, Text, TextInput } from '@mantine/core'
+import {
+  ActionIcon,
+  Avatar,
+  Button,
+  Container,
+  Divider,
+  Group,
+  Select,
+  Stack,
+  Tabs,
+  Text,
+  TextInput
+} from '@mantine/core'
 import { ContextModalProps, modals } from '@mantine/modals'
 import { IconTrash } from '@tabler/icons-react'
 import { useCallback, useMemo, useState } from 'react'
@@ -8,11 +20,7 @@ type ShareListProps = {
   listId: string
 }
 
-export default function ShareList({
-  context,
-  id,
-  innerProps
-}: ContextModalProps<ShareListProps>) {
+export default function ShareList({ context, id, innerProps }: ContextModalProps<ShareListProps>) {
   const listId = innerProps?.listId
   const [tabValue, setTabValue] = useState<string | null>('invite')
   const [shareWithEmail, setShareWithEmail] = useState<string>('')
@@ -26,7 +34,7 @@ export default function ShareList({
 
   const members = useMemo(() => {
     if (!list) return []
-    return list.members.filter((member) => member.role !== 'owner')
+    return list.members.filter(member => member.role !== 'owner')
   }, [list])
 
   const handleShare = useCallback(() => {
@@ -38,11 +46,7 @@ export default function ShareList({
     (memberId: string) => () => {
       modals.openConfirmModal({
         title: 'Confirm Remove Member',
-        children: (
-          <Text size="sm">
-            Are you sure you want to remove this member from the list?
-          </Text>
-        ),
+        children: <Text size="sm">Are you sure you want to remove this member from the list?</Text>,
         labels: { confirm: 'Remove', cancel: 'Cancel' },
         confirmProps: { color: 'red' },
         onConfirm: () => {
@@ -66,9 +70,7 @@ export default function ShareList({
     <Tabs value={tabValue} onChange={setTabValue} h={400} variant="pills">
       <Tabs.List>
         <Tabs.Tab value="invite">Invite</Tabs.Tab>
-        <Tabs.Tab value="members">
-          Members ({members.length})
-        </Tabs.Tab>
+        <Tabs.Tab value="members">Members ({members.length})</Tabs.Tab>
       </Tabs.List>
 
       <Tabs.Panel value="invite" pt="md">
@@ -77,9 +79,7 @@ export default function ShareList({
             label="Email"
             placeholder="Enter email to share with"
             value={shareWithEmail}
-            onChange={(event) =>
-              setShareWithEmail(event.currentTarget.value)
-            }
+            onChange={event => setShareWithEmail(event.currentTarget.value)}
           />
 
           <Select
@@ -94,18 +94,11 @@ export default function ShareList({
           />
 
           <Group justify="flex-end">
-            <Button
-              variant="outline"
-              color="gray"
-              onClick={() => context.closeModal(id)}
-            >
+            <Button variant="outline" color="gray" onClick={() => context.closeModal(id)}>
               Cancel
             </Button>
 
-            <Button
-              disabled={!shareWithEmail || !listId}
-              onClick={handleShare}
-            >
+            <Button disabled={!shareWithEmail || !listId} onClick={handleShare}>
               Share
             </Button>
           </Group>
@@ -115,7 +108,7 @@ export default function ShareList({
       <Tabs.Panel value="members" pt="md">
         <Stack gap="sm">
           {members.length ? (
-            members.map((member) => (
+            members.map(member => (
               <div key={member.id}>
                 <Group justify="space-between" align="center">
                   <Group>
@@ -124,9 +117,7 @@ export default function ShareList({
                     </Avatar>
 
                     <div>
-                      <Text>
-                        {member.name ?? member.email}
-                      </Text>
+                      <Text>{member.name ?? member.email}</Text>
 
                       <Text size="sm" c="dimmed">
                         {member.email}

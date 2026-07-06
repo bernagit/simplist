@@ -1,5 +1,6 @@
 'use client'
 
+import { useSidebar } from '@/providers/SidebarProvider'
 import { Button, Divider, Group, Stack, Text, TextInput } from '@mantine/core'
 import { useCallback, useState } from 'react'
 
@@ -12,6 +13,7 @@ type AddSectionProps = {
 export default function AddSection({ listId, order, onSave }: AddSectionProps) {
   const [isHovered, setIsHovered] = useState(false)
   const [isClicked, setIsClicked] = useState(false)
+  const { isMobile } = useSidebar()
 
   const [sectionTitle, setSectionTitle] = useState('')
 
@@ -36,9 +38,10 @@ export default function AddSection({ listId, order, onSave }: AddSectionProps) {
           </Text>
         }
         style={{
-          opacity: isHovered ? 1 : 0,
+          opacity: isMobile || isHovered ? 1 : 0,
           cursor: 'pointer',
-          transition: 'opacity 150ms ease'
+          transition: 'opacity 150ms ease',
+          marginTop: isMobile ? 16 : 8
         }}
         onClick={() => setIsClicked(true)}
       />

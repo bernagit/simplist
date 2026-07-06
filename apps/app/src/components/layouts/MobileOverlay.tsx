@@ -1,4 +1,5 @@
 'use client'
+
 import { useSidebar } from '@/providers/SidebarProvider'
 import { Overlay } from '@mantine/core'
 

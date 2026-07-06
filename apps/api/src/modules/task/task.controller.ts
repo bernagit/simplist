@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import { HTTP_STATUS } from '../../types/http'
-import { CreateTaskInput, CreateTaskParams, TaskIdInput } from './task.schema'
+import { CreateTaskInput, CreateTaskParams, TaskIdInput, UpdateTaskInput } from './task.schema'
 import { TaskService } from './task.service'
 
 export class TaskController {
@@ -18,6 +18,23 @@ export class TaskController {
       res.status(HTTP_STATUS.CREATED).json({
         message: 'Task created successfully',
         data: task
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  update = async (req: Request, res: Response, next: NextFunction) => {
+    const { id: userId } = req.user!
+    const { id: taskId } = req.validated!.params as TaskIdInput
+    const data = req.validated!.body as UpdateTaskInput
+
+    try {
+      const updatedTask = await this.service.update(taskId, data, userId)
+
+      res.status(HTTP_STATUS.OK).json({
+        message: 'Task updated successfully',
+        data: updatedTask
       })
     } catch (error) {
       next(error)

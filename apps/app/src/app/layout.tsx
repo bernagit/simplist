@@ -7,7 +7,9 @@ import '@mantine/core/styles.layer.css'
 import '@mantine/notifications/styles.css'
 import '@mantine/spotlight/styles.css'
 import '@mantine/dates/styles.css'
+import 'mantine-contextmenu/styles.layer.css'
 import './layout.css'
+import { ContextMenuProvider } from 'mantine-contextmenu'
 
 export const metadata: Metadata = {
   title: 'Simplist',
@@ -27,12 +29,14 @@ export default function RootLayout({
   return (
     <html lang="en" {...mantineHtmlProps} className="vsc-initialized">
       <head>
-        <ColorSchemeScript />
+        <ColorSchemeScript defaultColorScheme="auto" />
       </head>
       <body className="vsc-initialized">
         <MantineProvider defaultColorScheme="auto" theme={theme}>
           <Notifications zIndex={1000} />
-          <AppLayout>{children}</AppLayout>
+          <ContextMenuProvider>
+            <AppLayout>{children}</AppLayout>
+          </ContextMenuProvider>
         </MantineProvider>
       </body>
     </html>

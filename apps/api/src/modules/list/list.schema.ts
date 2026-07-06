@@ -3,7 +3,7 @@ import z from 'zod'
 
 export const createListSchema = z.object({
   body: z.object({
-    title: z.string().max(255),
+    title: z.string().max(255).min(1),
     description: z.string().max(1024).optional(),
     color: z.string().max(7).optional(),
     icon: z.string().max(255).optional()

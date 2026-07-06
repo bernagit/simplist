@@ -22,7 +22,7 @@ export type AllList = {
 export type ListMember = {
   id: string
   userId: string
-  role: 'owner' | 'editor' | 'viewer',
+  role: 'owner' | 'editor' | 'viewer'
   email: string
   name: string | null
   joinedAt: Date

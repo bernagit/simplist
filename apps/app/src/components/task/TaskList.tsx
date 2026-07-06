@@ -17,18 +17,31 @@ import {
   arrayMove,
   sortableKeyboardCoordinates
 } from '@dnd-kit/sortable'
-import { Stack } from '@mantine/core'
-import { useMemo } from 'react'
+import { Modal, Stack, Text } from '@mantine/core'
+import { useMemo, useState } from 'react'
 import TaskRow from './TaskRow'
+import { useDisclosure } from '@mantine/hooks'
+import { useSidebar } from '@/providers/SidebarProvider'
+import EditTask from '../modals/EditTask'
 
 type TaskListProps = {
+  title: string
   data: Task[]
   onReorder?: (tasks: Task[]) => void | Promise<void>
   onToggle: (task: Task) => void | Promise<void>
+  onUpdate: (taskId: string, updates: Partial<Task>) => void | Promise<void>
 }
 
-export default function TaskList({ data, onReorder, onToggle }: TaskListProps) {
+export default function TaskList({ title, data, onReorder, onToggle, onUpdate }: TaskListProps) {
+  const { isMobile } = useSidebar()
   const tasks = useMemo(() => [...data].sort((a, b) => a.order - b.order), [data])
+  const [opened, { open, close }] = useDisclosure(false)
+  const [selectedTaskId, setSelectedTask] = useState<string | null>(null)
+  const task = useMemo(
+    () => tasks.find(t => t.id === selectedTaskId) ?? null,
+    [tasks, selectedTaskId]
+  )
+
   const sensors = useSensors(
     useSensor(MouseSensor, {
       activationConstraint: {
@@ -45,6 +58,11 @@ export default function TaskList({ data, onReorder, onToggle }: TaskListProps) {
       coordinateGetter: sortableKeyboardCoordinates
     })
   )
+
+  const taskClickHandler = (task: Task) => {
+    setSelectedTask(task.id)
+    open()
+  }
 
   const ids = useMemo(() => tasks.map(t => t.id), [tasks])
 
@@ -67,14 +85,32 @@ export default function TaskList({ data, onReorder, onToggle }: TaskListProps) {
   }
 
   return (
-    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-      <SortableContext items={ids} strategy={verticalListSortingStrategy}>
-        <Stack gap={0}>
-          {tasks.map(task => (
-            <TaskRow key={task.id} task={task} onToggle={onToggle} />
-          ))}
-        </Stack>
-      </SortableContext>
-    </DndContext>
+    <>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={ids} strategy={verticalListSortingStrategy}>
+          <Stack gap={0}>
+            {tasks.map(task => (
+              <TaskRow key={task.id} task={task} onToggle={onToggle} onClick={taskClickHandler} />
+            ))}
+          </Stack>
+        </SortableContext>
+      </DndContext>
+      {task && (
+        <Modal
+          opened={opened}
+          onClose={close}
+          fullScreen={isMobile}
+          size="xl"
+          title={
+            <Text size="md" fw={600}>
+              {title}
+            </Text>
+          }
+          p={0}
+        >
+          <EditTask task={task} onToggle={onToggle} onUpdate={onUpdate} />
+        </Modal>
+      )}
+    </>
   )
 }

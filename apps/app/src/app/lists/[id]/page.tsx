@@ -18,8 +18,8 @@ import {
 } from '@mantine/core'
 import { EditableTitle } from '@/components/list/EditableText'
 import AddTask from '@/components/list/AddTask'
-import { CreateTaskInput } from '@/models/task'
-import { useCreateTask, useToggleCompleteTask } from '@/queries/task'
+import { CreateTaskInput, Task } from '@/models/task'
+import { useCreateTask, useToggleCompleteTask, useUpdateTask } from '@/queries/task'
 import TaskList from '@/components/task/TaskList'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { IconChevronDown, IconChevronRight } from '@tabler/icons-react'
@@ -30,7 +30,7 @@ import { useTopbar } from '@/providers/TopbarProvider'
 export default function ListPage() {
   const params = useParams()
   const lastCrossedRef = useRef<boolean>(false)
-  const { setTitle, setShowTitle, showTitle: showTopbarTitle } = useTopbar()
+  const { setTitle, setDescription, setShowTitle, showTitle: showTopbarTitle } = useTopbar()
 
   const { data, isLoading } = useListById(params.id as string)
   const [sectionExpanded, setSectionExpanded] = useState<Record<string, boolean>>({})
@@ -38,6 +38,7 @@ export default function ListPage() {
   const createTask = useCreateTask()
   const createSection = useCreateSection()
   const toggleTask = useToggleCompleteTask()
+  const updateTask = useUpdateTask()
   // const reorderTasks = useReorderTasks();
 
   const list = data?.data
@@ -64,6 +65,16 @@ export default function ListPage() {
     await createSection.mutateAsync({ listId, title, order })
   }
 
+  const handleToggleTask = async (task: Task) => {
+    if (!list) return
+    await toggleTask.mutateAsync({ listId: list.id, taskId: task.id })
+  }
+
+  const handleUpdateTask = async (taskId: string, updates: Partial<CreateTaskInput>) => {
+    if (!list) return
+    await updateTask.mutateAsync({ taskId, listId: list.id, updates })
+  }
+
   const handleScroll = ({ y }: { y: number }) => {
     const HIDE_THRESHOLD = 25
     const SHOW_THRESHOLD = 15
@@ -81,10 +92,12 @@ export default function ListPage() {
 
       if (isPastThreshold && list?.title) {
         setTitle(list.title)
+        setDescription(list.description ?? undefined)
         setShowTitle(true)
       } else {
         setShowTitle(false)
         setTitle(undefined)
+        setDescription(undefined)
       }
     }
   }
@@ -124,6 +137,11 @@ export default function ListPage() {
             }}
           >
             <EditableTitle onSave={handleSaveTitle} value={list.title} />
+            {list.description && (
+              <Text ml={8} size="sm" c="dimmed">
+                {list.description}
+              </Text>
+            )}
           </Box>
           {orderedSections.length > 0 && (
             <Stack gap={'xs'}>
@@ -132,13 +150,10 @@ export default function ListPage() {
                   return (
                     <div key={section.id}>
                       <TaskList
+                        title={list.title}
                         data={list.tasks.filter(task => task.sectionId === list.defaultSectionId)}
-                        onToggle={task =>
-                          toggleTask.mutate({
-                            listId: list.id,
-                            taskId: task.id
-                          })
-                        }
+                        onToggle={handleToggleTask}
+                        onUpdate={handleUpdateTask}
                       />
                       <AddTask
                         ml={38}
@@ -185,13 +200,10 @@ export default function ListPage() {
                       <Divider ml={28} mr={8} />
                       <Collapse expanded={sectionExpanded[section.id] ?? true}>
                         <TaskList
+                          title={`${list.title} / ${section.title}`}
                           data={list.tasks.filter(task => task.sectionId === section.id)}
-                          onToggle={task =>
-                            toggleTask.mutate({
-                              listId: list.id,
-                              taskId: task.id
-                            })
-                          }
+                          onToggle={handleToggleTask}
+                          onUpdate={handleUpdateTask}
                         />
                         <AddTask
                           ml={38}
