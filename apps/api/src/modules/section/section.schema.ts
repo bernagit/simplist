@@ -9,11 +9,22 @@ export const createSectionSchema = z.object({
   })
 })
 
+export const updateSectionSchema = z.object({
+  params: z.object({
+    id: z.uuid()
+  }),
+  body: z.object({
+    title: z.string().max(255),
+    order: z.number().min(1).optional()
+  })
+})
+
 export const sectionIdSchema = z.object({
   params: z.object({
     id: z.uuid()
   })
 })
 
+export type UpdateSectionInput = z.infer<typeof updateSectionSchema>['body']
 export type SectionIdInput = z.infer<typeof sectionIdSchema>['params']
 export type CreateSectionInput = z.infer<typeof createSectionSchema>['body']

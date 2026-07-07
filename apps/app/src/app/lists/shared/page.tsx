@@ -1,7 +1,7 @@
 'use client'
 
+import ListOverview from '@/components/list/ListOverview'
 import { useLists } from '@/queries/lists'
-import ListPage from '@/components/list/ListPage'
 
 export default function Page() {
   const { data: lists, isLoading } = useLists()
@@ -9,6 +9,6 @@ export default function Page() {
   const sharedLists = lists?.data.shared ?? []
 
   return (
-    <ListPage data={sharedLists} isLoading={isLoading} />
+    <ListOverview data={sharedLists} isLoading={isLoading} shared={true} />
   )
 }

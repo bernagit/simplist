@@ -50,7 +50,7 @@ export function Topbar() {
         if (segments.length === 1) {
           return [{ label: 'My Lists', href: '/lists' }]
         }
-        // /lists/shared
+        // /lists/shared or /lists/shared/:id
         if (segments[1] === 'shared') {
           return [{ label: 'Shared', href: '/lists/shared' }]
         }

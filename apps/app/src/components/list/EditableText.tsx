@@ -1,14 +1,16 @@
 'use client'
 
-import { TextInput, Title, useComputedColorScheme } from '@mantine/core'
-import { useRef, useState } from 'react'
+import { TextInput, Title, TitleOrder, useComputedColorScheme } from '@mantine/core'
+import { useCallback, useRef, useState } from 'react'
 
 type EditableTitleProps = {
+  canEdit?: boolean
+  order: TitleOrder
   value: string
   onSave: (value: string) => Promise<void> | void
 }
 
-export function EditableTitle({ value, onSave }: EditableTitleProps) {
+export function EditableTitle({ canEdit, order, value, onSave }: EditableTitleProps) {
   const colorScheme = useComputedColorScheme()
 
   const [editing, setEditing] = useState(false)
@@ -16,16 +18,17 @@ export function EditableTitle({ value, onSave }: EditableTitleProps) {
 
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const startEditing = () => {
+  const startEditing = useCallback(() => {
+    if (!canEdit) return
     setDraft(value)
     setEditing(true)
 
     requestAnimationFrame(() => {
       inputRef.current?.focus()
     })
-  }
+  }, [canEdit, value])
 
-  const save = async () => {
+  const save = useCallback(async () => {
     const trimmed = draft.trim()
 
     if (trimmed && trimmed !== value) {
@@ -33,7 +36,7 @@ export function EditableTitle({ value, onSave }: EditableTitleProps) {
     }
 
     setEditing(false)
-  }
+  }, [draft, value, onSave])
 
   const cancel = () => {
     setEditing(false)
@@ -61,14 +64,14 @@ export function EditableTitle({ value, onSave }: EditableTitleProps) {
           },
 
           input: {
-            padding: '6px 6px 0px 6px',
+            padding: '2px 6px 0px 6px',
             margin: 0,
             height: 'auto',
             minHeight: 0,
 
-            fontSize: 'var(--mantine-h2-font-size)',
-            fontWeight: 'var(--mantine-h2-font-weight)',
-            lineHeight: 'var(--mantine-h2-line-height)',
+            fontSize: `var(--mantine-h${order}-font-size)`,
+            fontWeight: `var(--mantine-h${order}-font-weight)`,
+            lineHeight: `var(--mantine-h${order}-line-height)`,
 
             fontFamily: 'inherit',
 
@@ -82,21 +85,23 @@ export function EditableTitle({ value, onSave }: EditableTitleProps) {
 
   return (
     <Title
-      order={2}
+      order={order}
       onClick={startEditing}
       style={{
         display: 'inline-block',
         cursor: 'text',
-        padding: '6px 6px 0px 6px',
+        padding: '2px 6px 0px 6px',
         borderRadius: 6,
         border: '1px solid transparent',
         transition: 'border-color 150ms'
       }}
       onMouseEnter={e => {
+        if (!canEdit) return
         e.currentTarget.style.borderColor =
           colorScheme === 'dark' ? 'var(--mantine-color-dark-4)' : 'var(--mantine-color-gray-4)'
       }}
       onMouseLeave={e => {
+        if (!canEdit) return
         e.currentTarget.style.borderColor = 'transparent'
       }}
     >

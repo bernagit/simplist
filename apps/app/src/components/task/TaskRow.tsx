@@ -6,7 +6,7 @@ import { IconCalendar, IconEdit, IconGripVertical, IconTrash } from '@tabler/ico
 import { CSS } from '@dnd-kit/utilities'
 import { useSortable } from '@dnd-kit/sortable'
 import dayjs from 'dayjs'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { getPriorityColor } from '@/utils/color'
 import { useSidebar } from '@/providers/SidebarProvider'
 import { useDeleteTask, useToggleTask } from '@/queries/task'
@@ -24,6 +24,7 @@ export default function TaskRow({ task, canEdit, onClick }: TaskRowProps) {
   const toggleTask = useToggleTask()
   const deleteTask = useDeleteTask()
   const { showContextMenu } = useContextMenu();
+  const [hovered, setHovered] = useState(false);
 
   const handleToggleTask = async (task: Task) => {
     if (!task.listId) return
@@ -37,7 +38,8 @@ export default function TaskRow({ task, canEdit, onClick }: TaskRowProps) {
   }
 
   const { attributes, listeners, setNodeRef, transform, isDragging } = useSortable({
-    id: task.id
+    id: task.id,
+    disabled: !canEdit
   })
 
   const menuOptions = [
@@ -73,23 +75,15 @@ export default function TaskRow({ task, canEdit, onClick }: TaskRowProps) {
       style={{
         borderRadius: 6,
         cursor: 'default',
-        // transition: transition ?? 'background-color 120ms ease',
         transform: CSS.Transform.toString(transform),
-        // backgroundColor: isDragging
-        //   ? colorScheme === 'dark'
-        //     ? 'var(--mantine-color-dark-5)'
-        //     : 'var(--mantine-color-gray-1)'
-        //   : hovered
-        //     ? colorScheme === 'dark'
-        //       ? 'var(--mantine-color-dark-6)'
-        //       : 'var(--mantine-color-gray-0)'
-        //     : 'transparent',
 
         boxShadow: isDragging ? '0 8px 24px rgba(0,0,0,.18)' : undefined,
 
         opacity: isDragging ? 0.95 : 1,
         zIndex: isDragging ? 100 : 1
       }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
       <Group wrap="nowrap" gap="sm" flex={1} align="flex-start">
         <ActionIcon
@@ -99,10 +93,10 @@ export default function TaskRow({ task, canEdit, onClick }: TaskRowProps) {
           color="gray"
           size="sm"
           style={{
-            opacity: isMobile ? 1 : 0,
+            opacity: canEdit && (isMobile || hovered) ? 1 : 0,
             cursor: 'grab',
             transition: 'opacity 120ms',
-            marginTop: 2
+            marginTop: 2,
           }}
           mt={task.description ? 10 : 0}
         >

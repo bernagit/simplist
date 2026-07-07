@@ -253,7 +253,7 @@ export function Sidebar() {
                   style={{ borderRadius: 'var(--mantine-radius-md)' }}
                 />
               ))}
-              <NavLink
+              {/* <NavLink
                 label={
                   <Text mt={4} size="sm" c="dimmed">
                     Add list
@@ -262,7 +262,7 @@ export function Sidebar() {
                 leftSection={<IconPlus size={14} />}
                 style={{ borderRadius: 'var(--mantine-radius-md)' }}
                 onClick={handleAddList}
-              />
+              /> */}
             </NavLink>
             <Divider my="xs" />
             <NavLink
@@ -313,8 +313,8 @@ export function Sidebar() {
                       fill={list.color ? `${list.color}` : 'var(--mantine-color-gray-6)'}
                     />
                   }
-                  active={pathname === `/lists/${list.id}`}
-                  onClick={() => handleNavigate(`/lists/${list.id}`)}
+                  active={pathname === `/lists/shared/${list.id}`}
+                  onClick={() => handleNavigate(`/lists/shared/${list.id}`)}
                   style={{ borderRadius: 'var(--mantine-radius-md)' }}
                 />
               ))}

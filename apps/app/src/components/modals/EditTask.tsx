@@ -13,14 +13,14 @@ import {
   TextInput,
   Textarea,
   Popover,
-  Box
+  Box,
+  useComputedColorScheme
 } from '@mantine/core'
 import { useMemo, useState } from 'react'
 import dayjs from 'dayjs'
 import { IconCalendar, IconFlag, IconX } from '@tabler/icons-react'
 import { formatDate } from '@/utils/date'
 import { DatePicker } from '@mantine/dates'
-import { useColorScheme } from '@mantine/hooks'
 import { PRIORITY_OPTIONS } from '@/utils/constants'
 import { useToggleTask } from '@/queries/task'
 
@@ -32,7 +32,7 @@ type EditTaskProps = {
 
 export default function EditTask({ task, canEdit, onUpdate }: EditTaskProps) {
   const { isMobile } = useSidebar()
-  const colorScheme = useColorScheme()
+  const colorScheme = useComputedColorScheme()
   const toggleTask = useToggleTask()
   const colorMemo = useMemo(() => getPriorityColor(task.priority), [task.priority])
   const [isEditing, setIsEditing] = useState(false)

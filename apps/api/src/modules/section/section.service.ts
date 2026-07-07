@@ -3,7 +3,7 @@ import { Errors } from '../../types/http'
 import { ListRepository } from '../list/list.repository'
 import { SectionRepository } from '../section/section.repository'
 import { UserRepository } from '../user/user.repository'
-import { CreateSectionInput } from './section.schema'
+import { CreateSectionInput, UpdateSectionInput } from './section.schema'
 
 export class SectionService {
   private readonly repository: SectionRepository = new SectionRepository()
@@ -49,6 +49,46 @@ export class SectionService {
     }
 
     return section
+  }
+
+  async update(sectionId: string, data: Partial<UpdateSectionInput>, userId: string) {
+    // get the section and check if the user can update it
+    const section = await this.repository.getById(sectionId)
+
+    if (!section) {
+      throw Errors.notFound('Section not found')
+    }
+
+    const members = await this.listRepository.getMembers(section.listId)
+
+    const isMember = members.some(
+      member => member.userId === userId && this.canEditRoles.includes(member.role)
+    )
+
+    if (!isMember) {
+      throw Errors.forbidden('You do not have permission to update this section')
+    }
+
+    // if order is provided, move all sections with order >= data.order down by 1
+    if (data.order !== undefined) {
+      const sections = await this.repository.getByListId(section.listId)
+      const sectionsToUpdate = sections.filter(
+        s => s.id !== sectionId && s.order !== null && s.order >= data.order!
+      )
+
+      for (const s of sectionsToUpdate) {
+        await this.repository.update(s.id, { order: (s.order ?? 0) + 1 })
+      }
+    }
+
+    // update the section
+    const updatedSection = await this.repository.update(sectionId, data)
+
+    if (!updatedSection) {
+      throw Errors.internal('Failed to update section')
+    }
+
+    return updatedSection
   }
 
   async delete(sectionId: string, userId: string) {

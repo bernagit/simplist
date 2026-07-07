@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import { HTTP_STATUS } from '../../types/http'
 import { SectionService } from './section.service'
-import { CreateSectionInput, SectionIdInput } from './section.schema'
+import { CreateSectionInput, SectionIdInput, UpdateSectionInput } from './section.schema'
 
 export class SectionController {
   private readonly service: SectionService = new SectionService()
@@ -17,6 +17,23 @@ export class SectionController {
       res.status(HTTP_STATUS.CREATED).json({
         message: 'Section created successfully',
         data: section
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  update = async (req: Request, res: Response, next: NextFunction) => {
+    const { id: userId } = req.user!
+    const { id: sectionId } = req.validated!.params as SectionIdInput
+    const data = req.validated!.body as UpdateSectionInput
+
+    try {
+      const updatedSection = await this.service.update(sectionId, data, userId)
+
+      res.status(HTTP_STATUS.OK).json({
+        message: 'Section updated successfully',
+        data: updatedSection
       })
     } catch (error) {
       next(error)

@@ -1,8 +1,8 @@
 'use client'
 
 import { CreateTaskInput } from '@/models/task'
-import { Box, Button, Card, Group, Stack, Text, TextInput, useMantineTheme } from '@mantine/core'
-import { useColorScheme, useHotkeys } from '@mantine/hooks'
+import { Box, Button, Card, Group, Stack, Text, TextInput, useComputedColorScheme, useMantineTheme } from '@mantine/core'
+import { useHotkeys } from '@mantine/hooks'
 import { IconCirclePlus, IconPlus } from '@tabler/icons-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import DateSelector from '../task/DateSelector'
@@ -16,7 +16,7 @@ type AddTaskProps = {
 }
 
 export default function AddTask({ ml, listId, sectionId, onSave }: AddTaskProps) {
-  const colorScheme = useColorScheme()
+  const colorScheme = useComputedColorScheme()
   const theme = useMantineTheme()
   const [isClicked, setIsClicked] = useState(false)
   const [hovered, setHovered] = useState(false)
