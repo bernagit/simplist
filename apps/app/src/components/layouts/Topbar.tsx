@@ -36,30 +36,48 @@ export function Topbar() {
   const path = usePathname()
   const queryClient = useQueryClient()
 
-  const listId = useMemo(() => {
-    const match = path.match(/^\/lists\/([a-zA-Z0-9-]+)$/)
-    return match ? match[1] : null
+  const route = useMemo(() => {
+    const segments = path.split('/').filter(Boolean)
+
+    const isLists = segments[0] === 'lists'
+    const isShared = isLists && segments[1] === 'shared'
+
+    const listId = isLists
+      ? isShared
+        ? segments[2] ?? null
+        : segments[1] ?? null
+      : null
+
+    return {
+      segments,
+      isLists,
+      isShared,
+      listId,
+    }
   }, [path])
 
   const localBreadcrumbs = useMemo(() => {
     if (path === '/') return []
-    const segments = path.split('/').filter(Boolean)
+
+    const segments = route.segments
+
     switch (segments[0]) {
       case 'lists': {
-        // /lists
         if (segments.length === 1) {
           return [{ label: 'My Lists', href: '/lists' }]
         }
-        // /lists/shared or /lists/shared/:id
-        if (segments[1] === 'shared') {
+
+        if (route.isShared) {
           return [{ label: 'Shared', href: '/lists/shared' }]
         }
-        // /lists/:id
-        if (segments.length === 2) {
+
+        if (route.listId) {
           return [{ label: 'My Lists', href: '/lists' }]
         }
+
         break
       }
+
       default:
         return [
           {
@@ -68,12 +86,13 @@ export function Topbar() {
           },
         ]
     }
+
     return []
-  }, [path])
+  }, [path, route])
 
   const handleEdit = useCallback(() => {
-    if (!listId) return
-    const cachedData = queryClient.getQueryData<Resp<CompleteList>>(listKeys.detail(listId))
+    if (!route.listId) return
+    const cachedData = queryClient.getQueryData<Resp<CompleteList>>(listKeys.detail(route.listId))
     const list = cachedData?.data
 
     if (!list) return
@@ -81,7 +100,7 @@ export function Topbar() {
     modals.openContextModal({
       modal: 'addList',
       title: 'Update list',
-      centered: true,
+      size: 'lg',
       innerProps: {
         listId: list.id,
         data: {
@@ -92,10 +111,10 @@ export function Topbar() {
         }
       }
     })
-  }, [listId, queryClient])
+  }, [route.listId, queryClient])
 
   const handleShare = useCallback(() => {
-    if (!listId) return
+    if (!route.listId) return
 
     modals.openContextModal({
       modal: 'shareList',
@@ -104,16 +123,17 @@ export function Topbar() {
           Share list
         </Text>
       ),
-      centered: true,
       innerProps: {
-        listId
+        listId: route.listId
       }
     })
-  }, [listId])
+  }, [route.listId])
 
   useEffect(() => {
     setBreadcrumbs(localBreadcrumbs)
   }, [localBreadcrumbs, setBreadcrumbs])
+
+  const canShare = route.listId && !route.isShared
 
   return (
     <Box h={50} style={{ flexShrink: 0 }}>
@@ -183,7 +203,7 @@ export function Topbar() {
           </Stack>
         )}
         <Group gap={'xs'}>
-          {listId && (
+          {canShare && (
             <>
               <Tooltip label="Share list" openDelay={500}>
                 <Button variant="light" mt="sm" onClick={handleShare}>

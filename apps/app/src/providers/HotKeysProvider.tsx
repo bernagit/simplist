@@ -17,7 +17,7 @@ export function HotkeyProvider({ children }: { children: ReactNode }) {
         modals.openContextModal({
           modal: 'addList',
           title: 'Add new list',
-          centered: true,
+          size: 'lg',
           innerProps: undefined
         })
       }

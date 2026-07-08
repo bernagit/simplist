@@ -3,9 +3,7 @@
 import { useParams } from 'next/navigation'
 import { useListById, useUpdateList } from '@/queries/lists'
 import {
-  ActionIcon,
   Center,
-  Collapse,
   Container,
   Group,
   Loader,
@@ -17,33 +15,29 @@ import {
   Box,
   ThemeIcon,
   Tooltip,
-  RingProgress,
-  useMantineTheme
 } from '@mantine/core'
 import { EditableTitle } from '@/components/list/EditableText'
 import AddTask from '@/components/list/AddTask'
 import { CreateTaskInput } from '@/models/task'
 import { useCreateTask, useUpdateTask } from '@/queries/task'
 import TaskList from '@/components/task/TaskList'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { IconChevronDown, IconChevronRight, IconLock } from '@tabler/icons-react'
+import { useEffect, useMemo, useRef } from 'react'
+import { IconLock } from '@tabler/icons-react'
 import AddSection from '@/components/list/AddSection'
-import { useCreateSection, useUpdateSection } from '@/queries/section'
+import { useCreateSection } from '@/queries/section'
 import { useTopbar } from '@/providers/TopbarProvider'
 import { useMe } from '@/queries/auth'
+import SectionPanel from './SectionPanel'
 
 export default function ListPage() {
   const params = useParams()
-  const theme = useMantineTheme()
   const lastCrossedRef = useRef<boolean>(false)
   const { setTitle, setDescription, setShowTitle, showTitle: showTopbarTitle } = useTopbar()
 
   const { data, isLoading } = useListById(params.id as string)
-  const [sectionExpanded, setSectionExpanded] = useState<Record<string, boolean>>({})
   const updateList = useUpdateList()
   const createTask = useCreateTask()
   const createSection = useCreateSection()
-  const updateSection = useUpdateSection()
   const updateTask = useUpdateTask()
   const { data: me } = useMe()
 
@@ -81,12 +75,6 @@ export default function ListPage() {
 
   const handleAddSection = async (listId: string, title: string, order: number | undefined) => {
     await createSection.mutateAsync({ listId, title, order })
-  }
-
-  const handleUpdateSection = async (sectionId: string, newTitle: string) => {
-    if (!list) return
-    console.log('Updating section', sectionId, newTitle)
-    await updateSection.mutateAsync({ listId: list.id, sectionId, title: newTitle, order: undefined })
   }
 
   const handleUpdateTask = async (taskId: string, updates: Partial<CreateTaskInput>) => {
@@ -216,55 +204,13 @@ export default function ListPage() {
                 } else {
                   return (
                     <div key={section.id}>
-                      <Group gap={4} align="center">
-                        <ActionIcon
-                          variant="subtle"
-                          color="gray"
-                          size="sm"
-                          onClick={() => {
-                            setSectionExpanded(prev => ({
-                              ...prev,
-                              [section.id]: !(prev[section.id] ?? true)
-                            }))
-                          }}
-                        >
-                          {(sectionExpanded[section.id] ?? true) ? (
-                            <IconChevronDown />
-                          ) : (
-                            <IconChevronRight />
-                          )}
-                        </ActionIcon>
-                        {/* <Text size="sm" c="gray" ml={2} mt={4}>
-                          ({list.tasks.filter(task => task.sectionId === section.id).length})
-                        </Text> */}
-                        <RingProgress
-                          size={30}
-                          thickness={2}
-                          sections={[
-                            {
-                              value: totalTasksCount === 0 ? 100 : (completedTasksCount / totalTasksCount) * 100,
-                              color: theme.colors.green[6]
-                            }
-                          ]}
-                          label={
-                            <Center mt={2}>
-                              <Text size="xs" c="dimmed">
-                                {totalTasksCount}
-                              </Text>
-                            </Center>
-                          }
-                        />
-                        <EditableTitle
-                          canEdit={canEdit}
-                          order={4}
-                          value={section.title}
-                          onSave={(newTitle) => {
-                            handleUpdateSection(section.id, newTitle)
-                          }}
-                        />
-                      </Group>
-                      <Divider ml={28} mr={8} />
-                      <Collapse expanded={sectionExpanded[section.id] ?? true}>
+                      <SectionPanel
+                        section={section}
+                        totalTasksCount={totalTasksCount}
+                        completedTasksCount={completedTasksCount}
+                        canEdit={canEdit}
+                      >
+                        <Divider ml={28} mr={8} />
                         <TaskList
                           canEdit={canEdit}
                           title={`${list.title} / ${section.title}`}
@@ -279,7 +225,7 @@ export default function ListPage() {
                             onSave={handleAddTask}
                           />
                         )}
-                      </Collapse>
+                      </SectionPanel>
                       {canEdit && index === orderedSections.length - 1 && (
                         <AddSection
                           order={section.order}

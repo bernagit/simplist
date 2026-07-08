@@ -66,7 +66,7 @@ export default function AddTask({ ml, listId, sectionId, onSave }: AddTaskProps)
         setIsClicked(false)
       }
     ]
-  ])
+  ], [], true)
 
   useEffect(() => {
     if (isClicked) {

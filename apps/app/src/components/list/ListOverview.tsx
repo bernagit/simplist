@@ -1,5 +1,6 @@
 import { List } from "@/models/lists"
 import { Center, Loader, Container, Group, Title, ActionIcon, Grid, Card, Stack, ThemeIcon, Badge, Text } from "@mantine/core"
+import { modals } from "@mantine/modals"
 import { IconPlus, IconList } from "@tabler/icons-react"
 import dayjs from "dayjs"
 import { useRouter } from "next/navigation"
@@ -12,6 +13,20 @@ type ListOverviewProps = {
 
 export default function ListOverview({ shared, data, isLoading }: ListOverviewProps) {
   const router = useRouter()
+
+  const handleAddList = () => {
+    modals.openContextModal({
+      modal: 'addList',
+      title: 'Add New List',
+      innerProps: undefined,
+      size: 'lg'
+    })
+  }
+
+  const handleListClick = (listId: string) => {
+    const path = shared ? `/lists/shared/${listId}` : `/lists/${listId}`
+    router.push(path)
+  }
 
   if (isLoading) {
     return (
@@ -31,7 +46,12 @@ export default function ListOverview({ shared, data, isLoading }: ListOverviewPr
           </Text>
         </div>
         {shared === false && (
-          <ActionIcon size="lg" radius="md" variant="filled">
+          <ActionIcon
+            size="lg"
+            radius="md"
+            variant="filled"
+            onClick={handleAddList}
+          >
             <IconPlus size={20} />
           </ActionIcon>
         )}
@@ -49,7 +69,7 @@ export default function ListOverview({ shared, data, isLoading }: ListOverviewPr
                 cursor: 'pointer',
                 transition: '0.15s',
               }}
-              onClick={() => router.push(`/lists/${list.id}`)}
+              onClick={() => handleListClick(list.id)}
             >
               <Stack gap="md">
                 <Group justify="space-between">

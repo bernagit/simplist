@@ -68,7 +68,7 @@ export function Sidebar() {
   const handleAddList = () => {
     modals.openContextModal({
       modal: 'addList',
-      title: 'Add List',
+      title: 'Add New List',
       innerProps: undefined,
       size: 'lg'
     })
@@ -241,6 +241,7 @@ export function Sidebar() {
                 <NavLink
                   key={list.id}
                   label={list.title}
+                  color={list.color ? `${list.color}` : 'gray'}
                   leftSection={
                     <IconPoint
                       size={18}
@@ -306,6 +307,7 @@ export function Sidebar() {
                 <NavLink
                   key={list.id}
                   label={list.title}
+                  color={list.color ? `${list.color}` : 'gray'}
                   leftSection={
                     <IconPoint
                       size={18}
