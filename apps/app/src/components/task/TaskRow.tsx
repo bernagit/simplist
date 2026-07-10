@@ -23,8 +23,8 @@ export default function TaskRow({ task, canEdit, onClick }: TaskRowProps) {
   const colorMemo = useMemo(() => getPriorityColor(task.priority), [task.priority])
   const toggleTask = useToggleTask()
   const deleteTask = useDeleteTask()
-  const { showContextMenu } = useContextMenu();
-  const [hovered, setHovered] = useState(false);
+  const { showContextMenu } = useContextMenu()
+  const [hovered, setHovered] = useState(false)
 
   const handleToggleTask = async (task: Task) => {
     if (!task.listId) return
@@ -96,7 +96,7 @@ export default function TaskRow({ task, canEdit, onClick }: TaskRowProps) {
             opacity: canEdit && (isMobile || hovered) ? 1 : 0,
             cursor: 'grab',
             transition: 'opacity 120ms',
-            marginTop: 2,
+            marginTop: 2
           }}
           mt={task.description ? 10 : 0}
         >
@@ -130,11 +130,7 @@ export default function TaskRow({ task, canEdit, onClick }: TaskRowProps) {
             }}
           />
 
-          <Stack
-            gap={2}
-            flex={1}
-            onContextMenu={showContextMenu(menuOptions)}
-          >
+          <Stack gap={2} flex={1} onContextMenu={showContextMenu(menuOptions)}>
             <Text
               size="sm"
               fw={500}

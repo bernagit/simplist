@@ -73,8 +73,12 @@ export function useUpdateSection() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (input: { listId: string; sectionId: string; title: string; order: number | undefined }) =>
-      sectionService.updateSection(input.sectionId, { title: input.title, order: input.order }),
+    mutationFn: (input: {
+      listId: string
+      sectionId: string
+      title: string
+      order: number | undefined
+    }) => sectionService.updateSection(input.sectionId, { title: input.title, order: input.order }),
 
     onMutate: async input => {
       await queryClient.cancelQueries({

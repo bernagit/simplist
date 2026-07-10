@@ -18,12 +18,12 @@ import {
   Menu,
   Stack
 } from '@mantine/core'
-import { modals } from '@mantine/modals'
 import { IconDots, IconEdit, IconLayoutSidebar, IconUserShare } from '@tabler/icons-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { usePathname } from 'next/navigation'
 import { useCallback, useEffect, useMemo } from 'react'
 import { MENU_WIDTH } from './Sidebar'
+import { shareListModal, updateListModal } from '@/lib/modals/list'
 
 export const TOPBAR_HEIGHT = 50
 
@@ -42,17 +42,13 @@ export function Topbar() {
     const isLists = segments[0] === 'lists'
     const isShared = isLists && segments[1] === 'shared'
 
-    const listId = isLists
-      ? isShared
-        ? segments[2] ?? null
-        : segments[1] ?? null
-      : null
+    const listId = isLists ? (isShared ? (segments[2] ?? null) : (segments[1] ?? null)) : null
 
     return {
       segments,
       isLists,
       isShared,
-      listId,
+      listId
     }
   }, [path])
 
@@ -82,8 +78,8 @@ export function Topbar() {
         return [
           {
             label: capitalize(segments.join(' ')),
-            href: path,
-          },
+            href: path
+          }
         ]
     }
 
@@ -97,36 +93,18 @@ export function Topbar() {
 
     if (!list) return
 
-    modals.openContextModal({
-      modal: 'addList',
-      title: 'Update list',
-      size: 'lg',
-      innerProps: {
-        listId: list.id,
-        data: {
-          title: list.title,
-          description: list.description,
-          color: list.color,
-          icon: list.icon
-        }
-      }
+    updateListModal(list.id, {
+      title: list.title,
+      description: list.description,
+      color: list.color,
+      icon: list.icon
     })
   }, [route.listId, queryClient])
 
   const handleShare = useCallback(() => {
     if (!route.listId) return
 
-    modals.openContextModal({
-      modal: 'shareList',
-      title: (
-        <Text size="xl" fw={600}>
-          Share list
-        </Text>
-      ),
-      innerProps: {
-        listId: route.listId
-      }
-    })
+    shareListModal(route.listId)
   }, [route.listId])
 
   useEffect(() => {

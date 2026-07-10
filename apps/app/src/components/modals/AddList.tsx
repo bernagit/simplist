@@ -52,7 +52,7 @@ export default function AddList({
   const isFormValid = useMemo(() => {
     return title.trim().length > 0 && title.trim().length <= maxTitleLength
   }, [title])
-  
+
   const [colorPickerOpened, setColorPickerOpened] = useState(false)
 
   const buttonLabel = isUpdateMode ? 'Update List' : 'Create List'

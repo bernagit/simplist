@@ -8,7 +8,5 @@ export default function Page() {
 
   const sharedLists = lists?.data.shared ?? []
 
-  return (
-    <ListOverview data={sharedLists} isLoading={isLoading} shared={true} />
-  )
+  return <ListOverview data={sharedLists} isLoading={isLoading} shared={true} />
 }

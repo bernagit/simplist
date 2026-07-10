@@ -34,8 +34,8 @@ import { spotlight } from '@mantine/spotlight'
 import { useMe } from '@/queries/auth'
 import { useLists } from '@/queries/lists'
 import { useSidebar } from '@/providers/SidebarProvider'
-import { modals } from '@mantine/modals'
 import { authService } from '@/services/auth'
+import { createListModal } from '@/lib/modals/list'
 
 export const MENU_WIDTH = 290
 const SIDEBAR_WIDTH = 280
@@ -63,15 +63,6 @@ export function Sidebar() {
     if (isMobile) {
       toggle()
     }
-  }
-
-  const handleAddList = () => {
-    modals.openContextModal({
-      modal: 'addList',
-      title: 'Add New List',
-      innerProps: undefined,
-      size: 'lg'
-    })
   }
 
   if (!opened) return null
@@ -147,11 +138,7 @@ export function Sidebar() {
               Settings
             </Menu.Item>
             <Menu.Divider />
-            <Menu.Item
-              color="red"
-              leftSection={<IconLogout size={16} />}
-              onClick={handleLogout}
-            >
+            <Menu.Item color="red" leftSection={<IconLogout size={16} />} onClick={handleLogout}>
               Log out
             </Menu.Item>
           </Menu.Dropdown>
@@ -202,7 +189,7 @@ export function Sidebar() {
                       color="gray"
                       size="xs"
                       onClick={e => {
-                        handleAddList()
+                        createListModal()
                         e.stopPropagation()
                       }}
                       aria-label="Add list"
@@ -230,7 +217,7 @@ export function Sidebar() {
                 </Group>
               }
               opened={ownedListsOpen}
-              onClick={(e) => {
+              onClick={e => {
                 handleNavigate('/lists')
                 e.stopPropagation()
               }}
@@ -296,7 +283,7 @@ export function Sidebar() {
                 </Group>
               }
               opened={sharedListsOpen}
-              onClick={(e) => {
+              onClick={e => {
                 handleNavigate(`/lists/shared`)
                 e.stopPropagation()
               }}

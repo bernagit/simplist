@@ -61,14 +61,14 @@ export default function EditTask({ task, canEdit, onUpdate }: EditTaskProps) {
     setSelectedDate(date)
 
     onUpdate?.(task.id, {
-      dueDate: date ? new Date(date) : null,
+      dueDate: date ? new Date(date) : null
     })
   }
 
   const handleSaveEdit = async () => {
     await onUpdate?.(task.id, {
       title,
-      description,
+      description
     })
     setIsEditing(false)
   }
@@ -167,7 +167,7 @@ export default function EditTask({ task, canEdit, onUpdate }: EditTaskProps) {
           )}
         </Stack>
       </Group>
-      <Popover disabled={!canEdit} position="bottom-start" shadow="md" >
+      <Popover disabled={!canEdit} position="bottom-start" shadow="md">
         <Popover.Target>
           <Box
             onMouseEnter={e => {
@@ -187,7 +187,7 @@ export default function EditTask({ task, canEdit, onUpdate }: EditTaskProps) {
             }}
           >
             <Group flex={1} justify="space-between">
-              <Group align="flex-start" style={{ height: "var(--button-height-xs)"}}>
+              <Group align="flex-start" style={{ height: 'var(--button-height-xs)' }}>
                 <IconCalendar size={20} />
                 <Text size="sm" c="dimmed">
                   {shortDate ?? 'No due date'}
@@ -198,7 +198,7 @@ export default function EditTask({ task, canEdit, onUpdate }: EditTaskProps) {
                   variant="subtle"
                   color="gray"
                   size="xs"
-                  onClick={(e) => {
+                  onClick={e => {
                     if (!canEdit) return
                     e.stopPropagation()
                     handleDateSelect(null)

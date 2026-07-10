@@ -1,27 +1,47 @@
-'use client';
+'use client'
 
-import { ActionIcon, Center, Collapse, Group, Popover, RingProgress, Text, useMantineTheme } from "@mantine/core"
-import { IconChevronDown, IconChevronRight, IconDots } from "@tabler/icons-react"
-import { EditableTitle } from "./EditableText"
-import { useState } from "react"
-import { Section } from "@/models/section";
-import { useUpdateSection } from "@/queries/section";
+import {
+  ActionIcon,
+  Center,
+  Collapse,
+  Group,
+  Popover,
+  RingProgress,
+  Text,
+  useMantineTheme
+} from '@mantine/core'
+import { IconChevronDown, IconChevronRight, IconDots } from '@tabler/icons-react'
+import { EditableTitle } from './EditableText'
+import { useState } from 'react'
+import { Section } from '@/models/section'
+import { useUpdateSection } from '@/queries/section'
 
 type SectionPanelProps = {
   section: Section
   totalTasksCount: number
   completedTasksCount: number
-  canEdit: boolean,
+  canEdit: boolean
   children: React.ReactNode
 }
 
-export default function SectionPanel({ section, totalTasksCount, completedTasksCount, canEdit, children }: SectionPanelProps) {
+export default function SectionPanel({
+  section,
+  totalTasksCount,
+  completedTasksCount,
+  canEdit,
+  children
+}: SectionPanelProps) {
   const [isExpanded, setIsExpanded] = useState(true)
   const theme = useMantineTheme()
 
   const updateSection = useUpdateSection()
   const handleUpdateSection = async (sectionId: string, newTitle: string) => {
-    await updateSection.mutateAsync({ listId: section.listId, sectionId, title: newTitle, order: undefined })
+    await updateSection.mutateAsync({
+      listId: section.listId,
+      sectionId,
+      title: newTitle,
+      order: undefined
+    })
   }
 
   return (
@@ -35,11 +55,7 @@ export default function SectionPanel({ section, totalTasksCount, completedTasksC
             setIsExpanded(!isExpanded)
           }}
         >
-          {isExpanded ? (
-            <IconChevronDown />
-          ) : (
-            <IconChevronRight />
-          )}
+          {isExpanded ? <IconChevronDown /> : <IconChevronRight />}
         </ActionIcon>
         {/* <Text size="sm" c="gray" ml={2} mt={4}>
                             ({list.tasks.filter(task => task.sectionId === section.id).length})
@@ -66,17 +82,13 @@ export default function SectionPanel({ section, totalTasksCount, completedTasksC
             canEdit={canEdit}
             order={4}
             value={section.title}
-            onSave={(newTitle) => {
+            onSave={newTitle => {
               handleUpdateSection(section.id, newTitle)
             }}
           />
           <Popover>
             <Popover.Target>
-              <ActionIcon
-                variant="subtle"
-                color="gray"
-                size="sm"
-              >
+              <ActionIcon variant="subtle" color="gray" size="sm">
                 <IconDots />
               </ActionIcon>
             </Popover.Target>
@@ -88,9 +100,7 @@ export default function SectionPanel({ section, totalTasksCount, completedTasksC
           </Popover>
         </Group>
       </Group>
-      <Collapse expanded={isExpanded}>
-        {children}
-      </Collapse>
+      <Collapse expanded={isExpanded}>{children}</Collapse>
     </>
   )
 }

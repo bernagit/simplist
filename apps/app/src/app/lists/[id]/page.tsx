@@ -1,5 +1,5 @@
-import ListPage from "@/components/list/ListPage";
-import { Metadata } from "next";
+import ListPage from '@/components/list/ListPage'
+import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'My Lists',
@@ -7,7 +7,5 @@ export const metadata: Metadata = {
 }
 
 export default function Page() {
-  return (
-    <ListPage />
-  )
+  return <ListPage />
 }

@@ -14,7 +14,7 @@ import {
   ScrollArea,
   Box,
   ThemeIcon,
-  Tooltip,
+  Tooltip
 } from '@mantine/core'
 import { EditableTitle } from '@/components/list/EditableText'
 import AddTask from '@/components/list/AddTask'
@@ -135,7 +135,7 @@ export default function ListPage() {
     <ScrollArea h="100%" type="auto" scrollbars="y" onScrollPositionChange={handleScroll}>
       <Container>
         <Stack>
-          <Group justify='space-between' wrap='nowrap'>
+          <Group justify="space-between" wrap="nowrap">
             <Box
               style={{
                 transition: 'opacity 400ms ease, transform 400ms ease',
@@ -144,7 +144,12 @@ export default function ListPage() {
                 visibility: showTopbarTitle ? 'hidden' : 'visible'
               }}
             >
-              <EditableTitle canEdit={isOwner} onSave={handleSaveTitle} value={list.title} order={2} />
+              <EditableTitle
+                canEdit={isOwner}
+                onSave={handleSaveTitle}
+                value={list.title}
+                order={2}
+              />
               {list.description && (
                 <Text ml={8} size="sm" c="dimmed">
                   {list.description}
@@ -158,10 +163,7 @@ export default function ListPage() {
                 withArrow
                 transitionProps={{ transition: 'pop', duration: 200 }}
               >
-                <ThemeIcon
-                  variant="light"
-                  size={30}
-                >
+                <ThemeIcon variant="light" size={30}>
                   <IconLock size={18} />
                 </ThemeIcon>
               </Tooltip>

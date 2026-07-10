@@ -8,7 +8,5 @@ export default function Page() {
 
   const ownedLists = lists?.data.owned ?? []
 
-  return (
-    <ListOverview data={ownedLists} isLoading={isLoading} shared={false} />
-  )
+  return <ListOverview data={ownedLists} isLoading={isLoading} shared={false} />
 }

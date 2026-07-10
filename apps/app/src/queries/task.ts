@@ -126,48 +126,39 @@ export function useUpdateTask() {
 
     onMutate: async ({ taskId, listId, updates }) => {
       await queryClient.cancelQueries({
-        queryKey: listKeys.detail(listId),
+        queryKey: listKeys.detail(listId)
       })
 
-      const previousList =
-        queryClient.getQueryData<Resp<CompleteList>>(
-          listKeys.detail(listId)
-        )
+      const previousList = queryClient.getQueryData<Resp<CompleteList>>(listKeys.detail(listId))
 
-      queryClient.setQueryData<Resp<CompleteList>>(
-        listKeys.detail(listId),
-        (old) => {
-          if (!old) return old
+      queryClient.setQueryData<Resp<CompleteList>>(listKeys.detail(listId), old => {
+        if (!old) return old
 
-          return {
-            ...old,
-            data: {
-              ...old.data,
-              tasks: old.data.tasks.map((task) =>
-                task.id === taskId
-                  ? {
-                      ...task,
-                      ...updates,
-                      updatedAt: new Date(),
-                    }
-                  : task
-              ),
-            },
+        return {
+          ...old,
+          data: {
+            ...old.data,
+            tasks: old.data.tasks.map(task =>
+              task.id === taskId
+                ? {
+                    ...task,
+                    ...updates,
+                    updatedAt: new Date()
+                  }
+                : task
+            )
           }
         }
-      )
+      })
 
       return { previousList }
     },
 
     onError: (_error, { listId }, context) => {
       if (context?.previousList) {
-        queryClient.setQueryData(
-          listKeys.detail(listId),
-          context.previousList
-        )
+        queryClient.setQueryData(listKeys.detail(listId), context.previousList)
       }
-    },
+    }
   })
 }
 
@@ -175,17 +166,14 @@ export function useDeleteTask() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ taskId }: { listId: string; taskId: string }) =>
-      tasksService.deleteTask(taskId),
+    mutationFn: ({ taskId }: { listId: string; taskId: string }) => tasksService.deleteTask(taskId),
 
     onMutate: async ({ listId, taskId }) => {
       await queryClient.cancelQueries({
         queryKey: listKeys.detail(listId)
       })
 
-      const previousList = queryClient.getQueryData<Resp<CompleteList>>(
-        listKeys.detail(listId)
-      )
+      const previousList = queryClient.getQueryData<Resp<CompleteList>>(listKeys.detail(listId))
 
       queryClient.setQueryData<Resp<CompleteList>>(listKeys.detail(listId), old => {
         if (!old) return old

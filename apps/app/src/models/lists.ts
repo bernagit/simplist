@@ -37,9 +37,9 @@ export type CompleteList = List & {
 
 export type CreateListInput = {
   title: string
-  description?: string
-  color?: string
-  icon?: string
+  description?: string | null
+  color?: string | null
+  icon?: string | null
 }
 
 export type UpdateListInput = CreateListInput & {

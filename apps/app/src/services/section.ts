@@ -14,13 +14,18 @@ async function createSection(input: CreateSectionInput): Promise<Resp<Section>> 
     .json()
 }
 
-async function updateSection(sectionId: string, input: Partial<CreateSectionInput>): Promise<Resp<Section>> {
-  return await api.put<Resp<Section>>(`sections/${sectionId}`, {
-    json: {
-      title: input.title,
-      order: input.order
-    }
-  }).json()
+async function updateSection(
+  sectionId: string,
+  input: Partial<CreateSectionInput>
+): Promise<Resp<Section>> {
+  return await api
+    .put<Resp<Section>>(`sections/${sectionId}`, {
+      json: {
+        title: input.title,
+        order: input.order
+      }
+    })
+    .json()
 }
 
 export const sectionService = {

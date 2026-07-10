@@ -1,7 +1,17 @@
 'use client'
 
 import { CreateTaskInput } from '@/models/task'
-import { Box, Button, Card, Group, Stack, Text, TextInput, useComputedColorScheme, useMantineTheme } from '@mantine/core'
+import {
+  Box,
+  Button,
+  Card,
+  Group,
+  Stack,
+  Text,
+  TextInput,
+  useComputedColorScheme,
+  useMantineTheme
+} from '@mantine/core'
 import { useHotkeys } from '@mantine/hooks'
 import { IconCirclePlus, IconPlus } from '@tabler/icons-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -58,15 +68,19 @@ export default function AddTask({ ml, listId, sectionId, onSave }: AddTaskProps)
     })
   }, [title, listId, sectionId, description, selectedDate, selectedPriority, onSave])
 
-  useHotkeys([
+  useHotkeys(
     [
-      'Escape',
-      () => {
-        clearInputs()
-        setIsClicked(false)
-      }
-    ]
-  ], [], true)
+      [
+        'Escape',
+        () => {
+          clearInputs()
+          setIsClicked(false)
+        }
+      ]
+    ],
+    [],
+    true
+  )
 
   useEffect(() => {
     if (isClicked) {
