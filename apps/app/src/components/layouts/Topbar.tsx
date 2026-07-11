@@ -18,7 +18,7 @@ import {
   Menu,
   Stack
 } from '@mantine/core'
-import { IconDots, IconEdit, IconLayoutSidebar, IconUserShare } from '@tabler/icons-react'
+import { IconArchive, IconDots, IconEdit, IconLayoutSidebar, IconUserShare } from '@tabler/icons-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { usePathname } from 'next/navigation'
 import { useCallback, useEffect, useMemo } from 'react'
@@ -200,10 +200,12 @@ export function Topbar() {
                   </Tooltip>
                 </Menu.Target>
                 <Menu.Dropdown>
-                  <Menu.Item leftSection={<IconEdit size={16} />} onClick={handleEdit}>
+                  <Menu.Item leftSection={<IconEdit size={20} />} onClick={handleEdit}>
                     Edit
                   </Menu.Item>
-                  <Menu.Item>Add Section</Menu.Item>
+                  <Menu.Item leftSection={<IconArchive size={20} />} onClick={() => console.log('Archive')}>
+                    Archive
+                  </Menu.Item>
                 </Menu.Dropdown>
               </Menu>
             </>

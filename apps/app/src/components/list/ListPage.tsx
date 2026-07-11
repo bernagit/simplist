@@ -112,8 +112,18 @@ export default function ListPage() {
   useEffect(() => {
     if (lastCrossedRef.current && list?.title) {
       setTitle(list.title)
+    } else {
+      setTitle(undefined)
     }
   }, [list?.title, setTitle])
+
+  useEffect(() => {
+    return () => {
+      setTitle(undefined)
+      setDescription(undefined)
+      setShowTitle(false)
+    }
+  }, [setDescription, setShowTitle, setTitle])
 
   if (!list && !isLoading) return null
 

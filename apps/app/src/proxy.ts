@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function proxy(req: NextRequest) {
-  console.log('Proxy middleware triggered for URL:', req.cookies)
   const token = req.cookies.get('accessToken')?.value
 
   const isAuthPage = req.nextUrl.pathname.startsWith('/login')

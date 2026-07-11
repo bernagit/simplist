@@ -15,6 +15,7 @@ import { EditableTitle } from './EditableText'
 import { useState } from 'react'
 import { Section } from '@/models/section'
 import { useUpdateSection } from '@/queries/section'
+import { getHTMLSectionId } from '@/utils/misc'
 
 type SectionPanelProps = {
   section: Section
@@ -46,7 +47,7 @@ export default function SectionPanel({
 
   return (
     <>
-      <Group gap={4} align="center">
+      <Group gap={4} align="center" id={getHTMLSectionId(section.id)} mb={4}>
         <ActionIcon
           variant="subtle"
           color="gray"

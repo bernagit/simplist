@@ -1,8 +1,6 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { Spotlight, SpotlightActionData } from '@mantine/spotlight'
-import { useState } from 'react'
 import { ModalsProvider } from '@mantine/modals'
 import { Box } from '@mantine/core'
 import { Sidebar } from './Sidebar'
@@ -14,11 +12,9 @@ import { QueryProvider } from '@/providers/QueryProvider'
 import { TopbarProvider } from '@/providers/TopbarProvider'
 import AddList from '../modals/AddList'
 import ShareList from '../modals/ShareList'
+import { SpotlightProvider } from '@/providers/SpotlightProvider'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  // const [query, setQuery] = useState<string>("");
-  // const [debouncedQuery] = useDebouncedValue(query, 200);
-  const [actions, setActions] = useState<SpotlightActionData[]>([])
   const pathname = usePathname()
 
   const skipLayout = pathname.startsWith('/login') || pathname.startsWith('/profile')
@@ -27,30 +23,24 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <QueryProvider>
-      <HotkeyProvider>
-        <ModalsProvider
-          modals={{
-            addList: AddList,
-            shareList: ShareList
-          }}
-          modalProps={{
-            withinPortal: true,
-            zIndex: 400,
-            closeOnClickOutside: false
-          }}
-        >
-          <TopbarProvider>
-            <SidebarProvider>
-              <Spotlight
-                actions={actions}
-                // onQueryChange={setQuery}
-                onSpotlightClose={() => setActions([])}
-              />
-
+      <ModalsProvider
+        modals={{
+          addList: AddList,
+          shareList: ShareList
+        }}
+        modalProps={{
+          withinPortal: true,
+          zIndex: 400,
+          closeOnClickOutside: false
+        }}
+      >
+        <TopbarProvider>
+          <SidebarProvider>
+            <HotkeyProvider>
+              <SpotlightProvider />
               <Box display="flex" h="100dvh" style={{ overflow: 'hidden' }}>
                 <Sidebar />
                 <MobileOverlay />
-
                 <Box
                   flex={1}
                   display="flex"
@@ -76,10 +66,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   </Box>
                 </Box>
               </Box>
-            </SidebarProvider>
-          </TopbarProvider>
-        </ModalsProvider>
-      </HotkeyProvider>
+            </HotkeyProvider>
+          </SidebarProvider>
+        </TopbarProvider>
+      </ModalsProvider>
     </QueryProvider>
   )
 }

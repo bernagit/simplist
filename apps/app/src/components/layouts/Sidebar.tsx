@@ -12,7 +12,9 @@ import {
   Menu,
   ActionIcon,
   UnstyledButton,
-  Tooltip
+  Tooltip,
+  useMantineTheme,
+  useComputedColorScheme
 } from '@mantine/core'
 import {
   IconHome2,
@@ -48,6 +50,8 @@ export function Sidebar() {
   const [sharedListsOpen, setSharedListsOpen] = useState(true)
   const router = useRouter()
   const pathname = usePathname()
+  const theme = useMantineTheme()
+  const colorScheme = useComputedColorScheme()
 
   const { data: me, isLoading: meLoading } = useMe()
   const { data: lists } = useLists()
@@ -78,22 +82,23 @@ export function Sidebar() {
         zIndex: isMobile ? 300 : undefined,
         flexShrink: 0,
         overflow: 'hidden',
-        transition: 'width 200ms ease'
+        transition: 'width 200ms ease',
+        borderRight: `2px solid ${colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[2]}`
       }}
       bg="var(--mantine-color-body)"
     >
       <Stack gap={0} h="100%">
         <Menu shadow="md" width={MENU_WIDTH} position="bottom-start">
           <Menu.Target>
-            <Group gap="sm" wrap="nowrap" ml={0} m="xs">
+            <Group gap="sm" wrap="nowrap" ml={0} m={4}>
               <UnstyledButton
                 style={{
                   width: '100%',
                   borderRadius: 'var(--mantine-radius-md)'
                 }}
               >
-                <Group gap="sm" wrap="nowrap" px="md" py="xs">
-                  <Avatar radius="xl" color="blue">
+                <Group gap="sm" wrap="nowrap" px="xs" py="xs">
+                  <Avatar radius="xl" color={theme.primaryColor}>
                     {me?.initials}
                   </Avatar>
 
