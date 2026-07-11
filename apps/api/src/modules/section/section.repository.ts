@@ -1,6 +1,7 @@
+import { lists } from '../../db/schema/lists'
 import { sections } from '../../db/schema/sections'
 import db from '../../infrastructure/database/db'
-import { eq, and, max } from 'drizzle-orm'
+import { eq, and, max, ilike } from 'drizzle-orm'
 
 export class SectionRepository {
   async create(listId: string, title: string, order: number | undefined = undefined) {
@@ -58,5 +59,21 @@ export class SectionRepository {
 
     const result = await query.execute()
     return result[0]?.maxOrder ?? 0
+  }
+
+  async search(userId: string, query: string) {
+    const res = await db
+      .select({
+        id: sections.id,
+        listId: sections.listId,
+        title: sections.title,
+        listName: lists.title
+      })
+      .from(sections)
+      .innerJoin(lists, eq(sections.listId, lists.id))
+      .where(and(eq(lists.ownerId, userId), ilike(sections.title, `%${query}%`)))
+      .execute()
+
+    return res
   }
 }

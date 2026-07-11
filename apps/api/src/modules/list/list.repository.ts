@@ -1,4 +1,4 @@
-import { eq, isNull, SQL, and, or, not } from 'drizzle-orm'
+import { eq, isNull, SQL, and, or, not, ilike } from 'drizzle-orm'
 import { lists } from '../../db/schema/lists'
 import db from '../../infrastructure/database/db'
 import { ListCreateInput, ListUpdateInput } from './list.schema'
@@ -196,5 +196,27 @@ export class ListRepository {
 
     const result = await query.execute()
     return result
+  }
+
+  async search(userId: string, query: string) {
+    const res = await db
+      .select({
+        id: lists.id,
+        title: lists.title,
+        description: lists.description,
+        color: lists.color,
+        icon: lists.icon
+      })
+      .from(lists)
+      .where(
+        and(
+          this.notDeleted(),
+          this.ownedBy(userId),
+          or(ilike(lists.title, `%${query}%`), ilike(lists.description, `%${query}%`))
+        )
+      )
+      .execute()
+
+    return res
   }
 }

@@ -8,6 +8,7 @@ import authRouter from './modules/auth/auth.route'
 import listRouter from './modules/list/list.route'
 import sectionRouter from './modules/section/section.route'
 import taskRouter from './modules/task/task.route'
+import baseRouter from './modules/base/base.route'
 import cookieParser from 'cookie-parser'
 import appConfig from './config/env'
 
@@ -34,6 +35,7 @@ app.use('/api/auth', authRouter)
 app.use('/api/lists', listRouter)
 app.use('/api/sections', sectionRouter)
 app.use('/api/tasks', taskRouter)
+app.use('/api/base', baseRouter)
 
 // this should be the last middleware to ensure it catches all errors
 app.use(errorHandler)
