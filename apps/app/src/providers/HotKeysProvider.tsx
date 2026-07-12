@@ -9,16 +9,19 @@ import { HOTKEYS } from '@/utils/hotkeys'
 import { createListModal } from '@/lib/modals/list'
 import { useKeySequence } from '@/hooks/use-key-sequence'
 import { useSidebar } from './SidebarProvider'
+import { useHelp } from './HelpProvider'
 
 export function HotkeyProvider({ children }: { children: ReactNode }) {
   const router = useRouter()
   const { toggleColorScheme } = useMantineColorScheme()
   const { toggle: toggleSidebar } = useSidebar()
+  const { toggle: toggleHelp } = useHelp()
 
   useHotkeys([
     [HOTKEYS.NEW_LIST.keys[0], createListModal],
     [HOTKEYS.TOGGLE_THEME.keys[0], toggleColorScheme],
     [HOTKEYS.TOGGLE_SIDEBAR.keys[0], toggleSidebar],
+    [HOTKEYS.TOGGLE_HELP.keys[0], toggleHelp],
   ])
 
   useKeySequence(HOTKEYS.GO_HOME.keys, () => router.push('/'))
