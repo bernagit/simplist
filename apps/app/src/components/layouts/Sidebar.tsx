@@ -31,7 +31,7 @@ import {
   IconHelp
 } from '@tabler/icons-react'
 import { usePathname, useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { spotlight } from '@mantine/spotlight'
 import { useMe } from '@/queries/auth'
 import { useLists } from '@/queries/lists'
@@ -55,6 +55,15 @@ export function Sidebar() {
 
   const { data: me, isLoading: meLoading } = useMe()
   const { data: lists } = useLists()
+
+  // apply filter on owned lists removing archived lists
+  const ownedLists = useMemo(() => {
+    return lists?.data.owned.filter(list => !list.archivedAt) || []
+  }, [lists])
+
+  const sharedLists = useMemo(() => {
+    return lists?.data.shared.filter(list => !list.archivedAt) || []
+  }, [lists])
 
   const handleLogout = async () => {
     await authService.logout()
@@ -229,7 +238,7 @@ export function Sidebar() {
               active={pathname === '/lists'}
               style={{ borderRadius: 'var(--mantine-radius-md)' }}
             >
-              {lists?.data.owned.map(list => (
+              {ownedLists.map(list => (
                 <NavLink
                   key={list.id}
                   label={list.title}
@@ -246,16 +255,6 @@ export function Sidebar() {
                   style={{ borderRadius: 'var(--mantine-radius-md)' }}
                 />
               ))}
-              {/* <NavLink
-                label={
-                  <Text mt={4} size="sm" c="dimmed">
-                    Add list
-                  </Text>
-                }
-                leftSection={<IconPlus size={14} />}
-                style={{ borderRadius: 'var(--mantine-radius-md)' }}
-                onClick={handleAddList}
-              /> */}
             </NavLink>
             <Divider my="xs" />
             <NavLink
@@ -295,7 +294,7 @@ export function Sidebar() {
               active={pathname === '/lists/shared'}
               style={{ borderRadius: 'var(--mantine-radius-md)' }}
             >
-              {lists?.data.shared.map(list => (
+              {sharedLists.map(list => (
                 <NavLink
                   key={list.id}
                   label={list.title}

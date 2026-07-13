@@ -4,7 +4,7 @@ import { Resp } from '@/models/base'
 import { CompleteList } from '@/models/lists'
 import { useSidebar } from '@/providers/SidebarProvider'
 import { useTopbar } from '@/providers/TopbarProvider'
-import { listKeys } from '@/queries/lists'
+import { listKeys, useArchiveList } from '@/queries/lists'
 import {
   Group,
   ActionIcon,
@@ -35,6 +35,7 @@ export function Topbar() {
   const { breadcrumbs, setBreadcrumbs, showTitle, title, description } = useTopbar()
   const path = usePathname()
   const queryClient = useQueryClient()
+  const archiveList = useArchiveList()
 
   const route = useMemo(() => {
     const segments = path.split('/').filter(Boolean)
@@ -100,6 +101,12 @@ export function Topbar() {
       icon: list.icon
     })
   }, [route.listId, queryClient])
+
+  const handleArchive = useCallback(() => {
+    if (!route.listId) return
+
+    archiveList.mutate(route.listId)
+  }, [archiveList, route.listId])
 
   const handleShare = useCallback(() => {
     if (!route.listId) return
@@ -203,7 +210,7 @@ export function Topbar() {
                   <Menu.Item leftSection={<IconEdit size={20} />} onClick={handleEdit}>
                     Edit
                   </Menu.Item>
-                  <Menu.Item leftSection={<IconArchive size={20} />} onClick={() => console.log('Archive')}>
+                  <Menu.Item leftSection={<IconArchive size={20} />} onClick={handleArchive}>
                     Archive
                   </Menu.Item>
                 </Menu.Dropdown>

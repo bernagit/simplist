@@ -1,7 +1,9 @@
 'use client'
 
-import { createListModal } from '@/lib/modals/list'
+import { createListModal, shareListModal, updateListModal } from '@/lib/modals/list'
 import { List } from '@/models/lists'
+import { useArchiveList, useUnarchiveList } from '@/queries/lists'
+import { contextMenuStyles } from '@/utils/misc'
 import {
   Center,
   Loader,
@@ -23,14 +25,15 @@ import {
   Select
 } from '@mantine/core'
 import { useDebouncedValue, useLocalStorage } from '@mantine/hooks'
-import { IconPlus, IconList, IconAdjustmentsHorizontal } from '@tabler/icons-react'
+import { IconPlus, IconList, IconAdjustmentsHorizontal, IconArchive, IconArchiveOff, IconShare, IconEdit, IconUsers } from '@tabler/icons-react'
 import dayjs from 'dayjs'
+import { useContextMenu } from 'mantine-contextmenu'
 import { useRouter } from 'next/navigation'
 import { useMemo, useState } from 'react'
 
 type ListOverviewProps = {
   shared: boolean | undefined
-  data: List[]
+  data: (List & { shared: boolean })[]
   isLoading: boolean
 }
 
@@ -38,6 +41,10 @@ export default function ListOverview({ shared, data, isLoading }: ListOverviewPr
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState('')
   const [debouncedQuery] = useDebouncedValue(searchQuery, 300)
+  const { showContextMenu } = useContextMenu()
+
+  const archiveList = useArchiveList()
+  const unarchiveList = useUnarchiveList()
 
   type StatusFilter = 'active' | 'all' | 'archived'
   type SortBy = 'updated-desc' | 'created-desc' | 'title-asc'
@@ -101,6 +108,39 @@ export default function ListOverview({ shared, data, isLoading }: ListOverviewPr
   const handleListClick = (listId: string) => {
     const path = shared ? `/lists/shared/${listId}` : `/lists/${listId}`
     router.push(path)
+  }
+
+  const getMenuOptions = (list: List) => {
+    return [
+      {
+        key: 'edit',
+        icon: <IconEdit size={20} />,
+        title: 'Edit',
+        onClick: () => {
+          updateListModal(list.id, list)
+        }
+      },
+      {
+        key: 'archive',
+        icon: list.archivedAt ? <IconArchiveOff size={20} /> : <IconArchive size={20} />,
+        title: list.archivedAt ? 'Unarchive' : 'Archive',
+        onClick: () => {
+          if (list.archivedAt) {
+            unarchiveList.mutate(list.id)
+          } else {
+            archiveList.mutate(list.id)
+          }
+        }
+      },
+      {
+        key: 'share',
+        icon: <IconShare size={20} />,
+        title: 'Share',
+        onClick: () => {
+          shareListModal(list.id)
+        }
+      }
+    ]
   }
 
   if (isLoading) {
@@ -224,14 +264,32 @@ export default function ListOverview({ shared, data, isLoading }: ListOverviewPr
                 transition: '0.15s'
               }}
               onClick={() => handleListClick(list.id)}
+              onContextMenu={showContextMenu(getMenuOptions(list), {
+                styles: contextMenuStyles
+              })}
             >
               <Stack gap="md">
                 <Group justify="space-between">
-                  <ThemeIcon radius="xl" size="lg" color={list.color ?? 'gray'} variant="light">
-                    <IconList size={18} />
+                  <ThemeIcon
+                    radius="xl"
+                    size="lg"
+                    color={list.color ?? 'gray'}
+                    variant="light"
+                  >
+                    {list.shared ? <IconUsers size={18} /> : <IconList size={18} />}
                   </ThemeIcon>
 
-                  <Badge variant="outline">{dayjs(list.updatedAt).format('DD MMM')}</Badge>
+                  <Group gap="xs">
+                    {list.archivedAt && (
+                      <Badge color="gray" variant="light">
+                        Archived
+                      </Badge>
+                    )}
+
+                    <Badge variant="outline">
+                      {dayjs(list.updatedAt).format('DD MMM')}
+                    </Badge>
+                  </Group>
                 </Group>
 
                 <div>

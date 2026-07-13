@@ -23,5 +23,6 @@ route.delete('/:id', validate(listIdSchema), controller.delete)
 route.post('/:id/share', validate(addMemberSchema), controller.share)
 route.delete('/:id/share', validate(removeMemberSchema), controller.removeMember)
 route.patch('/:id/archive', validate(listIdSchema), controller.archive)
+route.patch('/:id/unarchive', validate(listIdSchema), controller.unarchive)
 
 export default route

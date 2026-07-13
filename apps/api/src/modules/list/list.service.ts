@@ -29,9 +29,7 @@ export class ListService {
   }
 
   async getAll(userId: string) {
-    const lists = await this.repository.getWithFilter(userId, {
-      archived: false
-    })
+    const lists = await this.repository.getAll(userId)
 
     const sharedLists = await this.repository.getShared(userId)
 
@@ -151,6 +149,22 @@ export class ListService {
     }
 
     const list = await this.repository.update(listId, { archivedAt: new Date() })
+
+    if (!list) {
+      throw Errors.notFound('List not found')
+    }
+
+    return list
+  }
+
+  async unarchive(listId: string, userId: string) {
+    // Check if the user has permission to view the list
+    const canUpdate = await this.repository.canUpdate(listId, userId)
+    if (!canUpdate) {
+      throw Errors.forbidden('You do not have permission to unarchive this list')
+    }
+
+    const list = await this.repository.update(listId, { archivedAt: null })
 
     if (!list) {
       throw Errors.notFound('List not found')

@@ -208,3 +208,87 @@ export const useDeleteListMember = () => {
     }
   })
 }
+
+export const useArchiveList = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (listId: string) => listsService.archiveList(listId),
+
+    onError: async error => {
+      let message = 'Something went wrong. Please try again.'
+
+      if (error instanceof HTTPError) {
+        try {
+          const body = await error.response.json<ErrorResponse>()
+          message = body.message
+        } catch {
+          // Ignore JSON parsing errors
+        }
+      }
+
+      showNotification({
+        title: 'Unable to archive list',
+        message,
+        color: 'red'
+      })
+    },
+
+    onSuccess: (_data, listId) => {
+      // reload the list details to get the updated members
+      queryClient.invalidateQueries({
+        queryKey: listKeys.detail(listId)
+      })
+      queryClient.invalidateQueries({
+        queryKey: listKeys.all
+      })
+      showNotification({
+        title: 'Success',
+        message: `List archived successfully.`,
+        color: 'green'
+      })
+    }
+  })
+}
+
+export const useUnarchiveList = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (listId: string) => listsService.unarchiveList(listId),
+
+    onError: async error => {
+      let message = 'Something went wrong. Please try again.'
+
+      if (error instanceof HTTPError) {
+        try {
+          const body = await error.response.json<ErrorResponse>()
+          message = body.message
+        } catch {
+          // Ignore JSON parsing errors
+        }
+      }
+
+      showNotification({
+        title: 'Unable to unarchive list',
+        message,
+        color: 'red'
+      })
+    },
+
+    onSuccess: (_data, listId) => {
+      // reload the list details to get the updated members
+      queryClient.invalidateQueries({
+        queryKey: listKeys.detail(listId)
+      })
+      queryClient.invalidateQueries({
+        queryKey: listKeys.all
+      })
+      showNotification({
+        title: 'Success',
+        message: `List unarchived successfully.`,
+        color: 'green'
+      })
+    }
+  })
+}

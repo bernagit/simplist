@@ -33,11 +33,21 @@ async function deleteListMember(listId: string, memberId: string): Promise<Resp<
   return await api.delete(`lists/${listId}/share/`, { json: { memberId } }).json()
 }
 
+async function archiveList(listId: string): Promise<Resp<void>> {
+  return await api.patch(`lists/${listId}/archive`).json()
+}
+
+async function unarchiveList(listId: string): Promise<Resp<void>> {
+  return await api.patch(`lists/${listId}/unarchive`).json()
+}
+
 export const listsService = {
   getLists,
   getListById,
   createList,
   updateList,
   shareList,
-  deleteListMember
+  deleteListMember,
+  archiveList,
+  unarchiveList
 }

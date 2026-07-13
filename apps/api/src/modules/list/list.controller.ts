@@ -163,4 +163,26 @@ export class ListController {
       next(error)
     }
   }
+
+  unarchive = async (req: Request, res: Response, next: NextFunction) => {
+    const { id: userId } = req.user!
+    const params = req.validated!.params as ListIdInput
+
+    try {
+      const updatedList = await this.service.unarchive(params.id, userId)
+
+      if (!updatedList) {
+        return res.status(HTTP_STATUS.NOT_FOUND).json({
+          message: 'List not found'
+        })
+      }
+
+      res.status(HTTP_STATUS.OK).json({
+        message: 'List unarchived successfully',
+        data: updatedList
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
 }

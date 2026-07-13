@@ -1,4 +1,4 @@
-import { eq, isNull, SQL, and, or, not, ilike } from 'drizzle-orm'
+import { eq, isNull, SQL, and, or, not, ilike, exists, getTableColumns } from 'drizzle-orm'
 import { lists } from '../../db/schema/lists'
 import db from '../../infrastructure/database/db'
 import { ListCreateInput, ListUpdateInput } from './list.schema'
@@ -32,22 +32,26 @@ export class ListRepository {
     return list
   }
 
-  async getWithFilter(
-    ownerId: string,
-    filter?: {
-      archived?: boolean
-    }
-  ) {
+  async getAll(ownerId: string) {
     // base filters
     const filters: SQL[] = [this.notDeleted(), this.ownedBy(ownerId)]
-    if (filter) {
-      if (filter.archived !== undefined) {
-        filters.push(isNull(lists.archivedAt))
-      }
-    }
 
     const query = db
-      .select()
+      .select({
+        ...getTableColumns(lists),
+        shared: exists(
+          db
+            .select({ id: listMembers.id })
+            .from(listMembers)
+            .where(
+              and(
+                eq(listMembers.listId, lists.id),
+                not(eq(listMembers.userId, ownerId)),
+                not(eq(listMembers.role, 'owner'))
+              )
+            )
+        )
+      })
       .from(lists)
       .where(and(...filters))
 
@@ -136,7 +140,7 @@ export class ListRepository {
 
   async update(
     listId: string,
-    data: Partial<ListUpdateInput & { archivedAt?: Date; favorite?: boolean }>
+    data: Partial<ListUpdateInput & { archivedAt?: Date | null; favorite?: boolean }>
   ) {
     const [updatedList] = await db
       .update(lists)

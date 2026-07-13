@@ -5,7 +5,6 @@ import {
   SpotlightActionData,
   SpotlightActionGroupData,
 } from '@mantine/spotlight'
-import { ActionIcon } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import {
   IconCalendar,
@@ -24,6 +23,7 @@ import { baseService } from '@/services/base'
 import { createListModal } from '@/lib/modals/list'
 import { getHTMLSectionId } from '@/utils/misc'
 import { HotkeyBinding } from '@/components/common/KeyBinding'
+import { ThemeIcon } from '@mantine/core'
 
 export function SpotlightProvider() {
   const router = useRouter()
@@ -138,13 +138,13 @@ export function SpotlightProvider() {
         description: list.description ?? '',
         onClick: () => goToList(list.id),
         leftSection: (
-          <ActionIcon
+          <ThemeIcon
             variant="subtle"
             color={list.color ?? 'gray'}
             size="sm"
           >
             <IconList size={18} />
-          </ActionIcon>
+          </ThemeIcon>
         ),
       }))
 

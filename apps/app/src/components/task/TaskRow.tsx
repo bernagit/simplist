@@ -11,6 +11,7 @@ import { getPriorityColor } from '@/utils/color'
 import { useSidebar } from '@/providers/SidebarProvider'
 import { useDeleteTask, useToggleTask } from '@/queries/task'
 import { useContextMenu } from 'mantine-contextmenu'
+import { contextMenuStyles } from '@/utils/misc'
 
 type TaskRowProps = {
   task: Task
@@ -130,7 +131,12 @@ export default function TaskRow({ task, canEdit, onClick }: TaskRowProps) {
             }}
           />
 
-          <Stack gap={2} flex={1} onContextMenu={showContextMenu(menuOptions)}>
+          <Stack
+            gap={2}
+            flex={1}
+            onContextMenu={showContextMenu(menuOptions, {
+              styles: contextMenuStyles,
+            })}>
             <Text
               size="sm"
               fw={500}
