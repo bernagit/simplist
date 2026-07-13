@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { HTTP_STATUS } from '../../types/http'
 import { AuthService } from './auth.service'
-import { LoginInput, RegisterInput } from './auth.schema'
+import { InviteInput, LoginInput, RegisterInput } from './auth.schema'
 import appConfig from '../../config/env'
 import { cfg } from '../../config/internal'
 import { createModuleLogger } from '../../infrastructure/logging/logger'
@@ -30,19 +30,30 @@ export class AuthController {
     }
   }
 
+  createInvite = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = req.validated!.body as InviteInput
+
+      const result = await this.authService.createInvite(data)
+
+      res.status(HTTP_STATUS.CREATED).json({
+        message: 'Invite created successfully',
+        data: result
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
   register = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.validated!.body as RegisterInput
 
-      const user = await this.authService.register(data)
+      const result = await this.authService.register(data)
 
       res.status(HTTP_STATUS.CREATED).json({
         message: 'User created successfully',
-        data: {
-          id: user.id,
-          name: user.name,
-          email: user.email
-        }
+        data: result
       })
     } catch (error) {
       next(error)
@@ -54,7 +65,7 @@ export class AuthController {
       this.logger.info('Login request received', { body: req.validated!.body })
       const data = req.validated!.body as LoginInput
 
-      const tokens = await this.authService.login(data)
+      const tokens = await this.authService.loginWithPassword(data)
 
       // set cookie
       res.cookie(cfg.AUTH_COOKIE_NAME, tokens.accessToken, {

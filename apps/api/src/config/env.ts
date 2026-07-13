@@ -16,7 +16,8 @@ const appConfigSchema = z.object({
   databaseUrl: z.string(),
   jwtPrivateKey: z.string().default(privkey),
   jwtPublicKey: z.string().default(pubkey),
-  jwtExpiresIn: z.string().default(cfg.DEFAULT_JWT_EXPIRES_IN)
+  jwtExpiresIn: z.string().default(cfg.DEFAULT_JWT_EXPIRES_IN),
+  inviteSecret: z.string().nullable().default(null)
 })
 
 const appConfig = appConfigSchema.parse({
@@ -27,7 +28,8 @@ const appConfig = appConfigSchema.parse({
   databaseUrl: process.env.DATABASE_URL,
   jwtPrivateKey: process.env.JWT_PRIVATE_KEY,
   jwtPublicKey: process.env.JWT_PUBLIC_KEY,
-  jwtExpiresIn: process.env.JWT_EXPIRES_IN
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN,
+  inviteSecret: process.env.INVITE_SECRET
 })
 
 export default appConfig

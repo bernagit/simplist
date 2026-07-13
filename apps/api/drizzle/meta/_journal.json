@@ -36,6 +36,13 @@
       "when": 1782985387478,
       "tag": "0004_blushing_reaper",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1783949932081,
+      "tag": "0005_nifty_silver_sable",
+      "breakpoints": true
     }
   ]
 }
