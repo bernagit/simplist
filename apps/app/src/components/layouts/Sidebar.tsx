@@ -31,16 +31,19 @@ import {
   IconHelp
 } from '@tabler/icons-react'
 import { usePathname, useRouter } from 'next/navigation'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { spotlight } from '@mantine/spotlight'
 import { useMe } from '@/queries/auth'
 import { useLists } from '@/queries/lists'
 import { useSidebar } from '@/providers/SidebarProvider'
 import { authService } from '@/services/auth'
 import { createListModal } from '@/lib/modals/list'
+import { useLocalStorage } from '@mantine/hooks'
 
 export const MENU_WIDTH = 290
-const SIDEBAR_WIDTH = 280
+const MIN_WIDTH = 240
+const MAX_WIDTH = 480
+const DEFAULT_WIDTH = 280
 const MY_LISTS_TEXT = 'My Lists'
 const SHARED_LISTS_TEXT = 'Shared Lists'
 
@@ -52,6 +55,20 @@ export function Sidebar() {
   const pathname = usePathname()
   const theme = useMantineTheme()
   const colorScheme = useComputedColorScheme()
+  const [sidebarWidth, setSidebarWidth] = useLocalStorage({
+    key: 'sidebar-width',
+    defaultValue: DEFAULT_WIDTH,
+  })
+  const sidebarRef = useRef<HTMLDivElement>(null)
+  const widthRef = useRef(sidebarWidth)
+  const rafRef = useRef<number | null>(null)
+  const [isResizing, setIsResizing] = useState(false)
+  const [isHandleHovered, setIsHandleHovered] = useState(false)
+
+  // Keep references to the active listeners so we can clean them up
+  // on unmount even if the user never releases the mouse.
+  const moveHandlerRef = useRef<((e: MouseEvent) => void) | null>(null)
+  const upHandlerRef = useRef<(() => void) | null>(null)
 
   const { data: me, isLoading: meLoading } = useMe()
   const { data: lists } = useLists()
@@ -78,116 +95,246 @@ export function Sidebar() {
     }
   }
 
+  const cleanupResizeListeners = useCallback(() => {
+    if (moveHandlerRef.current) {
+      window.removeEventListener('mousemove', moveHandlerRef.current)
+      moveHandlerRef.current = null
+    }
+    if (upHandlerRef.current) {
+      window.removeEventListener('mouseup', upHandlerRef.current)
+      upHandlerRef.current = null
+    }
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current)
+      rafRef.current = null
+    }
+    document.body.style.cursor = ''
+    document.body.style.userSelect = ''
+  }, [])
+
+  const startResize = (e: React.MouseEvent) => {
+    e.preventDefault()
+    setIsResizing(true)
+    document.body.style.cursor = 'col-resize'
+    document.body.style.userSelect = 'none'
+
+    const onMove = (ev: MouseEvent) => {
+      widthRef.current = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, ev.clientX))
+
+      if (rafRef.current) return
+
+      rafRef.current = requestAnimationFrame(() => {
+        sidebarRef.current?.style.setProperty('width', `${widthRef.current}px`)
+        rafRef.current = null
+      })
+    }
+
+    const onUp = () => {
+      setIsResizing(false)
+      setSidebarWidth(widthRef.current)
+      cleanupResizeListeners()
+    }
+
+    moveHandlerRef.current = onMove
+    upHandlerRef.current = onUp
+
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup', onUp)
+  }
+
+  useEffect(() => {
+    widthRef.current = sidebarWidth
+  }, [sidebarWidth])
+
+  useEffect(() => {
+    return () => cleanupResizeListeners()
+  }, [cleanupResizeListeners])
+
+  const handleActive = isResizing || isHandleHovered
+
   if (!opened) return null
 
   return (
-    <Box
-      w={SIDEBAR_WIDTH}
-      h={isMobile ? '100dvh' : '100%'}
-      pos={isMobile ? 'fixed' : 'relative'}
-      style={{
-        top: isMobile ? 0 : undefined,
-        left: isMobile ? 0 : undefined,
-        zIndex: isMobile ? 300 : undefined,
-        flexShrink: 0,
-        overflow: 'hidden',
-        transition: 'width 200ms ease',
-        borderRight: `2px solid ${colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[2]}`
-      }}
-      bg="var(--mantine-color-body)"
-    >
-      <Stack gap={0} h="100%">
-        <Menu shadow="md" width={MENU_WIDTH} position="bottom-start">
-          <Menu.Target>
-            <Group gap="sm" wrap="nowrap" ml={0} m={4}>
-              <UnstyledButton
-                style={{
-                  width: '100%',
-                  borderRadius: 'var(--mantine-radius-md)'
-                }}
-              >
-                <Group gap="sm" wrap="nowrap" px="xs" py="xs">
-                  <Avatar radius="xl" color={theme.primaryColor}>
-                    {me?.initials}
-                  </Avatar>
-
-                  <Box>
-                    <Text size="sm" fw={500} truncate>
-                      {meLoading ? 'Loading...' : me?.name}
-                    </Text>
-
-                    <Text size="xs" c="dimmed" truncate>
-                      {me?.email}
-                    </Text>
-                  </Box>
-
-                  <IconChevronDown size={14} />
-                </Group>
-              </UnstyledButton>
-              {opened && (
-                <ActionIcon
-                  variant="subtle"
-                  color="gray"
-                  size="md"
-                  onClick={toggle}
-                  aria-label="Toggle sidebar"
-                  mr="xs"
+    <>
+      <Box
+        w={isMobile ? DEFAULT_WIDTH : sidebarWidth}
+        ref={sidebarRef}
+        h={isMobile ? '100dvh' : '100%'}
+        pos={isMobile ? 'fixed' : 'relative'}
+        style={{
+          top: isMobile ? 0 : undefined,
+          left: isMobile ? 0 : undefined,
+          zIndex: isMobile ? 300 : undefined,
+          flexShrink: 0,
+          overflow: 'hidden',
+          transition: isResizing ? 'none' : 'width 200ms ease',
+          borderRight: `2px solid ${colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[2]}`
+        }}
+        bg="var(--mantine-color-body)"
+      >
+        <Stack gap={0} h="100%">
+          <Menu shadow="md" width={MENU_WIDTH} position="bottom-start">
+            <Menu.Target>
+              <Group gap="sm" wrap="nowrap" ml={0} m={4}>
+                <UnstyledButton
+                  style={{
+                    flex: 1,
+                    minWidth: 0,
+                    borderRadius: 'var(--mantine-radius-md)'
+                  }}
                 >
-                  <IconLayoutSidebar size={18} />
-                </ActionIcon>
-              )}
-            </Group>
-          </Menu.Target>
-          <Menu.Dropdown>
-            <Menu.Item
-              leftSection={<IconUserCircle size={16} />}
-              onClick={() => handleNavigate('/profile')}
-            >
-              Profile
-            </Menu.Item>
-            <Menu.Item
-              leftSection={<IconSettings size={16} />}
-              onClick={() => handleNavigate('/settings')}
-            >
-              Settings
-            </Menu.Item>
-            <Menu.Divider />
-            <Menu.Item color="red" leftSection={<IconLogout size={16} />} onClick={handleLogout}>
-              Log out
-            </Menu.Item>
-          </Menu.Dropdown>
-        </Menu>
+                  <Group gap="sm" wrap="nowrap" px="xs" py="xs">
+                    <Avatar radius="xl" color={theme.primaryColor}>
+                      {me?.initials}
+                    </Avatar>
 
-        {/* Nav */}
-        <ScrollArea flex={1} scrollbarSize={4} type="hover">
-          <Stack gap={2} p="xs">
-            <NavLink
-              label="Home"
-              leftSection={<IconHome2 size={18} />}
-              active={pathname === '/'}
-              onClick={() => handleNavigate('/')}
-              style={{ borderRadius: 'var(--mantine-radius-md)' }}
-            />
-            <NavLink
-              label="Calendar"
-              leftSection={<IconCalendar size={18} />}
-              active={pathname === '/calendar'}
-              onClick={() => handleNavigate('/calendar')}
-              style={{ borderRadius: 'var(--mantine-radius-md)' }}
-            />
-            <NavLink
-              label="Search"
-              leftSection={<IconSearch size={18} />}
-              active={pathname === '/search'}
-              onClick={() => spotlight.open()}
-              style={{ borderRadius: 'var(--mantine-radius-md)' }}
-            />
+                    <Box flex={1} miw={0}>
+                      <Text size="sm" fw={500} truncate={'end'}>
+                        {meLoading ? 'Loading...' : me?.name}
+                      </Text>
 
-            <Divider my="xs" />
+                      <Text size="xs" c="dimmed" truncate={'end'}>
+                        {me?.email}
+                      </Text>
+                    </Box>
 
-            <NavLink
-              label={
-                <Group justify="space-between" align="center" style={{ width: '100%' }}>
+                    <IconChevronDown size={14} />
+                  </Group>
+                </UnstyledButton>
+                {opened && (
+                  <ActionIcon
+                    variant="subtle"
+                    color="gray"
+                    size="md"
+                    onClick={toggle}
+                    aria-label="Toggle sidebar"
+                    mr="xs"
+                  >
+                    <IconLayoutSidebar size={18} />
+                  </ActionIcon>
+                )}
+              </Group>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item
+                leftSection={<IconUserCircle size={16} />}
+                onClick={() => handleNavigate('/profile')}
+              >
+                Profile
+              </Menu.Item>
+              <Menu.Item
+                leftSection={<IconSettings size={16} />}
+                onClick={() => handleNavigate('/settings')}
+              >
+                Settings
+              </Menu.Item>
+              <Menu.Divider />
+              <Menu.Item color="red" leftSection={<IconLogout size={16} />} onClick={handleLogout}>
+                Log out
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+
+          <ScrollArea flex={1} scrollbarSize={4} type="hover">
+            <Stack gap={2} p="xs">
+              <NavLink
+                label="Home"
+                leftSection={<IconHome2 size={18} />}
+                active={pathname === '/'}
+                onClick={() => handleNavigate('/')}
+                style={{ borderRadius: 'var(--mantine-radius-md)' }}
+              />
+              <NavLink
+                label="Calendar"
+                leftSection={<IconCalendar size={18} />}
+                active={pathname === '/calendar'}
+                onClick={() => handleNavigate('/calendar')}
+                style={{ borderRadius: 'var(--mantine-radius-md)' }}
+              />
+              <NavLink
+                label="Search"
+                leftSection={<IconSearch size={18} />}
+                active={pathname === '/search'}
+                onClick={() => spotlight.open()}
+                style={{ borderRadius: 'var(--mantine-radius-md)' }}
+              />
+
+              <Divider my="xs" />
+
+              <NavLink
+                label={
+                  <Group justify="space-between" align="center" style={{ width: '100%' }}>
+                    <Text
+                      size="xs"
+                      fw={600}
+                      tt="uppercase"
+                      c="dimmed"
+                      style={{ letterSpacing: '0.06em' }}
+                    >
+                      {MY_LISTS_TEXT}
+                    </Text>
+                    <Tooltip label="Add list" position="right" withArrow>
+                      <ActionIcon
+                        variant="subtle"
+                        color="gray"
+                        size="xs"
+                        onClick={e => {
+                          createListModal()
+                          e.stopPropagation()
+                        }}
+                        aria-label="Add list"
+                      >
+                        <IconPlus size={14} />
+                      </ActionIcon>
+                    </Tooltip>
+                  </Group>
+                }
+                rightSection={
+                  <Group wrap="nowrap" gap={4} flex={1}>
+                    <ActionIcon
+                      variant="subtle"
+                      color="gray"
+                      size="xs"
+                      onClick={e => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        setOwnedListsOpen(o => !o)
+                      }}
+                      aria-label={ownedListsOpen ? 'Collapse lists' : 'Expand lists'}
+                    >
+                      <IconChevronRight size={14} />
+                    </ActionIcon>
+                  </Group>
+                }
+                opened={ownedListsOpen}
+                onClick={e => {
+                  handleNavigate('/lists')
+                  e.stopPropagation()
+                }}
+                active={pathname === '/lists'}
+                style={{ borderRadius: 'var(--mantine-radius-md)' }}
+              >
+                {ownedLists.map(list => (
+                  <NavLink
+                    key={list.id}
+                    label={list.title}
+                    color={list.color ? `${list.color}` : 'gray'}
+                    leftSection={
+                      <IconPoint
+                        size={18}
+                        color={list.color ? `${list.color}` : 'var(--mantine-color-gray-6)'}
+                        fill={list.color ? `${list.color}` : 'var(--mantine-color-gray-6)'}
+                      />
+                    }
+                    active={pathname === `/lists/${list.id}`}
+                    onClick={() => handleNavigate(`/lists/${list.id}`)}
+                    style={{ borderRadius: 'var(--mantine-radius-md)' }}
+                  />
+                ))}
+              </NavLink>
+              <Divider my="xs" />
+              <NavLink
+                label={
                   <Text
                     size="xs"
                     fw={600}
@@ -195,136 +342,98 @@ export function Sidebar() {
                     c="dimmed"
                     style={{ letterSpacing: '0.06em' }}
                   >
-                    {MY_LISTS_TEXT}
+                    {SHARED_LISTS_TEXT}
                   </Text>
-                  <Tooltip label="Add list" position="right" withArrow>
+                }
+                rightSection={
+                  <Group wrap="nowrap" gap={4} flex={1}>
                     <ActionIcon
                       variant="subtle"
                       color="gray"
                       size="xs"
                       onClick={e => {
-                        createListModal()
+                        e.preventDefault()
                         e.stopPropagation()
+                        setSharedListsOpen(o => !o)
                       }}
-                      aria-label="Add list"
+                      aria-label={sharedListsOpen ? 'Collapse lists' : 'Expand lists'}
                     >
-                      <IconPlus size={14} />
+                      <IconChevronRight size={14} />
                     </ActionIcon>
-                  </Tooltip>
-                </Group>
-              }
-              rightSection={
-                <Group wrap="nowrap" gap={4} flex={1}>
-                  <ActionIcon
-                    variant="subtle"
-                    color="gray"
-                    size="xs"
-                    onClick={e => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                      setOwnedListsOpen(o => !o)
-                    }}
-                    aria-label={ownedListsOpen ? 'Collapse lists' : 'Expand lists'}
-                  >
-                    <IconChevronRight size={14} />
-                  </ActionIcon>
-                </Group>
-              }
-              opened={ownedListsOpen}
-              onClick={e => {
-                handleNavigate('/lists')
-                e.stopPropagation()
-              }}
-              active={pathname === '/lists'}
-              style={{ borderRadius: 'var(--mantine-radius-md)' }}
-            >
-              {ownedLists.map(list => (
-                <NavLink
-                  key={list.id}
-                  label={list.title}
-                  color={list.color ? `${list.color}` : 'gray'}
-                  leftSection={
-                    <IconPoint
-                      size={18}
-                      color={list.color ? `${list.color}` : 'var(--mantine-color-gray-6)'}
-                      fill={list.color ? `${list.color}` : 'var(--mantine-color-gray-6)'}
-                    />
-                  }
-                  active={pathname === `/lists/${list.id}`}
-                  onClick={() => handleNavigate(`/lists/${list.id}`)}
-                  style={{ borderRadius: 'var(--mantine-radius-md)' }}
-                />
-              ))}
-            </NavLink>
-            <Divider my="xs" />
-            <NavLink
-              label={
-                <Text
-                  size="xs"
-                  fw={600}
-                  tt="uppercase"
-                  c="dimmed"
-                  style={{ letterSpacing: '0.06em' }}
-                >
-                  {SHARED_LISTS_TEXT}
-                </Text>
-              }
-              rightSection={
-                <Group wrap="nowrap" gap={4} flex={1}>
-                  <ActionIcon
-                    variant="subtle"
-                    color="gray"
-                    size="xs"
-                    onClick={e => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                      setSharedListsOpen(o => !o)
-                    }}
-                    aria-label={sharedListsOpen ? 'Collapse lists' : 'Expand lists'}
-                  >
-                    <IconChevronRight size={14} />
-                  </ActionIcon>
-                </Group>
-              }
-              opened={sharedListsOpen}
-              onClick={e => {
-                handleNavigate(`/lists/shared`)
-                e.stopPropagation()
-              }}
-              active={pathname === '/lists/shared'}
-              style={{ borderRadius: 'var(--mantine-radius-md)' }}
-            >
-              {sharedLists.map(list => (
-                <NavLink
-                  key={list.id}
-                  label={list.title}
-                  color={list.color ? `${list.color}` : 'gray'}
-                  leftSection={
-                    <IconPoint
-                      size={18}
-                      color={list.color ? `${list.color}` : 'var(--mantine-color-gray-6)'}
-                      fill={list.color ? `${list.color}` : 'var(--mantine-color-gray-6)'}
-                    />
-                  }
-                  active={pathname === `/lists/shared/${list.id}`}
-                  onClick={() => handleNavigate(`/lists/shared/${list.id}`)}
-                  style={{ borderRadius: 'var(--mantine-radius-md)' }}
-                />
-              ))}
-            </NavLink>
-          </Stack>
-        </ScrollArea>
+                  </Group>
+                }
+                opened={sharedListsOpen}
+                onClick={e => {
+                  handleNavigate(`/lists/shared`)
+                  e.stopPropagation()
+                }}
+                active={pathname === '/lists/shared'}
+                style={{ borderRadius: 'var(--mantine-radius-md)' }}
+              >
+                {sharedLists.map(list => (
+                  <NavLink
+                    key={list.id}
+                    label={list.title}
+                    color={list.color ? `${list.color}` : 'gray'}
+                    leftSection={
+                      <IconPoint
+                        size={18}
+                        color={list.color ? `${list.color}` : 'var(--mantine-color-gray-6)'}
+                        fill={list.color ? `${list.color}` : 'var(--mantine-color-gray-6)'}
+                      />
+                    }
+                    active={pathname === `/lists/shared/${list.id}`}
+                    onClick={() => handleNavigate(`/lists/shared/${list.id}`)}
+                    style={{ borderRadius: 'var(--mantine-radius-md)' }}
+                  />
+                ))}
+              </NavLink>
+            </Stack>
+          </ScrollArea>
 
-        {/* Bottom */}
-        <Box p="xs">
-          <Divider mb="xs" />
-          <NavLink
-            label="Help & Support"
-            leftSection={<IconHelp size={18} />}
-            style={{ borderRadius: 'var(--mantine-radius-md)' }}
+          <Box p="xs">
+            <Divider mb="xs" />
+            <NavLink
+              label="Help & Support"
+              leftSection={<IconHelp size={18} />}
+              style={{ borderRadius: 'var(--mantine-radius-md)' }}
+            />
+          </Box>
+        </Stack>
+      </Box>
+
+      {!isMobile && (
+        <Box
+          onMouseDown={startResize}
+          onMouseEnter={() => setIsHandleHovered(true)}
+          onMouseLeave={() => setIsHandleHovered(false)}
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Resize sidebar"
+          pos="relative"
+          w={10}
+          style={{
+            flexShrink: 0,
+            cursor: 'col-resize',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Box
+            style={{
+              width: 2,
+              height: '100%',
+              borderRadius: 999,
+              backgroundColor: handleActive
+                ? theme.colors[theme.primaryColor]![colorScheme === 'dark' ? 5 : 6]
+                : 'transparent',
+              transition: isResizing ? 'none' : 'background-color 120ms ease',
+            }}
+            ml={-9}
           />
         </Box>
-      </Stack>
-    </Box>
+      )}
+    </>
   )
 }

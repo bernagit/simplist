@@ -15,13 +15,15 @@ import ShareList from '../modals/ShareList'
 import { SpotlightProvider } from '@/providers/SpotlightProvider'
 import HelpDrawer from './HelpDrawer'
 import { HelpProvider } from '@/providers/HelpProvider'
+import { PUBLIC_ROUTES } from '@/proxy'
+import AuthLayout from '../auth/AuthLayout'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
-  const skipLayout = pathname.startsWith('/login') || pathname.startsWith('/profile')
+  const isAuthRoute = PUBLIC_ROUTES.some(route => pathname.startsWith(route))
 
-  if (skipLayout) return <>{children}</>
+  if (isAuthRoute) return <AuthLayout>{children}</AuthLayout>
 
   return (
     <QueryProvider>

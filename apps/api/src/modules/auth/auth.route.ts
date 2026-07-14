@@ -1,7 +1,13 @@
 import { Router } from 'express'
 import { validate } from '../../infrastructure/middleware/validate'
 import { AuthController } from './auth.controller'
-import { registerSchema, loginSchema, refreshSchema, inviteSchema } from './auth.schema'
+import {
+  registerSchema,
+  loginSchema,
+  refreshSchema,
+  inviteSchema,
+  checkInviteSchema
+} from './auth.schema'
 import { requireAuth } from '../../infrastructure/middleware/auth'
 
 const router = Router()
@@ -13,6 +19,8 @@ router.get('/me', requireAuth, controller.getCurrentUser)
 router.post('/register', validate(registerSchema), controller.register)
 
 router.post('/create-invite', validate(inviteSchema), controller.createInvite)
+
+router.post('/check-invite', validate(checkInviteSchema), controller.checkInvite)
 
 router.post('/login', validate(loginSchema), controller.login)
 

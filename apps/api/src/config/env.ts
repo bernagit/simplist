@@ -7,6 +7,7 @@ const privkey = fs.readFileSync(new URL('../../../../keys/private.key', import.m
 const pubkey = fs.readFileSync(new URL('../../../../keys/public.pem', import.meta.url), 'utf8')
 
 const appConfigSchema = z.object({
+  appUrl: z.string().default(cfg.DEFAULT_APP_URL),
   port: z.number().default(cfg.DEFAULT_SERVER_PORT),
   logLevel: z
     .enum(['error', 'warn', 'info', 'debug'])
@@ -21,6 +22,7 @@ const appConfigSchema = z.object({
 })
 
 const appConfig = appConfigSchema.parse({
+  appUrl: process.env.APP_URL,
   port: process.env.PORT ? parseInt(process.env.PORT, 10) : undefined,
   logLevel: process.env.LOG_LEVEL,
   isDev: process.env.NODE_ENV === 'development',

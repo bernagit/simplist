@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { HTTP_STATUS } from '../../types/http'
 import { AuthService } from './auth.service'
-import { InviteInput, LoginInput, RegisterInput } from './auth.schema'
+import { CheckInviteInput, InviteInput, LoginInput, RegisterInput } from './auth.schema'
 import appConfig from '../../config/env'
 import { cfg } from '../../config/internal'
 import { createModuleLogger } from '../../infrastructure/logging/logger'
@@ -38,6 +38,21 @@ export class AuthController {
 
       res.status(HTTP_STATUS.CREATED).json({
         message: 'Invite created successfully',
+        data: result
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  checkInvite = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = req.validated!.body as CheckInviteInput
+
+      const result = await this.authService.checkInvite(data.token)
+
+      res.status(HTTP_STATUS.OK).json({
+        message: 'Invite is valid',
         data: result
       })
     } catch (error) {

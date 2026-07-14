@@ -5,12 +5,14 @@ const DEFAULT_JWT_EXPIRES_IN = '24h'
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers
 const DEFAULT_COOKIE_MAX_AGE = 24 * 60 * 60 * 1000
 const DEFAULT_CORS_ORIGIN = 'http://localhost:3000'
+const DEFAULT_APP_URL = 'http://localhost:3000'
 
 const SHUTDOWN_TIMEOUT_MS = 10000
 
 const MS_IN_SECOND = 1000
 
 export const cfg = {
+  DEFAULT_APP_URL,
   DEFAULT_SERVER_PORT,
   DEFAULT_LOG_LEVEL,
   DEFAULT_IS_DEV,

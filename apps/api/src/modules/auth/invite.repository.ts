@@ -59,4 +59,13 @@ export class InviteRepository {
 
     return invite ?? null
   }
+
+  async deleteByEmail(email: string) {
+    const [deletedInvite] = await db
+      .delete(betaInvites)
+      .where(eq(betaInvites.email, email))
+      .returning()
+
+    return deletedInvite ?? null
+  }
 }

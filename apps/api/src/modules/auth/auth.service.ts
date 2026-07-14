@@ -12,14 +12,13 @@ import {
   hashPassword
 } from '../../infrastructure/auth/crypto'
 import appConfig from '../../config/env'
+import { mailService } from '../../infrastructure/mail/mail.service'
 
 export class AuthService {
   private readonly logger = createModuleLogger('AuthService')
 
   private readonly userRepository = new UserRepository()
-
   private readonly inviteRepository = new InviteRepository()
-
   private readonly sessionService = new SessionService()
 
   public async createInvite(data: { email: string; secret: string }) {
@@ -55,15 +54,48 @@ export class AuthService {
       throw Errors.internal('Failed to create invite')
     }
 
+    try {
+      const inviteUrl = `${appConfig.appUrl}/register?token=${token}`
+      await mailService.sendInvitation(data.email, inviteUrl)
+    } catch (error) {
+      this.logger.error(
+        `Failed to send invitation email to ${data.email}: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      )
+
+      // delete the invite if email sending fails
+      await this.inviteRepository.deleteByEmail(data.email)
+
+      throw Errors.internal('Unable to send invitation email')
+    }
+  }
+
+  public async checkInvite(token: string) {
+    const tokenHash = hashInviteToken(token)
+
+    const invite = await this.inviteRepository.isValidInvite(tokenHash)
+
+    if (!invite) {
+      throw Errors.forbidden('Invalid invite token')
+    }
+
+    if (invite.used) {
+      throw Errors.forbidden('This invitation has already been used')
+    }
+
+    if (invite.expiresAt < new Date()) {
+      throw Errors.forbidden('This invitation has expired')
+    }
+
     return {
-      email: invite.email,
-      token, // Return the plain token to the user
-      expiresAt: invite.expiresAt
+      email: invite.email
     }
   }
 
   public async register(data: RegisterInput) {
-    const invite = await this.inviteRepository.findByEmail(data.email)
+    const hashedToken = hashInviteToken(data.inviteToken)
+    const invite = await this.inviteRepository.findByToken(hashedToken)
 
     const tokenHash = hashInviteToken(data.inviteToken)
 
@@ -83,7 +115,7 @@ export class AuthService {
       throw Errors.forbidden('This invitation has expired')
     }
 
-    const existingUser = await this.userRepository.findByEmail(data.email)
+    const existingUser = await this.userRepository.findByEmail(invite.email)
 
     if (existingUser) {
       throw Errors.conflict('User with this email already exists')
@@ -92,8 +124,8 @@ export class AuthService {
     const passwordHash = await hashPassword(data.password)
 
     const user = await this.userRepository.createUser({
-      name: data.name || data.email,
-      email: data.email,
+      name: data.name || invite.email,
+      email: invite.email,
       passwordHash
     })
 

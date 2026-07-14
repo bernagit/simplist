@@ -3,6 +3,7 @@ import { cfg } from './config/internal'
 import appConfig from './config/env'
 import { createModuleLogger } from './infrastructure/logging/logger'
 import { appInfo } from './config/appInfo'
+import { transporter } from './infrastructure/mail/mail.client'
 
 const logger = createModuleLogger('SERVER')
 
@@ -14,6 +15,7 @@ async function startServer() {
   return server
 }
 
+await transporter.verify()
 const server = await startServer()
 
 async function shutdown(signal: string) {
