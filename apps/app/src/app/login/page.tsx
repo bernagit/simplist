@@ -5,10 +5,7 @@ import { LoginForm } from '@/components/auth/LoginForm'
 
 export default function LoginPage() {
   return (
-    <AuthCard
-      title="Welcome back"
-      subtitle="Sign in to continue using Simplist."
-    >
+    <AuthCard title="Welcome back" subtitle="Sign in to continue using Simplist.">
       <LoginForm />
     </AuthCard>
   )

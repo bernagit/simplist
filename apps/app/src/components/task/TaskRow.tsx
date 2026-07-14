@@ -135,8 +135,9 @@ export default function TaskRow({ task, canEdit, onClick }: TaskRowProps) {
             gap={2}
             flex={1}
             onContextMenu={showContextMenu(menuOptions, {
-              styles: contextMenuStyles,
-            })}>
+              styles: contextMenuStyles
+            })}
+          >
             <Text
               size="sm"
               fw={500}

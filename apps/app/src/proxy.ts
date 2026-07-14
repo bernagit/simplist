@@ -1,19 +1,14 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-export const PUBLIC_ROUTES = [
-  '/login',
-  '/register',
-]
+export const PUBLIC_ROUTES = ['/login', '/register', '/forgot-password', '/reset-password']
 
 export function proxy(req: NextRequest) {
   const token = req.cookies.get('accessToken')?.value
 
   const pathname = req.nextUrl.pathname
 
-  const isPublicRoute = PUBLIC_ROUTES.some(route =>
-    pathname.startsWith(route)
-  )
+  const isPublicRoute = PUBLIC_ROUTES.some(route => pathname.startsWith(route))
 
   if (!token && !isPublicRoute) {
     return NextResponse.redirect(new URL('/login', req.url))
@@ -27,7 +22,5 @@ export function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/((?!api|_next|.*\\..*).*)',
-  ],
+  matcher: ['/((?!api|_next|.*\\..*).*)']
 }

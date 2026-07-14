@@ -32,4 +32,25 @@ export class UserRepository {
       updatedAt: user.updatedAt
     }
   }
+
+  async updatePassword(userId: string, passwordHash: string) {
+    const [user] = await db
+      .update(users)
+      .set({ passwordHash, updatedAt: new Date() })
+      .where(eq(users.id, userId))
+      .returning()
+
+    if (!user) {
+      this.logger.error(`Failed to update password hash for user with ID ${userId}`)
+      throw new Error('Failed to update password hash')
+    }
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    }
+  }
 }

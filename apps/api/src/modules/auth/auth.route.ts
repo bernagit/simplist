@@ -6,7 +6,9 @@ import {
   loginSchema,
   refreshSchema,
   inviteSchema,
-  checkInviteSchema
+  checkInviteSchema,
+  forgotPasswordSchema,
+  passwordResetSchema
 } from './auth.schema'
 import { requireAuth } from '../../infrastructure/middleware/auth'
 
@@ -23,6 +25,10 @@ router.post('/create-invite', validate(inviteSchema), controller.createInvite)
 router.post('/check-invite', validate(checkInviteSchema), controller.checkInvite)
 
 router.post('/login', validate(loginSchema), controller.login)
+
+router.post('/forgot-password', validate(forgotPasswordSchema), controller.forgotPassword)
+
+router.post('/reset-password', validate(passwordResetSchema), controller.resetPassword)
 
 router.post('/logout', controller.logout)
 

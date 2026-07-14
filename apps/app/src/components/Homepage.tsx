@@ -24,7 +24,7 @@ export default function Homepage() {
         <Stack gap={4}>
           <Title order={1}>Welcome to Simplist 👋</Title>
 
-          <Text c="dimmed">Organize your work, your life and everything in between.</Text>
+          <Text c="dimmed">Keep your lists together</Text>
         </Stack>
 
         <Button

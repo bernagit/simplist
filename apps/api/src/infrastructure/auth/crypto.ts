@@ -18,6 +18,14 @@ export function hashRefreshToken(token: string): string {
   return crypto.createHash('sha256').update(token).digest('hex')
 }
 
+export function generatePasswordResetToken() {
+  return crypto.randomBytes(32).toString('base64url')
+}
+
+export function hashPasswordResetToken(token: string): string {
+  return crypto.createHash('sha256').update(token).digest('hex')
+}
+
 export async function hashPassword(password: string) {
   return bcrypt.hash(password, 12)
 }

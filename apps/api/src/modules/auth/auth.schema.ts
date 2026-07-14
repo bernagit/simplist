@@ -29,6 +29,20 @@ export const loginSchema = z.object({
   })
 })
 
+export const forgotPasswordSchema = z.object({
+  body: z.object({
+    email: z.email().max(255)
+  })
+})
+
+export const passwordResetSchema = z.object({
+  body: z.object({
+    email: z.email().max(255),
+    token: z.string().min(1),
+    newPassword: z.string().min(10).max(128)
+  })
+})
+
 export const refreshSchema = z.object({
   refreshToken: z.string().min(1)
 })
@@ -38,3 +52,5 @@ export type LoginInput = z.infer<typeof loginSchema>['body']
 export type RefreshInput = z.infer<typeof refreshSchema>
 export type InviteInput = z.infer<typeof inviteSchema>['body']
 export type CheckInviteInput = z.infer<typeof checkInviteSchema>['body']
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>['body']
+export type PasswordResetInput = z.infer<typeof passwordResetSchema>['body']

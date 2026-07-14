@@ -14,8 +14,12 @@ export type List = {
   deletedAt: Date | null
 }
 
+export type OwnedList = List & {
+  shared: boolean
+}
+
 export type AllList = {
-  owned: List[]
+  owned: OwnedList[]
   shared: List[]
 }
 

@@ -1,7 +1,14 @@
 import { Request, Response, NextFunction } from 'express'
 import { HTTP_STATUS } from '../../types/http'
 import { AuthService } from './auth.service'
-import { CheckInviteInput, InviteInput, LoginInput, RegisterInput } from './auth.schema'
+import {
+  CheckInviteInput,
+  ForgotPasswordInput,
+  InviteInput,
+  LoginInput,
+  PasswordResetInput,
+  RegisterInput
+} from './auth.schema'
 import appConfig from '../../config/env'
 import { cfg } from '../../config/internal'
 import { createModuleLogger } from '../../infrastructure/logging/logger'
@@ -66,6 +73,13 @@ export class AuthController {
 
       const result = await this.authService.register(data)
 
+      res.cookie(cfg.AUTH_COOKIE_NAME, result.accessToken, {
+        httpOnly: true,
+        secure: !appConfig.isDev,
+        sameSite: 'lax',
+        maxAge: cfg.COOKIE_MAX_AGE
+      })
+
       res.status(HTTP_STATUS.CREATED).json({
         message: 'User created successfully',
         data: result
@@ -77,13 +91,12 @@ export class AuthController {
 
   login = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      this.logger.info('Login request received', { body: req.validated!.body })
       const data = req.validated!.body as LoginInput
 
-      const tokens = await this.authService.loginWithPassword(data)
+      const result = await this.authService.loginWithPassword(data)
 
       // set cookie
-      res.cookie(cfg.AUTH_COOKIE_NAME, tokens.accessToken, {
+      res.cookie(cfg.AUTH_COOKIE_NAME, result.accessToken, {
         httpOnly: true,
         secure: !appConfig.isDev,
         sameSite: 'lax',
@@ -92,7 +105,7 @@ export class AuthController {
 
       res.status(HTTP_STATUS.OK).json({
         message: 'Login successful',
-        data: tokens
+        data: result
       })
     } catch (error) {
       next(error)
@@ -119,6 +132,36 @@ export class AuthController {
     try {
       res.json({
         message: 'Not implemented'
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = req.validated!.body as ForgotPasswordInput
+
+      const result = await this.authService.forgotPassword(data)
+
+      res.status(HTTP_STATUS.OK).json({
+        message: 'Password reset email sent successfully',
+        data: result
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  resetPassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = req.validated!.body as PasswordResetInput
+
+      const result = await this.authService.resetPassword(data)
+
+      res.status(HTTP_STATUS.OK).json({
+        message: 'Password reset successfully',
+        data: result
       })
     } catch (error) {
       next(error)

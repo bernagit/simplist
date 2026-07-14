@@ -9,20 +9,9 @@ interface AuthCardProps {
   children: ReactNode
 }
 
-export function AuthCard({
-  title,
-  subtitle,
-  children,
-}: AuthCardProps) {
+export function AuthCard({ title, subtitle, children }: AuthCardProps) {
   return (
-    <Paper
-      withBorder
-      radius="lg"
-      shadow="sm"
-      p="xl"
-      w="100%"
-      maw={520}
-    >
+    <Paper withBorder radius="lg" shadow="sm" p="xl" w="100%" maw={520}>
       <Stack gap="xl">
         <Stack gap={4}>
           <Title order={2}>{title}</Title>

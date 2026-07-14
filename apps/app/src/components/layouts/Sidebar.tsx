@@ -57,7 +57,7 @@ export function Sidebar() {
   const colorScheme = useComputedColorScheme()
   const [sidebarWidth, setSidebarWidth] = useLocalStorage({
     key: 'sidebar-width',
-    defaultValue: DEFAULT_WIDTH,
+    defaultValue: DEFAULT_WIDTH
   })
   const sidebarRef = useRef<HTMLDivElement>(null)
   const widthRef = useRef(sidebarWidth)
@@ -417,7 +417,7 @@ export function Sidebar() {
             cursor: 'col-resize',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: 'center'
           }}
         >
           <Box
@@ -428,7 +428,7 @@ export function Sidebar() {
               backgroundColor: handleActive
                 ? theme.colors[theme.primaryColor]![colorScheme === 'dark' ? 5 : 6]
                 : 'transparent',
-              transition: isResizing ? 'none' : 'background-color 120ms ease',
+              transition: isResizing ? 'none' : 'background-color 120ms ease'
             }}
             ml={-9}
           />

@@ -1,10 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-export function useKeySequence(
-  sequence: readonly string[],
-  callback: () => void,
-  timeout = 1000
-) {
+export function useKeySequence(sequence: readonly string[], callback: () => void, timeout = 1000) {
   const indexRef = useRef(0)
   const timeoutRef = useRef<number | null>(null)
 

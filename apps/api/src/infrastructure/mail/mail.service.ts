@@ -3,6 +3,7 @@ import mailConfig from '../../config/mail'
 import { transporter } from './mail.client'
 import { inviteTemplate } from './templates/invitation'
 import { welcomeTemplate } from './templates/welcome'
+import { resetPasswordTemplate } from './templates/resetPassword'
 
 class MailService {
   async send(options: MailOptions) {
@@ -29,6 +30,14 @@ class MailService {
       to,
       subject: 'Welcome to Simplist',
       html: welcomeTemplate(name, url)
+    })
+  }
+
+  async sendPasswordReset(to: string, url: string, expiresInMinutes: number) {
+    await this.send({
+      to,
+      subject: 'Password Reset Request',
+      html: resetPasswordTemplate(url, expiresInMinutes)
     })
   }
 }

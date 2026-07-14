@@ -10,9 +10,16 @@ async function login(email: string, password: string): Promise<{ token: string }
   return await api.post<{ token: string }>('auth/login', { json: { email, password } }).json()
 }
 
-async function register(name: string, email: string, password: string, token: string): Promise<{ token: string }> {
+async function register(
+  name: string,
+  email: string,
+  password: string,
+  token: string
+): Promise<{ token: string }> {
   return await api
-    .post<{ token: string }>('auth/register', { json: { name, email, password, inviteToken: token } })
+    .post<{
+      token: string
+    }>('auth/register', { json: { name, email, password, inviteToken: token } })
     .json()
 }
 
@@ -25,10 +32,20 @@ async function getMe(): Promise<Resp<User>> {
   return res
 }
 
+async function forgotPassword(email: string): Promise<void> {
+  await api.post('auth/forgot-password', { json: { email } }).json()
+}
+
+async function resetPassword(email: string, token: string, newPassword: string): Promise<void> {
+  await api.post('auth/reset-password', { json: { email, token, newPassword } }).json()
+}
+
 export const authService = {
   login,
   register,
   logout,
   getMe,
-  checkInvite
+  checkInvite,
+  forgotPassword,
+  resetPassword
 }

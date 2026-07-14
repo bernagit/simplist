@@ -22,12 +22,12 @@ export const metadata: Metadata = {
     statusBarStyle: 'default'
   },
   icons: {
-    apple: "/icons/apple-touch-icon.png",
+    apple: '/icons/apple-touch-icon.png'
   }
 }
 
 export const viewport: Viewport = {
-  themeColor: '#000000',
+  themeColor: '#000000'
 }
 
 export default function RootLayout({

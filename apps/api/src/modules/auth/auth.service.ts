@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 import bcrypt from 'bcrypt'
 
 import { createModuleLogger } from '../../infrastructure/logging/logger'
@@ -5,14 +6,17 @@ import { Errors } from '../../types/http'
 import { SessionService } from '../session/session.service'
 import { UserRepository } from '../user/user.repository'
 import { InviteRepository } from './invite.repository'
-import { LoginInput, RegisterInput } from './auth.schema'
+import { ForgotPasswordInput, LoginInput, PasswordResetInput, RegisterInput } from './auth.schema'
 import {
   generateInviteToken,
+  generatePasswordResetToken,
   hashInviteToken,
-  hashPassword
+  hashPassword,
+  hashPasswordResetToken
 } from '../../infrastructure/auth/crypto'
 import appConfig from '../../config/env'
 import { mailService } from '../../infrastructure/mail/mail.service'
+import { PasswordResetRepository } from './passwordReset.repository'
 
 export class AuthService {
   private readonly logger = createModuleLogger('AuthService')
@@ -20,6 +24,7 @@ export class AuthService {
   private readonly userRepository = new UserRepository()
   private readonly inviteRepository = new InviteRepository()
   private readonly sessionService = new SessionService()
+  private readonly passwordResetRepository = new PasswordResetRepository()
 
   public async createInvite(data: { email: string; secret: string }) {
     const inviteSecret = appConfig.inviteSecret
@@ -41,7 +46,6 @@ export class AuthService {
     const token = generateInviteToken()
     const tokenHash = hashInviteToken(token)
 
-    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days from now
 
     const invite = await this.inviteRepository.create({
@@ -176,5 +180,83 @@ export class AuthService {
     return this.sessionService.create({
       userId: user.id
     })
+  }
+
+  public async forgotPassword(data: ForgotPasswordInput) {
+    const user = await this.userRepository.findByEmail(data.email)
+
+    const response = {
+      message: 'If an account with this email exists, you will receive a password reset link.'
+    }
+
+    if (!user) {
+      return response
+    }
+
+    const existingToken = await this.passwordResetRepository.findActiveByUserId(user.id)
+
+    if (existingToken) {
+      return response
+    }
+
+    const resetToken = generatePasswordResetToken()
+    const hashedToken = hashPasswordResetToken(resetToken)
+
+    const expiresInMinutes = 60
+    const expiresAt = new Date(Date.now() + expiresInMinutes * 60 * 1000)
+
+    await this.passwordResetRepository.create({
+      userId: user.id,
+      tokenHash: hashedToken,
+      expiresAt
+    })
+
+    try {
+      const resetUrl = `${appConfig.appUrl}/reset-password?token=${resetToken}&mail=${encodeURIComponent(user.email)}`
+
+      await mailService.sendPasswordReset(user.email, resetUrl, expiresInMinutes)
+    } catch (error) {
+      this.logger.error(
+        `Failed to send password reset email to ${user.email}: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      )
+
+      throw Errors.internal('Unable to send password reset email')
+    }
+
+    return response
+  }
+
+  public async resetPassword(data: PasswordResetInput) {
+    const hashedToken = hashPasswordResetToken(data.token)
+    const passwordResetToken = await this.passwordResetRepository.findByTokenHash(hashedToken)
+
+    if (!passwordResetToken) {
+      throw Errors.forbidden('Invalid or expired password reset token')
+    }
+
+    if (passwordResetToken.usedAt) {
+      throw Errors.forbidden('This password reset token has already been used')
+    }
+
+    if (passwordResetToken.expiresAt < new Date()) {
+      throw Errors.forbidden('This password reset token has expired')
+    }
+
+    const user = await this.userRepository.findById(passwordResetToken.userId)
+
+    if (!user) {
+      throw Errors.notFound('User not found')
+    }
+
+    const newPasswordHash = await hashPassword(data.newPassword)
+
+    await this.userRepository.updatePassword(user.id, newPasswordHash)
+    await this.passwordResetRepository.markAsUsed(passwordResetToken.id)
+
+    return {
+      message: 'Password reset successfully'
+    }
   }
 }

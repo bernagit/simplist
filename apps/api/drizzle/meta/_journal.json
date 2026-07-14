@@ -43,6 +43,13 @@
       "when": 1783949932081,
       "tag": "0005_nifty_silver_sable",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1784021088218,
+      "tag": "0006_fair_gladiator",
+      "breakpoints": true
     }
   ]
 }

@@ -18,7 +18,13 @@ import {
   Menu,
   Stack
 } from '@mantine/core'
-import { IconArchive, IconDots, IconEdit, IconLayoutSidebar, IconUserShare } from '@tabler/icons-react'
+import {
+  IconArchive,
+  IconDots,
+  IconEdit,
+  IconLayoutSidebar,
+  IconUserShare
+} from '@tabler/icons-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { usePathname } from 'next/navigation'
 import { useCallback, useEffect, useMemo } from 'react'

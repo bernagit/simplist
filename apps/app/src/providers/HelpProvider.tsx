@@ -1,5 +1,5 @@
-import { useDisclosure } from "@mantine/hooks"
-import { createContext, useContext } from "react"
+import { useDisclosure } from '@mantine/hooks'
+import { createContext, useContext } from 'react'
 
 interface HelpContextType {
   opened: boolean
@@ -11,12 +11,10 @@ interface HelpContextType {
 const HelpContext = createContext<HelpContextType | null>(null)
 
 export function HelpProvider({ children }: { children: React.ReactNode }) {
-  const [ opened, { toggle, open, close } ] = useDisclosure(false)
+  const [opened, { toggle, open, close }] = useDisclosure(false)
 
   return (
-    <HelpContext.Provider value={{ opened, toggle, open, close }}>
-      {children}
-    </HelpContext.Provider>
+    <HelpContext.Provider value={{ opened, toggle, open, close }}>{children}</HelpContext.Provider>
   )
 }
 
@@ -26,6 +24,6 @@ export function useHelp() {
   if (!ctx) {
     throw new Error('useHelp must be used within a HelpProvider')
   }
-  
+
   return ctx
 }

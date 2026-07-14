@@ -1,10 +1,6 @@
 'use client'
 
-import {
-  Spotlight,
-  SpotlightActionData,
-  SpotlightActionGroupData,
-} from '@mantine/spotlight'
+import { Spotlight, SpotlightActionData, SpotlightActionGroupData } from '@mantine/spotlight'
 import { useDebouncedValue } from '@mantine/hooks'
 import {
   IconCalendar,
@@ -13,7 +9,7 @@ import {
   IconPlus,
   IconSearch,
   IconSection,
-  IconShare,
+  IconShare
 } from '@tabler/icons-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -48,9 +44,7 @@ export function SpotlightProvider() {
     [router]
   )
 
-  const baseActions = useMemo<
-    (SpotlightActionGroupData | SpotlightActionData)[]
-  >(
+  const baseActions = useMemo<(SpotlightActionGroupData | SpotlightActionData)[]>(
     () => [
       {
         group: 'Navigation',
@@ -64,7 +58,7 @@ export function SpotlightProvider() {
               if (isMobile) toggle()
             },
             leftSection: <IconHome size={18} />,
-            rightSection: <HotkeyBinding hotkey="GO_HOME" />,
+            rightSection: <HotkeyBinding hotkey="GO_HOME" />
           },
           {
             id: 'go-calendar',
@@ -75,7 +69,7 @@ export function SpotlightProvider() {
               if (isMobile) toggle()
             },
             leftSection: <IconCalendar size={18} />,
-            rightSection: <HotkeyBinding hotkey="GO_CALENDAR" />,
+            rightSection: <HotkeyBinding hotkey="GO_CALENDAR" />
           },
           {
             id: 'go-lists',
@@ -86,7 +80,7 @@ export function SpotlightProvider() {
               if (isMobile) toggle()
             },
             leftSection: <IconList size={18} />,
-            rightSection: <HotkeyBinding hotkey="GO_LISTS" />,
+            rightSection: <HotkeyBinding hotkey="GO_LISTS" />
           },
           {
             id: 'go-shared',
@@ -97,9 +91,9 @@ export function SpotlightProvider() {
               if (isMobile) toggle()
             },
             leftSection: <IconShare size={18} />,
-            rightSection: <HotkeyBinding hotkey="GO_SHARED_LISTS" />,
-          },
-        ],
+            rightSection: <HotkeyBinding hotkey="GO_SHARED_LISTS" />
+          }
+        ]
       },
       {
         group: 'Actions',
@@ -112,10 +106,10 @@ export function SpotlightProvider() {
               setQuery('')
             },
             leftSection: <IconPlus size={18} />,
-            rightSection: <HotkeyBinding hotkey="NEW_LIST" />,
-          },
-        ],
-      },
+            rightSection: <HotkeyBinding hotkey="NEW_LIST" />
+          }
+        ]
+      }
     ],
     [router, isMobile, toggle]
   )
@@ -132,31 +126,25 @@ export function SpotlightProvider() {
 
       const response = await baseService.globalSearch(debouncedQuery)
 
-      const lists: SpotlightActionData[] = response.data.lists.map((list) => ({
+      const lists: SpotlightActionData[] = response.data.lists.map(list => ({
         id: list.id,
         label: list.title,
         description: list.description ?? '',
         onClick: () => goToList(list.id),
         leftSection: (
-          <ThemeIcon
-            variant="subtle"
-            color={list.color ?? 'gray'}
-            size="sm"
-          >
+          <ThemeIcon variant="subtle" color={list.color ?? 'gray'} size="sm">
             <IconList size={18} />
           </ThemeIcon>
-        ),
+        )
       }))
 
-      const sections: SpotlightActionData[] = response.data.sections.map(
-        (section) => ({
-          id: section.id,
-          label: section.title,
-          description: `Section in list ${section.listName}`,
-          onClick: () => goToSection(section.listId, section.id),
-          leftSection: <IconSection size={18} />,
-        })
-      )
+      const sections: SpotlightActionData[] = response.data.sections.map(section => ({
+        id: section.id,
+        label: section.title,
+        description: `Section in list ${section.listName}`,
+        onClick: () => goToSection(section.listId, section.id),
+        leftSection: <IconSection size={18} />
+      }))
 
       setActions([...lists, ...sections])
     }
@@ -171,7 +159,7 @@ export function SpotlightProvider() {
       onSpotlightClose={() => setActions(baseActions)}
       searchProps={{
         leftSection: <IconSearch size={20} />,
-        placeholder: 'Search...',
+        placeholder: 'Search...'
       }}
       scrollable
     />

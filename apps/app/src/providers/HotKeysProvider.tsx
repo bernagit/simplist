@@ -21,7 +21,7 @@ export function HotkeyProvider({ children }: { children: ReactNode }) {
     [HOTKEYS.NEW_LIST.keys[0], createListModal],
     [HOTKEYS.TOGGLE_THEME.keys[0], toggleColorScheme],
     [HOTKEYS.TOGGLE_SIDEBAR.keys[0], toggleSidebar],
-    [HOTKEYS.TOGGLE_HELP.keys[0], toggleHelp],
+    [HOTKEYS.TOGGLE_HELP.keys[0], toggleHelp]
   ])
 
   useKeySequence(HOTKEYS.GO_HOME.keys, () => router.push('/'))

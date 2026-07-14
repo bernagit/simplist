@@ -1,7 +1,7 @@
 'use client'
 
 import { createListModal, shareListModal, updateListModal } from '@/lib/modals/list'
-import { List } from '@/models/lists'
+import { List, OwnedList } from '@/models/lists'
 import { useArchiveList, useUnarchiveList } from '@/queries/lists'
 import { contextMenuStyles } from '@/utils/misc'
 import {
@@ -25,7 +25,16 @@ import {
   Select
 } from '@mantine/core'
 import { useDebouncedValue, useLocalStorage } from '@mantine/hooks'
-import { IconPlus, IconList, IconAdjustmentsHorizontal, IconArchive, IconArchiveOff, IconShare, IconEdit, IconUsers } from '@tabler/icons-react'
+import {
+  IconPlus,
+  IconList,
+  IconAdjustmentsHorizontal,
+  IconArchive,
+  IconArchiveOff,
+  IconShare,
+  IconEdit,
+  IconUsers
+} from '@tabler/icons-react'
 import dayjs from 'dayjs'
 import { useContextMenu } from 'mantine-contextmenu'
 import { useRouter } from 'next/navigation'
@@ -33,7 +42,7 @@ import { useMemo, useState } from 'react'
 
 type ListOverviewProps = {
   shared: boolean | undefined
-  data: (List & { shared: boolean })[]
+  data: (List | OwnedList)[]
   isLoading: boolean
 }
 
@@ -155,9 +164,7 @@ export default function ListOverview({ shared, data, isLoading }: ListOverviewPr
     <Container size="lg" py="xl">
       <Group justify="space-between" mb="xl">
         <div>
-          <Title order={1}>{
-            shared === true ? 'Shared Lists' : 'My Lists'
-          }</Title>
+          <Title order={1}>{shared === true ? 'Shared Lists' : 'My Lists'}</Title>
           <Text c="dimmed">
             {filteredData.length} {filteredData.length === 1 ? 'list' : 'lists'}
           </Text>
@@ -270,13 +277,18 @@ export default function ListOverview({ shared, data, isLoading }: ListOverviewPr
             >
               <Stack gap="md">
                 <Group justify="space-between">
-                  <ThemeIcon
-                    radius="xl"
-                    size="lg"
-                    color={list.color ?? 'gray'}
-                    variant="light"
-                  >
-                    {list.shared ? <IconUsers size={18} /> : <IconList size={18} />}
+                  <ThemeIcon radius="xl" size="lg" color={list.color ?? 'gray'} variant="light">
+                    {shared === false ? (
+                      (list as OwnedList).shared ? (
+                        <IconUsers size={18} />
+                      ) : (
+                        <IconList size={18} />
+                      )
+                    ) : shared === true ? (
+                      <IconUsers size={18} />
+                    ) : (
+                      <IconList size={18} />
+                    )}
                   </ThemeIcon>
 
                   <Group gap="xs">
@@ -286,9 +298,7 @@ export default function ListOverview({ shared, data, isLoading }: ListOverviewPr
                       </Badge>
                     )}
 
-                    <Badge variant="outline">
-                      {dayjs(list.updatedAt).format('DD MMM')}
-                    </Badge>
+                    <Badge variant="outline">{dayjs(list.updatedAt).format('DD MMM')}</Badge>
                   </Group>
                 </Group>
 
