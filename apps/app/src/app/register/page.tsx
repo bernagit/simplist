@@ -12,7 +12,8 @@ import {
   PasswordInput,
   Stack,
   Text,
-  TextInput
+  TextInput,
+  Tooltip
 } from '@mantine/core'
 
 import { useForm } from '@mantine/form'
@@ -111,10 +112,6 @@ export default function RegisterPage() {
     }
   }
 
-  async function registerWithPasskey() {
-    console.log('TODO passkey registration')
-  }
-
   if (loading) {
     return (
       <AuthCard
@@ -197,14 +194,16 @@ export default function RegisterPage() {
             labelPosition="center"
           />
 
-          <Button
-            variant="light"
-            fullWidth
-            leftSection={<IconKey size={18} />}
-            onClick={registerWithPasskey}
-          >
-            Register with Passkey
-          </Button>
+          <Tooltip label="Coming soon" openDelay={500}>
+            <Button
+              variant="light"
+              fullWidth
+              leftSection={<IconKey size={18} />}
+              disabled
+            >
+              Register with Passkey
+            </Button>
+          </Tooltip>
 
           <Group justify="center" mt="xs">
             <Text size="sm" c="dimmed">

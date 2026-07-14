@@ -139,6 +139,17 @@ export class AuthService {
       userId: user.id
     })
 
+    try {
+      const welcomeUrl = `${appConfig.appUrl}`
+      await mailService.sendWelcome(user.email, user.name, welcomeUrl)
+    } catch (error) {
+      this.logger.error(
+        `Failed to send welcome email to ${user.email}: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      )
+    }
+
     return {
       user,
       ...session
