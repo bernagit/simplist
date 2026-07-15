@@ -14,7 +14,8 @@ import {
   UnstyledButton,
   Tooltip,
   useMantineTheme,
-  useComputedColorScheme
+  useComputedColorScheme,
+  Popover
 } from '@mantine/core'
 import {
   IconHome2,
@@ -27,7 +28,8 @@ import {
   IconLogout,
   IconLayoutSidebar,
   IconChevronRight,
-  IconHelp
+  IconHelp,
+  IconUsers
 } from '@tabler/icons-react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
@@ -323,7 +325,8 @@ export function Sidebar() {
                 active={pathname === '/lists'}
                 style={{ borderRadius: 'var(--mantine-radius-md)' }}
               >
-                {ownedLists.map(list => (
+                {ownedLists.map(list => {
+                  return (
                   <NavLink
                     key={list.id}
                     label={list.title}
@@ -335,11 +338,16 @@ export function Sidebar() {
                         fill={list.color ? `${list.color}` : 'var(--mantine-color-gray-6)'}
                       />
                     }
+                    rightSection={
+                      list.shared ? (
+                        <IconUsers size={16} />
+                      ) : null
+                    }
                     active={pathname === `/lists/${list.id}`}
                     onClick={() => handleNavigate(`/lists/${list.id}`)}
                     style={{ borderRadius: 'var(--mantine-radius-md)' }}
                   />
-                ))}
+                )})}
               </NavLink>
               <Divider my="xs" />
               <NavLink
@@ -402,11 +410,31 @@ export function Sidebar() {
 
           <Box p="xs">
             <Divider mb="xs" />
-            <NavLink
-              label="Help & Support"
-              leftSection={<IconHelp size={18} />}
-              style={{ borderRadius: 'var(--mantine-radius-md)' }}
-            />
+            <Popover width={MENU_WIDTH} position="top-start" shadow="md">
+              <Popover.Target>
+                <NavLink
+                  label="Help & Support"
+                  leftSection={<IconHelp size={18} />}
+                  style={{ borderRadius: 'var(--mantine-radius-md)' }}
+                />
+              </Popover.Target>
+              <Popover.Dropdown>
+                <Stack gap={4}>
+                  <NavLink
+                    label="Documentation"
+                    leftSection={<IconHelp size={18} />}
+                    onClick={() => window.open('https://docs.simplist.app', '_blank')}
+                    style={{ borderRadius: 'var(--mantine-radius-md)' }}
+                  />
+                  <NavLink
+                    label="Contact Support"
+                    leftSection={<IconUsers size={18} />}
+                    onClick={() => window.open('mailto:simplist@benitec.it', '_blank')}
+                    style={{ borderRadius: 'var(--mantine-radius-md)' }}
+                  />
+                </Stack>
+              </Popover.Dropdown>
+            </Popover>
           </Box>
         </Stack>
       </Box>

@@ -16,12 +16,13 @@ import {
   verticalListSortingStrategy,
   sortableKeyboardCoordinates
 } from '@dnd-kit/sortable'
-import { Modal, Stack, Text } from '@mantine/core'
+import { Group, Modal, Stack, Text } from '@mantine/core'
 import { useMemo, useState } from 'react'
 import TaskRow from './TaskRow'
 import { useDisclosure } from '@mantine/hooks'
 import { useSidebar } from '@/providers/SidebarProvider'
 import EditTask from '../modals/EditTask'
+import { IconList } from '@tabler/icons-react'
 
 type TaskListProps = {
   title: string
@@ -78,7 +79,7 @@ export default function TaskList({ title, data, canEdit, onReorder, onUpdate }: 
     if (onReorder) {
       try {
         await onReorder(movedTask.id, targetTask.id, sectionId)
-      } catch {}
+      } catch { }
     }
   }
 
@@ -100,9 +101,12 @@ export default function TaskList({ title, data, canEdit, onReorder, onUpdate }: 
           fullScreen={isMobile}
           size="xl"
           title={
-            <Text size="md" fw={600}>
-              {title}
-            </Text>
+            <Group gap="xs" onClick={close} align='center'>
+              <IconList size={18} stroke={1.8} />
+              <Text fw={600}>
+                {title}
+              </Text>
+            </Group>
           }
           p={0}
         >

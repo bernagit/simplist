@@ -47,7 +47,7 @@ export default function TaskRow({ task, canEdit, onClick }: TaskRowProps) {
   const menuOptions = useMemo(() => [
     {
       key: 'item',
-      title: task.title,
+      title: task.title.length > 20 ? task.title.slice(0, 20) + '...' : task.title,
       icon: <IconChecklist size={20} />,
       disabled: true,
       onClick: () => { },
@@ -122,7 +122,7 @@ export default function TaskRow({ task, canEdit, onClick }: TaskRowProps) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <Group wrap="nowrap" gap="sm" flex={1} align="flex-start">
+      <Group wrap="nowrap" gap="sm" flex={1} align="center">
         <ActionIcon
           {...attributes}
           {...listeners}
@@ -149,6 +149,7 @@ export default function TaskRow({ task, canEdit, onClick }: TaskRowProps) {
         >
           <Checkbox
             radius="xl"
+            size='md'
             checked={task.completed}
             disabled={!canEdit}
             onChange={() => {
@@ -171,6 +172,8 @@ export default function TaskRow({ task, canEdit, onClick }: TaskRowProps) {
             gap={2}
             flex={1}
             onContextMenu={(e) => {
+              e.stopPropagation()
+              e.preventDefault()
               setSelected(true)
               showContextMenu(menuOptions, {
                 styles: contextMenuStyles

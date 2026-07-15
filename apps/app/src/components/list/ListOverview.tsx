@@ -18,13 +18,13 @@ import {
   Badge,
   Text,
   TextInput,
-  Popover,
   Button,
   Divider,
   SegmentedControl,
-  Select
+  Collapse,
+  Indicator,
 } from '@mantine/core'
-import { useDebouncedValue, useLocalStorage } from '@mantine/hooks'
+import { useDebouncedValue, useDisclosure, useLocalStorage } from '@mantine/hooks'
 import {
   IconPlus,
   IconList,
@@ -54,24 +54,22 @@ export default function ListOverview({ shared, data, isLoading }: ListOverviewPr
 
   const archiveList = useArchiveList()
   const unarchiveList = useUnarchiveList()
+  const [expanded, { toggle }] = useDisclosure(false);
 
   type StatusFilter = 'active' | 'all' | 'archived'
-  type SortBy = 'updated-desc' | 'created-desc' | 'title-asc'
 
   const [status, setStatus] = useLocalStorage<StatusFilter>({
     key: 'list-status-filter',
     defaultValue: 'active'
   })
 
-  const [sortBy, setSortBy] = useLocalStorage<SortBy>({
-    key: 'list-sort',
-    defaultValue: 'updated-desc'
-  })
+  const activeFilters = useMemo(() => {
+    return status !== 'active'
+  }, [status])
 
   const filteredData = useMemo(() => {
     let lists = [...data]
 
-    // Search
     if (debouncedQuery) {
       const query = debouncedQuery.toLowerCase()
 
@@ -82,7 +80,6 @@ export default function ListOverview({ shared, data, isLoading }: ListOverviewPr
       )
     }
 
-    // Status
     switch (status) {
       case 'active':
         lists = lists.filter(l => l.archivedAt === null)
@@ -96,23 +93,8 @@ export default function ListOverview({ shared, data, isLoading }: ListOverviewPr
         break
     }
 
-    // Sort
-    switch (sortBy) {
-      case 'updated-desc':
-        lists.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
-        break
-
-      case 'created-desc':
-        lists.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-        break
-
-      case 'title-asc':
-        lists.sort((a, b) => a.title.localeCompare(b.title))
-        break
-    }
-
     return lists
-  }, [data, debouncedQuery, status, sortBy])
+  }, [data, debouncedQuery, status])
 
   const handleListClick = (listId: string) => {
     const path = shared ? `/lists/shared/${listId}` : `/lists/${listId}`
@@ -175,21 +157,40 @@ export default function ListOverview({ shared, data, isLoading }: ListOverviewPr
           </ActionIcon>
         )}
       </Group>
-      <Group mb="md" gap="sm" align="center">
-        <TextInput
-          placeholder="Search lists..."
-          value={searchQuery}
-          onChange={e => setSearchQuery(e.currentTarget.value)}
-          flex={1}
-        />
-        <Popover width={300} position="bottom-end" shadow="md" withArrow>
-          <Popover.Target>
-            <ActionIcon size="lg" radius="md" variant="outline">
+      <Stack mb="md" gap="sm">
+        <Group gap="sm" align="center">
+          <TextInput
+            placeholder="Search lists..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.currentTarget.value)}
+            flex={1}
+          />
+          {activeFilters && !expanded ? (
+            <Indicator label="!" color='red' size={16} offset={4}>
+              <ActionIcon
+                size="lg"
+                radius="md"
+                variant={expanded ? 'filled' : 'outline'}
+                onClick={toggle}
+              >
+                <IconAdjustmentsHorizontal size={20} />
+              </ActionIcon>
+            </Indicator>
+          ) : (
+            <ActionIcon
+              size="lg"
+              radius="md"
+              variant={expanded ? 'filled' : 'outline'}
+              onClick={toggle}
+            >
               <IconAdjustmentsHorizontal size={20} />
             </ActionIcon>
-          </Popover.Target>
+          )}
 
-          <Popover.Dropdown>
+        </Group>
+
+        <Collapse expanded={expanded}>
+          <Card withBorder radius="md" p="md">
             <Stack gap="md">
               <div>
                 <Text size="sm" fw={600} mb={6}>
@@ -210,54 +211,19 @@ export default function ListOverview({ shared, data, isLoading }: ListOverviewPr
 
               <Divider />
 
-              <div>
-                <Text size="sm" fw={600} mb={6}>
-                  Sort by
-                </Text>
-
-                <Select
-                  value={sortBy}
-                  onChange={value => {
-                    if (value) setSortBy(value as SortBy)
-                  }}
-                  comboboxProps={{
-                    withinPortal: true
-                  }}
-                  data={[
-                    {
-                      value: 'updated-desc',
-                      label: 'Recently updated'
-                    },
-                    {
-                      value: 'created-desc',
-                      label: 'Recently created'
-                    },
-                    {
-                      value: 'title-asc',
-                      label: 'Alphabetical'
-                    }
-                  ]}
-                />
-              </div>
-
-              <Divider />
-
               <Group justify="flex-end">
                 <Button
                   variant="subtle"
                   size="xs"
-                  onClick={() => {
-                    setStatus('active')
-                    setSortBy('updated-desc')
-                  }}
+                  onClick={() => setStatus('active')}
                 >
                   Reset
                 </Button>
               </Group>
             </Stack>
-          </Popover.Dropdown>
-        </Popover>
-      </Group>
+          </Card>
+        </Collapse>
+      </Stack>
       <Grid>
         {filteredData.map(list => (
           <Grid.Col key={list.id} span={{ base: 12, sm: 6, lg: 4 }}>
