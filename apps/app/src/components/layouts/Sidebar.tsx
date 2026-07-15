@@ -35,10 +35,10 @@ import { spotlight } from '@mantine/spotlight'
 import { useMe } from '@/queries/auth'
 import { useLists } from '@/queries/lists'
 import { useSidebar } from '@/providers/SidebarProvider'
-import { authService } from '@/services/auth'
 import { createListModal } from '@/lib/modals/list'
 import { useLocalStorage } from '@mantine/hooks'
 import { modals } from '@mantine/modals'
+import { useAuth } from '@/providers/AuthProvider'
 
 export const MENU_WIDTH = 290
 const MIN_WIDTH = 240
@@ -55,6 +55,7 @@ export function Sidebar() {
   const pathname = usePathname()
   const theme = useMantineTheme()
   const colorScheme = useComputedColorScheme()
+  const { logout } = useAuth()
   const [sidebarWidth, setSidebarWidth] = useLocalStorage({
     key: 'sidebar-width',
     defaultValue: DEFAULT_WIDTH
@@ -80,7 +81,7 @@ export function Sidebar() {
   }, [lists])
 
   const handleLogout = async () => {
-    await authService.logout()
+    await logout()
     router.push('/login')
   }
 

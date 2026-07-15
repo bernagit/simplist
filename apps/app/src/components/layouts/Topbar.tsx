@@ -116,7 +116,9 @@ export function Topbar() {
     const cachedData = queryClient.getQueryData<Resp<CompleteList>>(listKeys.detail(route.listId))
     const list = cachedData?.data
 
-    return list?.archivedAt === null ? false : true
+    if (!list) return false
+
+    return list.archivedAt === null ? false : true
   }, [route.listId, queryClient])
 
   const handleToggleArchive = useCallback(() => {

@@ -1,6 +1,5 @@
 'use client'
 
-import { authService } from '@/services/auth'
 import { Anchor, Button, PasswordInput, Stack, TextInput } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { showNotification } from '@mantine/notifications'
@@ -8,9 +7,15 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { LoadingScreen } from './LoadingScreen'
 import { IconLock, IconMail } from '@tabler/icons-react'
+import { useAuth } from '@/providers/AuthProvider'
+import { useQueryClient } from '@tanstack/react-query'
+import { preferencesService } from '@/services/preferences'
+import { getDefaultViewFromString } from '@/utils/misc'
 
 export function LoginForm() {
   const router = useRouter()
+  const { login } = useAuth()
+  const queryClient = useQueryClient()
 
   const [loading, setLoading] = useState(false)
 
@@ -31,9 +36,23 @@ export function LoginForm() {
     setLoading(true)
 
     try {
-      await authService.login(values.identifier, values.password)
+      await login(values.identifier, values.password)
+      
+      let redirectTo = '/'
+      try {
+        const res = await queryClient.fetchQuery({
+          queryKey: ['preferences'],
+          queryFn: preferencesService.getPreferences,
+          staleTime: 1000 * 60 * 10
+        })
+        
+        const defaultView = res.data.defaultView
+        redirectTo = getDefaultViewFromString(defaultView)
+      } catch {
+        // safe to ignore
+      }
 
-      router.push('/')
+      router.push(redirectTo)
     } catch (err) {
       showNotification({
         title: 'Login failed',

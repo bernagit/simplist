@@ -11,3 +11,14 @@ export const contextMenuStyles = {
     padding: 8
   }
 }
+
+export function getDefaultViewFromString(view: string | undefined) {
+  if (view === 'calendar') {
+    return '/calendar'
+  } else if (view?.startsWith('list:')) {
+    const listId = view.split(':')[1]
+    return `/lists/${listId}`
+  } else {
+    return '/'
+  }
+}

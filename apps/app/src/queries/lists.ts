@@ -39,6 +39,11 @@ export function useCreateList() {
       })
 
       const previousLists = queryClient.getQueryData(listKeys.all)
+
+      const optimisticList = {
+        ...newList,
+        id: `temp-id-${Math.random()}`,
+      }
       queryClient.setQueryData(listKeys.all, (old: Resp<AllList> | undefined) => {
         if (!old) return old
 
@@ -46,7 +51,7 @@ export function useCreateList() {
           ...old,
           data: {
             ...old.data,
-            owned: [...old.data.owned, newList]
+            owned: [...old.data.owned, optimisticList],
           }
         }
       })

@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, ReactNode } from 'react'
+import { createContext, useContext, ReactNode, useState, useEffect } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { User } from '@/models/user'
 import { authService } from '@/services/auth'
@@ -23,32 +23,36 @@ export function AuthProvider({
   children: ReactNode
   hasSessionCookie: boolean
 }) {
+  const [sessionActive, setSessionActive] = useState(hasSessionCookie)
   const queryClient = useQueryClient()
 
-  const {
-    data,
-    isLoading,
-    isError,
-    refetch
-  } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['me'],
     queryFn: authService.getMe,
-    enabled: hasSessionCookie,
+    enabled: sessionActive,
     retry: false,
     staleTime: 1000 * 60 * 5
   })
 
   const user = isError ? undefined : data?.data
-  const isAuthenticated = Boolean(user)
+  const isAuthenticated = sessionActive && Boolean(user)
+
+  useEffect(() => {
+    if (!sessionActive) {
+      queryClient.removeQueries({ queryKey: ['me'] })
+      queryClient.removeQueries({ queryKey: ['preferences'] })
+    }
+  }, [sessionActive, queryClient])
 
   async function login(email: string, password: string) {
     await authService.login(email, password)
+    setSessionActive(true)
     await refetch()
   }
 
   async function logout() {
     await authService.logout()
-    queryClient.clear()
+    setSessionActive(false)
   }
 
   return (

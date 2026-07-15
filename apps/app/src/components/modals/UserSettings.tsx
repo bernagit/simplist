@@ -25,7 +25,7 @@ export default function UserSettings({ context, id }: ContextModalProps) {
   const [opened, { toggle }] = useDisclosure(false)
   const [section, setSection] = useState<Section>('general')
   const isMobile = useMediaQuery('(max-width: 768px)') ?? false
-  const { data: pref, isLoading: prefLoading } = usePreferences()
+  const { data: pref, isLoading: prefLoading } = usePreferences(true)
 
   const handleSectionChange = (next: Section) => {
     setSection(next)
