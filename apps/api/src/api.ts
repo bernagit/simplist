@@ -9,6 +9,7 @@ import listRouter from './modules/list/list.route'
 import sectionRouter from './modules/section/section.route'
 import taskRouter from './modules/task/task.route'
 import baseRouter from './modules/base/base.route'
+import preferenceRouter from './modules/preferences/preference.route'
 import cookieParser from 'cookie-parser'
 import appConfig from './config/env'
 
@@ -36,6 +37,7 @@ app.use('/api/lists', listRouter)
 app.use('/api/sections', sectionRouter)
 app.use('/api/tasks', taskRouter)
 app.use('/api/base', baseRouter)
+app.use('/api/preferences', preferenceRouter)
 
 // this should be the last middleware to ensure it catches all errors
 app.use(errorHandler)

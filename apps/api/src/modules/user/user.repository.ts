@@ -2,6 +2,7 @@ import { eq } from 'drizzle-orm'
 import db from '../../infrastructure/database/db'
 import { users } from '../../db/schema/users'
 import { createModuleLogger } from '../../infrastructure/logging/logger'
+import { UpdateCurrentUserInput } from '../auth/auth.schema'
 
 export class UserRepository {
   private readonly logger = createModuleLogger('UserRepository')
@@ -43,6 +44,27 @@ export class UserRepository {
     if (!user) {
       this.logger.error(`Failed to update password hash for user with ID ${userId}`)
       throw new Error('Failed to update password hash')
+    }
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    }
+  }
+
+  async update(userId: string, data: UpdateCurrentUserInput) {
+    const [user] = await db
+      .update(users)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(users.id, userId))
+      .returning()
+
+    if (!user) {
+      this.logger.error(`Failed to update user with ID ${userId}`)
+      throw new Error('Failed to update user')
     }
 
     return {

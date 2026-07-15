@@ -1,4 +1,4 @@
-import { User } from '@/models/auth'
+import { User } from '@/models/user'
 import { Resp } from '@/models/base'
 import api from '@/utils/ky'
 
@@ -32,12 +32,21 @@ async function getMe(): Promise<Resp<User>> {
   return res
 }
 
+async function updateCurrentUser(data: { name?: string; email?: string }): Promise<Resp<User>> {
+  const res = await api.put<Resp<User>>('auth/me', { json: data }).json()
+  return res
+}
+
 async function forgotPassword(email: string): Promise<void> {
   await api.post('auth/forgot-password', { json: { email } }).json()
 }
 
 async function resetPassword(email: string, token: string, newPassword: string): Promise<void> {
   await api.post('auth/reset-password', { json: { email, token, newPassword } }).json()
+}
+
+async function changePassword(currentPassword: string, newPassword: string): Promise<void> {
+  await api.post('auth/change-password', { json: { currentPassword, newPassword } }).json()
 }
 
 export const authService = {
@@ -47,5 +56,7 @@ export const authService = {
   getMe,
   checkInvite,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  updateCurrentUser,
+  changePassword
 }

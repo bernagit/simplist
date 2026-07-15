@@ -50,6 +50,13 @@
       "when": 1784021088218,
       "tag": "0006_fair_gladiator",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1784040434617,
+      "tag": "0007_nostalgic_living_mummy",
+      "breakpoints": true
     }
   ]
 }

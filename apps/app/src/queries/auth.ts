@@ -1,5 +1,5 @@
 import { authService } from '@/services/auth'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export function useMe() {
   return useQuery({
@@ -14,5 +14,26 @@ export function useMe() {
         response.data.email?.charAt(0)?.toUpperCase() ??
         ''
     })
+  })
+}
+
+export function useUpdateMe() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: { name?: string; email?: string }) => {
+      return authService.updateCurrentUser(data)
+    },
+    onSuccess: updatedUser => {
+      queryClient.setQueryData(['me'], updatedUser)
+    }
+  })
+}
+
+export function useUpdatePassword() {
+  return useMutation({
+    mutationFn: (data: { currentPassword: string; newPassword: string }) => {
+      return authService.changePassword(data.currentPassword, data.newPassword)
+    }
   })
 }

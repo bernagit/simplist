@@ -25,7 +25,6 @@ import {
   IconPoint,
   IconChevronDown,
   IconLogout,
-  IconUserCircle,
   IconLayoutSidebar,
   IconChevronRight,
   IconHelp
@@ -39,6 +38,7 @@ import { useSidebar } from '@/providers/SidebarProvider'
 import { authService } from '@/services/auth'
 import { createListModal } from '@/lib/modals/list'
 import { useLocalStorage } from '@mantine/hooks'
+import { modals } from '@mantine/modals'
 
 export const MENU_WIDTH = 290
 const MIN_WIDTH = 240
@@ -65,15 +65,12 @@ export function Sidebar() {
   const [isResizing, setIsResizing] = useState(false)
   const [isHandleHovered, setIsHandleHovered] = useState(false)
 
-  // Keep references to the active listeners so we can clean them up
-  // on unmount even if the user never releases the mouse.
   const moveHandlerRef = useRef<((e: MouseEvent) => void) | null>(null)
   const upHandlerRef = useRef<(() => void) | null>(null)
 
   const { data: me, isLoading: meLoading } = useMe()
   const { data: lists } = useLists()
 
-  // apply filter on owned lists removing archived lists
   const ownedLists = useMemo(() => {
     return lists?.data.owned.filter(list => !list.archivedAt) || []
   }, [lists])
@@ -142,6 +139,22 @@ export function Sidebar() {
     window.addEventListener('mouseup', onUp)
   }
 
+  const handleOpenSettings = useCallback(() => {
+    const width = isMobile ? '100%' : '80rem'
+    modals.openContextModal({
+      modal: 'userSettings',
+      size: width,
+      innerProps: undefined,
+      fullScreen: isMobile,
+      withCloseButton: false,
+      padding: 0,
+      overlayProps: {
+        blur: 3,
+        opacity: 0.55
+      }
+    })
+  }, [isMobile])
+
   useEffect(() => {
     widthRef.current = sidebarWidth
   }, [sidebarWidth])
@@ -168,7 +181,8 @@ export function Sidebar() {
           flexShrink: 0,
           overflow: 'hidden',
           transition: isResizing ? 'none' : 'width 200ms ease',
-          borderRight: `2px solid ${colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[2]}`
+          borderRight:
+            '2px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5))'
         }}
         bg="var(--mantine-color-body)"
       >
@@ -215,16 +229,10 @@ export function Sidebar() {
                 )}
               </Group>
             </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Item
-                leftSection={<IconUserCircle size={16} />}
-                onClick={() => handleNavigate('/profile')}
-              >
-                Profile
-              </Menu.Item>
+            <Menu.Dropdown style={{ zIndex: 400 }}>
               <Menu.Item
                 leftSection={<IconSettings size={16} />}
-                onClick={() => handleNavigate('/settings')}
+                onClick={() => handleOpenSettings()}
               >
                 Settings
               </Menu.Item>
@@ -318,10 +326,10 @@ export function Sidebar() {
                   <NavLink
                     key={list.id}
                     label={list.title}
-                    color={list.color ? `${list.color}` : 'gray'}
+                    // color={list.color ? `${list.color}` : 'gray'}
                     leftSection={
                       <IconPoint
-                        size={18}
+                        size={24}
                         color={list.color ? `${list.color}` : 'var(--mantine-color-gray-6)'}
                         fill={list.color ? `${list.color}` : 'var(--mantine-color-gray-6)'}
                       />
@@ -374,7 +382,7 @@ export function Sidebar() {
                   <NavLink
                     key={list.id}
                     label={list.title}
-                    color={list.color ? `${list.color}` : 'gray'}
+                    // color={list.color ? `${list.color}` : 'gray'}
                     leftSection={
                       <IconPoint
                         size={18}

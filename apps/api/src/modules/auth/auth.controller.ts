@@ -2,12 +2,14 @@ import { Request, Response, NextFunction } from 'express'
 import { HTTP_STATUS } from '../../types/http'
 import { AuthService } from './auth.service'
 import {
+  ChangePasswordInput,
   CheckInviteInput,
   ForgotPasswordInput,
   InviteInput,
   LoginInput,
   PasswordResetInput,
-  RegisterInput
+  RegisterInput,
+  UpdateCurrentUserInput
 } from './auth.schema'
 import appConfig from '../../config/env'
 import { cfg } from '../../config/internal'
@@ -31,6 +33,27 @@ export class AuthController {
       res.status(HTTP_STATUS.OK).json({
         message: 'Current user retrieved successfully',
         data: user
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  updateCurrentUser = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const user = req.user
+      const data = req.validated!.body as UpdateCurrentUserInput
+
+      if (!user) {
+        return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+          message: 'Not authenticated'
+        })
+      }
+      const updatedUser = await this.authService.updateCurrentUser(user.id, data)
+
+      res.status(HTTP_STATUS.OK).json({
+        message: 'Current user updated successfully',
+        data: updatedUser
       })
     } catch (error) {
       next(error)
@@ -161,6 +184,28 @@ export class AuthController {
 
       res.status(HTTP_STATUS.OK).json({
         message: 'Password reset successfully',
+        data: result
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  changePassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const user = req.user
+      const data = req.validated!.body as ChangePasswordInput
+
+      if (!user) {
+        return res.status(HTTP_STATUS.UNAUTHORIZED).json({
+          message: 'Not authenticated'
+        })
+      }
+
+      const result = await this.authService.changePassword(user.id, data)
+
+      res.status(HTTP_STATUS.OK).json({
+        message: 'Password changed successfully',
         data: result
       })
     } catch (error) {

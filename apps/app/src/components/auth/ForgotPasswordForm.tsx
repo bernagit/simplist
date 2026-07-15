@@ -7,8 +7,10 @@ import { showNotification } from '@mantine/notifications'
 import { IconMail } from '@tabler/icons-react'
 import { useState } from 'react'
 import { LoadingScreen } from './LoadingScreen'
+import { useRouter } from 'next/router'
 
 export default function ForgotPasswordForm() {
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
 
@@ -55,7 +57,7 @@ export default function ForgotPasswordForm() {
       <Stack>
         <div>Check your email for a password reset link.</div>
 
-        <Anchor href="/login" size="sm" ta="center">
+        <Anchor onClick={() => router.push('/login')} size="sm" ta="center">
           Back to login
         </Anchor>
       </Stack>

@@ -6,7 +6,14 @@ import { Errors } from '../../types/http'
 import { SessionService } from '../session/session.service'
 import { UserRepository } from '../user/user.repository'
 import { InviteRepository } from './invite.repository'
-import { ForgotPasswordInput, LoginInput, PasswordResetInput, RegisterInput } from './auth.schema'
+import {
+  ChangePasswordInput,
+  ForgotPasswordInput,
+  LoginInput,
+  PasswordResetInput,
+  RegisterInput,
+  UpdateCurrentUserInput
+} from './auth.schema'
 import {
   generateInviteToken,
   generatePasswordResetToken,
@@ -17,6 +24,7 @@ import {
 import appConfig from '../../config/env'
 import { mailService } from '../../infrastructure/mail/mail.service'
 import { PasswordResetRepository } from './passwordReset.repository'
+import { PreferencesRepository } from '../preferences/preference.repository'
 
 export class AuthService {
   private readonly logger = createModuleLogger('AuthService')
@@ -25,6 +33,7 @@ export class AuthService {
   private readonly inviteRepository = new InviteRepository()
   private readonly sessionService = new SessionService()
   private readonly passwordResetRepository = new PasswordResetRepository()
+  private readonly preferenceRepository = new PreferencesRepository()
 
   public async createInvite(data: { email: string; secret: string }) {
     const inviteSecret = appConfig.inviteSecret
@@ -132,6 +141,9 @@ export class AuthService {
       email: invite.email,
       passwordHash
     })
+
+    // create preferences for the new user
+    await this.preferenceRepository.createDefault(user.id)
 
     if (!user) {
       throw Errors.internal('Failed to create user')
@@ -257,6 +269,44 @@ export class AuthService {
 
     return {
       message: 'Password reset successfully'
+    }
+  }
+
+  public async updateCurrentUser(userId: string, data: UpdateCurrentUserInput) {
+    const user = await this.userRepository.findById(userId)
+
+    if (!user) {
+      throw Errors.notFound('User not found')
+    }
+
+    const updatedUser = await this.userRepository.update(userId, {
+      name: data.name ?? user.name
+      // email: data.email ?? user.email
+    })
+
+    return updatedUser
+  }
+
+  public async changePassword(userId: string, data: ChangePasswordInput) {
+    const user = await this.userRepository.findById(userId)
+
+    if (!user) {
+      throw Errors.notFound('User not found')
+    }
+
+    // Verify current password
+    const isMatch = await bcrypt.compare(data.currentPassword, user.passwordHash)
+
+    if (!isMatch) {
+      throw Errors.unauthorized('Current password is incorrect')
+    }
+
+    const newPasswordHash = await hashPassword(data.newPassword)
+
+    await this.userRepository.updatePassword(userId, newPasswordHash)
+
+    return {
+      message: 'Password changed successfully'
     }
   }
 }

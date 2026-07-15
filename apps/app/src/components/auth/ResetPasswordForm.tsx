@@ -107,7 +107,7 @@ export default function ResetPasswordForm() {
           Reset password
         </Button>
 
-        <Anchor href="/login" size="sm" ta="center">
+        <Anchor onClick={() => router.push('/login')} size="sm" ta="center">
           Back to login
         </Anchor>
       </Stack>

@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 
-import { ColorSchemeScript, MantineProvider, createTheme, mantineHtmlProps } from '@mantine/core'
+import { ColorSchemeScript, mantineHtmlProps } from '@mantine/core'
 import { Notifications } from '@mantine/notifications'
 import AppLayout from '@/components/layouts/AppLayout'
 import '@mantine/core/styles.layer.css'
@@ -11,6 +11,11 @@ import 'mantine-contextmenu/styles.layer.css'
 import './layout.css'
 import { ContextMenuProvider } from 'mantine-contextmenu'
 import PWARegister from '@/components/PWARegister'
+import { ThemeColorProvider } from '@/providers/ThemeColorProvider'
+import { AppMantineProvider } from '@/providers/AppMantineProvider'
+import { QueryProvider } from '@/providers/QueryProvider'
+import { AuthProvider } from '@/providers/AuthProvider'
+import { hasSessionCookie } from '@/lib/auth'
 
 export const metadata: Metadata = {
   title: 'Simplist',
@@ -30,15 +35,12 @@ export const viewport: Viewport = {
   themeColor: '#000000'
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const theme = createTheme({
-    primaryColor: 'pink',
-    defaultRadius: 'md'
-  })
+  const sessionCookiePresent = await hasSessionCookie()
 
   return (
     <html lang="en" {...mantineHtmlProps} className="vsc-initialized">
@@ -47,12 +49,18 @@ export default function RootLayout({
       </head>
       <body className="vsc-initialized">
         <PWARegister />
-        <MantineProvider defaultColorScheme="auto" theme={theme}>
-          <Notifications zIndex={1000} />
-          <ContextMenuProvider>
-            <AppLayout>{children}</AppLayout>
-          </ContextMenuProvider>
-        </MantineProvider>
+        <QueryProvider>
+          <AuthProvider hasSessionCookie={sessionCookiePresent}>
+            <ThemeColorProvider>
+              <AppMantineProvider>
+                <Notifications zIndex={1000} />
+                <ContextMenuProvider>
+                  <AppLayout>{children}</AppLayout>
+                </ContextMenuProvider>
+              </AppMantineProvider>
+            </ThemeColorProvider>
+          </AuthProvider>
+        </QueryProvider>
       </body>
     </html>
   )

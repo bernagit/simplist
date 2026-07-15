@@ -4,7 +4,7 @@ import { Resp } from '@/models/base'
 import { CompleteList } from '@/models/lists'
 import { useSidebar } from '@/providers/SidebarProvider'
 import { useTopbar } from '@/providers/TopbarProvider'
-import { listKeys, useArchiveList } from '@/queries/lists'
+import { listKeys, useArchiveList, useUnarchiveList } from '@/queries/lists'
 import {
   Group,
   ActionIcon,
@@ -26,7 +26,7 @@ import {
   IconUserShare
 } from '@tabler/icons-react'
 import { useQueryClient } from '@tanstack/react-query'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useCallback, useEffect, useMemo } from 'react'
 import { MENU_WIDTH } from './Sidebar'
 import { shareListModal, updateListModal } from '@/lib/modals/list'
@@ -36,12 +36,14 @@ export const TOPBAR_HEIGHT = 50
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 
 export function Topbar() {
+  const router = useRouter()
   const { toggle, opened } = useSidebar()
   const { isMobile } = useSidebar()
   const { breadcrumbs, setBreadcrumbs, showTitle, title, description } = useTopbar()
   const path = usePathname()
   const queryClient = useQueryClient()
   const archiveList = useArchiveList()
+  const unarchiveList = useUnarchiveList()
 
   const route = useMemo(() => {
     const segments = path.split('/').filter(Boolean)
@@ -108,11 +110,24 @@ export function Topbar() {
     })
   }, [route.listId, queryClient])
 
-  const handleArchive = useCallback(() => {
+  const isArchived = useMemo(() => {
+    if (!route.listId) return false
+    
+    const cachedData = queryClient.getQueryData<Resp<CompleteList>>(listKeys.detail(route.listId))
+    const list = cachedData?.data
+
+    return list?.archivedAt === null ? false : true
+  }, [route.listId, queryClient])
+
+  const handleToggleArchive = useCallback(() => {
     if (!route.listId) return
 
-    archiveList.mutate(route.listId)
-  }, [archiveList, route.listId])
+    if (isArchived) {
+      unarchiveList.mutate(route.listId)
+    } else {
+      archiveList.mutate(route.listId)
+    }
+  }, [archiveList, unarchiveList, route.listId, isArchived])
 
   const handleShare = useCallback(() => {
     if (!route.listId) return
@@ -147,7 +162,7 @@ export function Topbar() {
             <Breadcrumbs mt="md" separator=">">
               {breadcrumbs.map((item, index) =>
                 item.href ? (
-                  <Anchor key={index} href={item.href} size="sm" fw={600}>
+                  <Anchor key={index} onClick={() => router.push(item.href!)} size="sm" fw={600}>
                     {item.label}
                   </Anchor>
                 ) : (
@@ -216,8 +231,8 @@ export function Topbar() {
                   <Menu.Item leftSection={<IconEdit size={20} />} onClick={handleEdit}>
                     Edit
                   </Menu.Item>
-                  <Menu.Item leftSection={<IconArchive size={20} />} onClick={handleArchive}>
-                    Archive
+                  <Menu.Item leftSection={<IconArchive size={20} />} onClick={handleToggleArchive}>
+                    {isArchived ? 'Unarchive' : 'Archive'}
                   </Menu.Item>
                 </Menu.Dropdown>
               </Menu>
