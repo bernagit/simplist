@@ -1,7 +1,8 @@
 import { tasks } from '../../db/schema/tasks'
 import db from '../../infrastructure/database/db'
-import { eq, max } from 'drizzle-orm'
+import { and, eq, gt, gte, lt, lte, max, ne, sql } from 'drizzle-orm'
 import { CreateTaskInput, UpdateTaskInput } from './task.schema'
+import { logger } from '../../infrastructure/logging/logger'
 
 export class TaskRepository {
   constructor() {}
@@ -74,5 +75,37 @@ export class TaskRepository {
 
     const [task] = await query.returning().execute()
     return task
+  }
+
+  async reorder(
+    movedTaskId: string,
+    targetTaskId: string,
+    movedOrder: number,
+    targetOrder: number,
+    sectionId: string
+  ) {
+    const isMovingDown = movedOrder < targetOrder
+    logger.info(
+      `Reordering task ${movedTaskId} to position of task ${targetTaskId} in section ${sectionId}. Moving down: ${isMovingDown}`
+    )
+
+    await db.transaction(async tx => {
+      await tx
+        .update(tasks)
+        .set({
+          order: sql`${tasks.order} ${isMovingDown ? sql`- 1` : sql`+ 1`}`
+        })
+        .where(
+          and(
+            eq(tasks.sectionId, sectionId),
+            ne(tasks.id, movedTaskId),
+            isMovingDown
+              ? and(gt(tasks.order, movedOrder), lte(tasks.order, targetOrder))
+              : and(lt(tasks.order, movedOrder), gte(tasks.order, targetOrder))
+          )
+        )
+
+      await tx.update(tasks).set({ order: targetOrder }).where(eq(tasks.id, movedTaskId))
+    })
   }
 }

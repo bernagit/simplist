@@ -14,7 +14,6 @@ import {
 import {
   SortableContext,
   verticalListSortingStrategy,
-  arrayMove,
   sortableKeyboardCoordinates
 } from '@dnd-kit/sortable'
 import { Modal, Stack, Text } from '@mantine/core'
@@ -28,7 +27,7 @@ type TaskListProps = {
   title: string
   data: Task[]
   canEdit?: boolean
-  onReorder?: (tasks: Task[]) => void | Promise<void>
+  onReorder?: (movedTaskId: string, targetTaskId: string, sectionId: string) => void | Promise<void>
   onUpdate: (taskId: string, updates: Partial<Task>) => void | Promise<void>
 }
 
@@ -66,22 +65,21 @@ export default function TaskList({ title, data, canEdit, onReorder, onUpdate }: 
 
   const ids = useMemo(() => tasks.map(t => t.id), [tasks])
 
-  const handleDragEnd = async (event: DragEndEvent) => {
-    const { active, over } = event
+  const handleDragEnd = async ({ active, over }: DragEndEvent) => {
+    if (!over || active.id === over.id) return
 
-    if (!over) return
+    const movedTask = tasks.find(t => t.id === active.id)
+    const targetTask = tasks.find(t => t.id === over.id)
 
-    if (active.id === over.id) return
+    const sectionId = movedTask?.sectionId
 
-    const oldIndex = tasks.findIndex(t => t.id === active.id)
-    const newIndex = tasks.findIndex(t => t.id === over.id)
+    if (!movedTask || !targetTask || !sectionId) return
 
-    const reordered = arrayMove(tasks, oldIndex, newIndex).map((task, index) => ({
-      ...task,
-      order: index
-    }))
-
-    await onReorder?.(reordered)
+    if (onReorder) {
+      try {
+        await onReorder(movedTask.id, targetTask.id, sectionId)
+      } catch {}
+    }
   }
 
   return (

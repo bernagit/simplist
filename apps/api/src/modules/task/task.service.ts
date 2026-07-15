@@ -97,4 +97,38 @@ export class TaskService {
     const completed = task.completed ? false : true
     await this.repository.update(taskId, { completed })
   }
+
+  async reorder(
+    movedTaskId: string,
+    targetTaskId: string,
+    listId: string,
+    sectionId: string,
+    userId: string
+  ) {
+    const members = await this.listRepository.getMembers(listId)
+    if (!this.isMember(members, userId)) {
+      throw Errors.forbidden('You do not have permission to reorder tasks in this list')
+    }
+
+    const movedTask = await this.repository.getById(movedTaskId)
+    const targetTask = await this.repository.getById(targetTaskId)
+
+    if (!movedTask || !targetTask) {
+      throw Errors.notFound('One or both tasks not found')
+    }
+
+    if (movedTask.sectionId !== sectionId || targetTask.sectionId !== sectionId) {
+      throw Errors.badRequest('Tasks must be in the same section to reorder')
+    }
+
+    await this.repository.reorder(
+      movedTaskId,
+      targetTaskId,
+      movedTask.order,
+      targetTask.order,
+      sectionId
+    )
+
+    return await this.repository.getBySectionId(sectionId)
+  }
 }

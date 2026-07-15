@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { validate } from '../../infrastructure/middleware/validate'
 import { requireAuth } from '../../infrastructure/middleware/auth'
-import { createTaskSchema, taskIdSchema, updateTaskSchema } from './task.schema'
+import { createTaskSchema, reorderTasksSchema, taskIdSchema, updateTaskSchema } from './task.schema'
 import { TaskController } from './task.controller'
 
 const route = Router()
@@ -13,5 +13,6 @@ route.post('/:listId{/:sectionId}', validate(createTaskSchema), controller.creat
 route.put('/:id', validate(updateTaskSchema), controller.update)
 route.patch('/:id/toggle', validate(taskIdSchema), controller.toggleComplete)
 route.delete('/:id', validate(taskIdSchema), controller.delete)
+route.put('/:listId/:sectionId/reorder', validate(reorderTasksSchema), controller.reorder)
 
 export default route

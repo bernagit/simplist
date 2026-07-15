@@ -23,9 +23,19 @@ async function deleteTask(taskId: string): Promise<null> {
   return await api.delete(`tasks/${taskId}`).json()
 }
 
+async function reorderTasks(
+  movedTaskId: string,
+  targetTaskId: string,
+  listId: string,
+  sectionId: string
+): Promise<Resp<Task[]>> {
+  return await api.put(`tasks/${listId}/${sectionId}/reorder`, { json: { movedTaskId, targetTaskId } }).json()
+}
+
 export const tasksService = {
   createTask,
   toggleCompleteTask,
   updateTask,
-  deleteTask
+  deleteTask,
+  reorderTasks
 }

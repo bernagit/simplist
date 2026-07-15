@@ -21,17 +21,14 @@ export const taskIdSchema = z.object({
   })
 })
 
-export const reorderTaskSchema = z.object({
-  body: z.object({
-    tasks: z.array(
-      z.object({
-        id: z.uuid(),
-        order: z.number().int()
-      })
-    )
-  }),
+export const reorderTasksSchema = z.object({
   params: z.object({
-    listId: z.uuid()
+    listId: z.uuid(),
+    sectionId: z.uuid()
+  }),
+  body: z.object({
+    movedTaskId: z.uuid(),
+    targetTaskId: z.uuid()
   })
 })
 
@@ -53,5 +50,5 @@ export type CreateTaskInput = z.infer<typeof createTaskSchema>['body']
 export type CreateTaskParams = z.infer<typeof createTaskSchema>['params']
 export type UpdateTaskInput = z.infer<typeof updateTaskSchema>['body']
 export type UpdateTaskParams = z.infer<typeof updateTaskSchema>['params']
-export type ReorderTaskInput = z.infer<typeof reorderTaskSchema>['body']
-export type ReorderTaskParams = z.infer<typeof reorderTaskSchema>['params']
+export type ReorderTasksInput = z.infer<typeof reorderTasksSchema>['body']
+export type ReorderTasksParams = z.infer<typeof reorderTasksSchema>['params']

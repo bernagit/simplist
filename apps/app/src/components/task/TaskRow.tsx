@@ -2,11 +2,11 @@
 
 import { Task } from '@/models/task'
 import { ActionIcon, Checkbox, Group, Stack, Text } from '@mantine/core'
-import { IconCalendar, IconEdit, IconGripVertical, IconTrash } from '@tabler/icons-react'
+import { IconCalendar, IconChecklist, IconEdit, IconGripVertical, IconTrash } from '@tabler/icons-react'
 import { CSS } from '@dnd-kit/utilities'
 import { useSortable } from '@dnd-kit/sortable'
 import dayjs from 'dayjs'
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { getPriorityColor } from '@/utils/color'
 import { useSidebar } from '@/providers/SidebarProvider'
 import { useDeleteTask, useToggleTask } from '@/queries/task'
@@ -24,38 +24,52 @@ export default function TaskRow({ task, canEdit, onClick }: TaskRowProps) {
   const colorMemo = useMemo(() => getPriorityColor(task.priority), [task.priority])
   const toggleTask = useToggleTask()
   const deleteTask = useDeleteTask()
-  const { showContextMenu } = useContextMenu()
+  const { showContextMenu, isContextMenuVisible } = useContextMenu()
   const [hovered, setHovered] = useState(false)
+  const [selected, setSelected] = useState(false)
 
   const handleToggleTask = async (task: Task) => {
     if (!task.listId) return
     await toggleTask.mutateAsync({ listId: task.listId, taskId: task.id })
   }
 
-  const handleDeleteTask = async (task: Task) => {
+  const handleDeleteTask = useCallback(async (task: Task) => {
     if (!canEdit) return
     if (!task.listId) return
     await deleteTask.mutateAsync({ listId: task.listId, taskId: task.id })
-  }
+  }, [canEdit, deleteTask])
 
   const { attributes, listeners, setNodeRef, transform, isDragging } = useSortable({
     id: task.id,
     disabled: !canEdit
   })
 
-  const menuOptions = [
+  const menuOptions = useMemo(() => [
+    {
+      key: 'item',
+      title: task.title,
+      icon: <IconChecklist size={20} />,
+      disabled: true,
+      onClick: () => { },
+      style: {
+        cursor: 'default',
+      }
+    },
+    {
+      key: 'divider'
+    },
     {
       key: 'edit',
-      icon: <IconEdit size={14} />,
+      icon: <IconEdit size={20} />,
       title: 'Edit',
       onClick: () => {
         onClick?.(task)
       },
-      disabled: !canEdit
+      disabled: !canEdit,
     },
     {
       key: 'delete',
-      icon: <IconTrash size={14} />,
+      icon: <IconTrash size={20} />,
       title: 'Delete',
       color: 'red',
       onClick: () => {
@@ -63,7 +77,14 @@ export default function TaskRow({ task, canEdit, onClick }: TaskRowProps) {
       },
       disabled: !canEdit
     }
-  ]
+  ], [canEdit, handleDeleteTask, onClick, task])
+
+  useEffect(() => {
+    if (!isContextMenuVisible) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSelected(false)
+    }
+  }, [isContextMenuVisible])
 
   return (
     <Group
@@ -78,8 +99,23 @@ export default function TaskRow({ task, canEdit, onClick }: TaskRowProps) {
         cursor: 'default',
         transform: CSS.Transform.toString(transform),
 
-        boxShadow: isDragging ? '0 8px 24px rgba(0,0,0,.18)' : undefined,
+        backgroundColor: selected
+          ? 'light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))'
+          : undefined,
 
+        outline: selected
+          ? '1px solid var(--mantine-primary-color-filled)'
+          : undefined,
+
+        outlineOffset: -1,
+
+        boxShadow: [
+          selected && 'inset 0 0 0 1px var(--mantine-primary-color-filled)',
+          isDragging && '0 8px 24px rgba(0,0,0,.18)',
+        ]
+          .filter(Boolean)
+          .join(', '),
+        
         opacity: isDragging ? 0.95 : 1,
         zIndex: isDragging ? 100 : 1
       }}
@@ -134,9 +170,13 @@ export default function TaskRow({ task, canEdit, onClick }: TaskRowProps) {
           <Stack
             gap={2}
             flex={1}
-            onContextMenu={showContextMenu(menuOptions, {
-              styles: contextMenuStyles
-            })}
+            onContextMenu={(e) => {
+              setSelected(true)
+              showContextMenu(menuOptions, {
+                styles: contextMenuStyles
+              }
+              )(e)
+            }}
           >
             <Text
               size="sm"

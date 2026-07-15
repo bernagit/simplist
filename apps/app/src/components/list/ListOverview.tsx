@@ -272,7 +272,7 @@ export default function ListOverview({ shared, data, isLoading }: ListOverviewPr
               }}
               onClick={() => handleListClick(list.id)}
               onContextMenu={showContextMenu(getMenuOptions(list), {
-                styles: contextMenuStyles
+                styles: contextMenuStyles,
               })}
             >
               <Stack gap="md">

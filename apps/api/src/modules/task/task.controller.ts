@@ -1,6 +1,13 @@
 import { NextFunction, Request, Response } from 'express'
 import { HTTP_STATUS } from '../../types/http'
-import { CreateTaskInput, CreateTaskParams, TaskIdInput, UpdateTaskInput } from './task.schema'
+import {
+  CreateTaskInput,
+  CreateTaskParams,
+  ReorderTasksInput,
+  ReorderTasksParams,
+  TaskIdInput,
+  UpdateTaskInput
+} from './task.schema'
 import { TaskService } from './task.service'
 
 export class TaskController {
@@ -65,6 +72,29 @@ export class TaskController {
 
       res.status(HTTP_STATUS.OK).json({
         message: 'Task completion toggled successfully'
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  reorder = async (req: Request, res: Response, next: NextFunction) => {
+    const { id: userId } = req.user!
+    const { listId, sectionId } = req.validated!.params as ReorderTasksParams
+    const { movedTaskId, targetTaskId } = req.validated!.body as ReorderTasksInput
+
+    try {
+      const result = await this.service.reorder(
+        movedTaskId,
+        targetTaskId,
+        listId,
+        sectionId,
+        userId
+      )
+
+      res.status(HTTP_STATUS.OK).json({
+        message: 'Tasks reordered successfully',
+        data: result
       })
     } catch (error) {
       next(error)
