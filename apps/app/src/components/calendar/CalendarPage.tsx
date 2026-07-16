@@ -14,6 +14,8 @@ import {
 import { usePlannedTasks } from '@/queries/task'
 import { useSidebar } from '@/providers/SidebarProvider'
 import { editTaskModal } from '@/lib/modals/task'
+import { getHTMLSectionId } from '@/utils/misc'
+import { useRouter } from 'next/navigation'
 
 function getNavigationHandlers(date: DateStringValue, view: Exclude<ScheduleViewLevel, 'year'>) {
   const d = dayjs(date)
@@ -68,6 +70,7 @@ function getHeaderLabel(date: DateStringValue, view: Exclude<ScheduleViewLevel, 
 }
 
 export default function CustomSchedule() {
+  const router = useRouter()
   const [date, setDate] = useState<DateStringValue>(dayjs().format('YYYY-MM-DD') as DateStringValue)
   const { isMobile } = useSidebar()
   const [view, setView] = useState<Exclude<ScheduleViewLevel, 'year'>>('week')
@@ -109,7 +112,7 @@ export default function CustomSchedule() {
   }, [date, view])
 
 
-  const { data: plannedTasks, isLoading } = usePlannedTasks(
+  const { data: plannedTasks, isLoading, refetch } = usePlannedTasks(
     visibleRange.start.toDate(),
     visibleRange.end.toDate()
   )
@@ -122,12 +125,9 @@ export default function CustomSchedule() {
       .map(task => ({
         id: task.id,
         title: task.title,
-
         start: task.dueDate!,
         end: dayjs(task.dueDate!).add(30, 'minute').toDate(),
-
         color: task.color,
-
         data: task,
       }))
   }, [plannedTasks])
@@ -135,11 +135,26 @@ export default function CustomSchedule() {
   const handleEventClick = useCallback((event: ScheduleEventData) => {
     const task = events.find(e => e.id === event.id)?.data
     if (!task) return
-    editTaskModal(task, isMobile, true)
-  }, [events, isMobile])
+    const navigation = {
+      onOpenList: () => {
+        router.push(`/lists/${task.listId}`)
+      },
+      onOpenSection: () => {
+        let sectionUrl = `/lists/${task.listId}`
+        if (task.sectionId) {
+          sectionUrl += `#${getHTMLSectionId(task.sectionId)}`
+        }
+        router.push(sectionUrl)
+      }
+    }
+    editTaskModal(task, isMobile, true, navigation)
+  }, [events, isMobile, router])
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => setMounted(true), [])
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true)
+    refetch()
+  }, [refetch])
 
   if (isLoading) {
     return (

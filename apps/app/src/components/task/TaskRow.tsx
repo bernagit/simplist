@@ -17,8 +17,13 @@ import { getPriorityColor } from '@/utils/color'
 import { useSidebar } from '@/providers/SidebarProvider'
 import { useDeleteTask, useToggleTask } from '@/queries/task'
 import { useContextMenu } from 'mantine-contextmenu'
-import { contextMenuStyles } from '@/utils/misc'
+import { contextMenuStyles, getHTMLSectionId } from '@/utils/misc'
 import { editTaskModal } from '@/lib/modals/task'
+import { useQueryClient } from '@tanstack/react-query'
+import { Resp } from '@/models/base'
+import { CompleteList } from '@/models/lists'
+import { listKeys } from '@/queries/lists'
+import { useRouter } from 'next/navigation'
 
 type TaskRowProps = {
   task: Task
@@ -26,6 +31,7 @@ type TaskRowProps = {
 }
 
 export default function TaskRow({ task, canEdit }: TaskRowProps) {
+  const router = useRouter()
   const { isMobile } = useSidebar()
   const colorMemo = useMemo(() => getPriorityColor(task.priority), [task.priority])
   const toggleTask = useToggleTask()
@@ -33,6 +39,7 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
   const { showContextMenu, isContextMenuVisible } = useContextMenu()
   const [hovered, setHovered] = useState(false)
   const [selected, setSelected] = useState(false)
+  const queryClient = useQueryClient()
 
   const handleToggleTask = async (task: Task) => {
     if (!task.listId) return
@@ -41,9 +48,27 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
 
   const handleClick = useCallback(
     (task: Task) => {
-      editTaskModal(task, isMobile, canEdit)
+      const list = queryClient.getQueryData<Resp<CompleteList>>(listKeys.detail(task.listId))?.data
+      const navigation = {
+        onOpenList: () => {
+          router.push(`/lists/${task.listId}`)
+        },
+        onOpenSection: () => {
+          let sectionUrl = `/lists/${task.listId}`
+          if (task.sectionId && task.sectionId !== list?.defaultSectionId) {
+            sectionUrl += `#${getHTMLSectionId(task.sectionId)}`
+          }
+          router.push(sectionUrl)
+        }
+      }
+      editTaskModal({
+        ...task,
+        color: list?.color ?? '',
+        listTitle: list?.title ?? '',
+        sectionTitle: list?.sections.find(section => section.id === task.sectionId)?.title ?? null
+      }, isMobile, canEdit, navigation)
     },
-    [isMobile, canEdit]
+    [queryClient, isMobile, canEdit, router]
   )
 
   const handleDeleteTask = useCallback(

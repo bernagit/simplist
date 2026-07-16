@@ -15,6 +15,7 @@ export type Task = {
 export type PlannedTask = Task & {
   color: string
   listTitle: string
+  sectionTitle: string | null
 }
 
 export type CreateTaskInput = {

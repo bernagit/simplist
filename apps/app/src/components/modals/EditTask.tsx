@@ -1,6 +1,6 @@
 'use client'
 
-import { CreateTaskInput, Task } from '@/models/task'
+import { CreateTaskInput, PlannedTask } from '@/models/task'
 import { getPriorityColor } from '@/utils/color'
 import {
   Checkbox,
@@ -13,7 +13,8 @@ import {
   Textarea,
   Popover,
   Box,
-  useComputedColorScheme
+  useComputedColorScheme,
+  UnstyledButton
 } from '@mantine/core'
 import { useMemo, useState } from 'react'
 import dayjs from 'dayjs'
@@ -24,16 +25,22 @@ import { PRIORITY_OPTIONS } from '@/utils/constants'
 import { useToggleTask, useUpdateTask } from '@/queries/task'
 import { ContextModalProps } from '@mantine/modals'
 
-type EditTaskProps = {
-  task: Task
-  canEdit: boolean | undefined
+export type NavigationCallbacks = {
+  onOpenList: () => void
+  onOpenSection?: () => void
 }
 
-export default function EditTask({ innerProps }: ContextModalProps<EditTaskProps>) {
+type EditTaskProps = {
+  task: PlannedTask
+  canEdit: boolean | undefined
+  navigation: NavigationCallbacks
+}
+
+export default function EditTask({ context, id, innerProps }: ContextModalProps<EditTaskProps>) {
   const colorScheme = useComputedColorScheme()
   const toggleTask = useToggleTask()
   const updateTask = useUpdateTask()
-  const { task, canEdit } = innerProps
+  const { task, canEdit, navigation } = innerProps
   const colorMemo = useMemo(() => getPriorityColor(task.priority), [task.priority])
   const [isEditing, setIsEditing] = useState(false)
   const [title, setTitle] = useState(task.title)
@@ -44,16 +51,15 @@ export default function EditTask({ innerProps }: ContextModalProps<EditTaskProps
   const shortDate = formatDate(selectedDate)
   const [selectedPriority, setSelectedPriority] = useState<string | null>(task.priority)
   const priorityLabel = selectedPriority
-  ? (PRIORITY_OPTIONS.find(option => option.value === selectedPriority)?.label ?? 'Priority')
-  : 'Priority'
-  
+    ? (PRIORITY_OPTIONS.find(option => option.value === selectedPriority)?.label ?? 'Priority')
+    : 'Priority'
+
   const [completed, setCompleted] = useState(task.completed)
 
   const handleToggle = async () => {
     const next = !completed
 
     setCompleted(next)
-
     try {
       await toggleTask.mutateAsync({
         listId: task.listId,
@@ -67,7 +73,7 @@ export default function EditTask({ innerProps }: ContextModalProps<EditTaskProps
   const handleUpdateTask = async (taskId: string, updates: Partial<CreateTaskInput>) => {
     if (!task.listId) return
     await updateTask.mutateAsync({ taskId, listId: task.listId, updates })
-  }  
+  }
 
   const handlePrioritySelect = (priority: string | null) => {
     setSelectedPriority(priority)
@@ -97,14 +103,68 @@ export default function EditTask({ innerProps }: ContextModalProps<EditTaskProps
     setIsEditing(false)
   }
 
+  const handleNavigateToList = () => {
+    navigation.onOpenList()
+    context.closeModal(id)
+  }
+
+  const handleNavigateToSection = () => {
+    if (navigation.onOpenSection) {
+      navigation.onOpenSection()
+      context.closeModal(id)
+    }
+  }
+
   return (
     <Stack
-      style={{
-        borderTop: '1px solid var(--mantine-color-gray-4)'
-      }}
-      py={'sm'}
+      py={0}
       h={'100%'}
     >
+      <Group gap={6}>
+        <UnstyledButton
+          onClick={handleNavigateToList}
+          style={{
+            padding: '4px 8px',
+            borderRadius: 6,
+            transition: 'background-color 150ms ease'
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.backgroundColor = 'var(--mantine-color-gray-1)'
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.backgroundColor = 'transparent'
+          }}
+        >
+          <Text size="sm" fw={600}>
+            {task.listTitle}
+          </Text>
+        </UnstyledButton>
+
+        {task.sectionTitle && task.sectionTitle !== 'DEFAULT' && (
+          <>
+            <Text c="dimmed">/</Text>
+
+            <UnstyledButton
+              onClick={handleNavigateToSection}
+              style={{
+                padding: '4px 8px',
+                borderRadius: 6,
+                transition: 'background-color 150ms ease'
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.backgroundColor = 'var(--mantine-color-gray-1)'
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.backgroundColor = 'transparent'
+              }}
+            >
+              <Text size="sm" fw={600}>
+                {task.sectionTitle}
+              </Text>
+            </UnstyledButton>
+          </>
+        )}
+      </Group>
       <Group align="start">
         <Checkbox
           size="lg"

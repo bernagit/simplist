@@ -4,6 +4,7 @@ import { and, eq, gt, gte, lt, lte, max, ne, sql } from 'drizzle-orm'
 import { CreateTaskInput, UpdateTaskInput } from './task.schema'
 import { logger } from '../../infrastructure/logging/logger'
 import { lists } from '../../db/schema/lists'
+import { sections } from '../../db/schema/sections'
 
 export class TaskRepository {
   constructor() {}
@@ -129,10 +130,12 @@ export class TaskRepository {
         listId: tasks.listId,
         sectionId: tasks.sectionId,
         color: lists.color,
-        listTitle: lists.title
+        listTitle: lists.title,
+        sectionTitle: sections.title
       })
       .from(tasks)
       .innerJoin(lists, eq(tasks.listId, lists.id))
+      .innerJoin(sections, eq(tasks.sectionId, sections.id))
       .where(
         and(
           eq(lists.ownerId, userId),
