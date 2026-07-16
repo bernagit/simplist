@@ -2,8 +2,9 @@
 
 import dayjs from 'dayjs'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Box, Center, Group, Loader, SegmentedControl, useMantineTheme } from '@mantine/core'
+import { Box, Button, Center, Group, Loader, SegmentedControl, useMantineTheme, Text } from '@mantine/core'
 import {
+  AgendaView,
   DateStringValue,
   getStartOfWeek,
   Schedule,
@@ -76,6 +77,7 @@ export default function CustomSchedule() {
   const [view, setView] = useState<Exclude<ScheduleViewLevel, 'year'>>('week')
   const theme = useMantineTheme()
   const [mounted, setMounted] = useState(false)
+  const [withAgenda, setWithAgenda] = useState(false)
 
   const nav = getNavigationHandlers(date, view)
 
@@ -96,7 +98,6 @@ export default function CustomSchedule() {
             firstDayOfWeek: 1
           })
         )
-
         return {
           start,
           end: start.add(6, 'day').endOf('day')
@@ -207,6 +208,13 @@ export default function CustomSchedule() {
         <ScheduleHeader.Today
           onClick={() => setDate(dayjs().format('YYYY-MM-DD') as DateStringValue)}
         />
+        <Button
+          size='compact-md'
+          variant={withAgenda ? 'filled' : 'outline'}
+          onClick={() => setWithAgenda(prev => !prev)}
+        >
+          Agenda
+        </Button>
 
         <Group ms="auto">
           <SegmentedControl
@@ -221,37 +229,46 @@ export default function CustomSchedule() {
           />
         </Group>
       </ScheduleHeader>
-
-      <Schedule
-        style={{ flex: 1, minHeight: 0 }}
-        date={date}
-        onDateChange={setDate}
-        view={view}
-        onViewChange={value => setView(value as Exclude<ScheduleViewLevel, 'year'>)}
-        events={events}
-        onEventClick={handleEventClick}
-        dayViewProps={{
-          withHeader: false,
-          // startTime: '08:00:00',
-          // endTime: '24:00:00',
-          intervalMinutes: 30,
-          scrollAreaProps: { mah: '100%' },
-          withCurrentTimeIndicator: mounted
-        }}
-        weekViewProps={{
-          withHeader: false,
-          scrollAreaProps: { mah: '100%' },
-          withCurrentTimeIndicator: mounted
-        }}
-        monthViewProps={{
-          withHeader: false,
-          scrollAreaProps: { mah: '100%' }
-        }}
-        yearViewProps={{
-          withHeader: false
-          // scrollAreaProps: { mah: '100%' },
-        }}
-      />
+      {withAgenda ? (
+        <AgendaView
+          rangeStart={visibleRange.start}
+          rangeEnd={visibleRange.end}
+          style={{ flex: 1, minHeight: 0 }}
+          events={events}
+          onEventClick={handleEventClick}
+        />
+      ) : (
+        <Schedule
+          style={{ flex: 1, minHeight: 0 }}
+          date={date}
+          onDateChange={setDate}
+          view={view}
+          onViewChange={value => setView(value as Exclude<ScheduleViewLevel, 'year'>)}
+          events={events}
+          onEventClick={handleEventClick}
+          withAgenda={true}
+          dayViewProps={{
+            withHeader: false,
+            // startTime: '08:00:00',
+            // endTime: '24:00:00',
+            intervalMinutes: 30,
+            scrollAreaProps: { mah: '100%' },
+            withCurrentTimeIndicator: mounted
+          }}
+          weekViewProps={{
+            withHeader: false,
+            scrollAreaProps: { mah: '100%' },
+            withCurrentTimeIndicator: mounted
+          }}
+          monthViewProps={{
+            withHeader: false,
+            scrollAreaProps: { mah: '100%' }
+          }}
+          yearViewProps={{
+            withHeader: false
+            // scrollAreaProps: { mah: '100%' },
+          }}
+        />)}
     </Box>
   )
 }
