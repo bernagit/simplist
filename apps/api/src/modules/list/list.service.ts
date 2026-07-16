@@ -172,4 +172,33 @@ export class ListService {
 
     return list
   }
+
+  async changeMemberRole(
+    listId: string,
+    userId: string,
+    memberId: string,
+    role: 'editor' | 'viewer'
+  ) {
+    // Check if the user has permission to view the list
+    const canUpdate = await this.repository.canUpdate(listId, userId)
+    if (!canUpdate) {
+      throw Errors.forbidden('You do not have permission to change member roles for this list')
+    }
+
+    // Check if the member to be updated exists
+    const members = await this.repository.getMembers(listId)
+    const memberExists = members.some(member => member.id === memberId)
+
+    if (!memberExists) {
+      throw Errors.notFound('Member not found in this list')
+    }
+
+    // Prevent the owner from having their role changed
+    const owner = members.find(member => member.role === 'owner')
+    if (owner && owner.userId === memberId) {
+      throw Errors.badRequest('You cannot change the role of the owner of the list')
+    }
+
+    return await this.repository.changeMemberRole(listId, memberId, role)
+  }
 }

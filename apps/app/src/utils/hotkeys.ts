@@ -5,6 +5,12 @@ export const HOTKEYS = {
     category: 'Actions'
   },
 
+  SHARE_LIST: {
+    keys: ['shift+s'],
+    description: 'Share current list',
+    category: 'Actions'
+  },
+
   TOGGLE_THEME: {
     keys: ['mod+j'],
     description: 'Toggle theme',

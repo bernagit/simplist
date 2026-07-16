@@ -47,8 +47,19 @@ export const removeMemberSchema = z.object({
   })
 })
 
+export const changeMemberRoleSchema = z.object({
+  params: z.object({
+    id: z.uuid()
+  }),
+  body: z.object({
+    memberId: z.uuid(),
+    role: z.enum(['viewer', 'editor'])
+  })
+})
+
 export type ListCreateInput = z.infer<typeof createListSchema>['body']
 export type ListIdInput = z.infer<typeof listIdSchema>['params']
 export type ListUpdateInput = z.infer<typeof updateListSchema>['body']
 export type ListAddMemberInput = z.infer<typeof addMemberSchema>['body']
+export type ListChangeMemberRoleInput = z.infer<typeof changeMemberRoleSchema>['body']
 export type ListRemoveMemberInput = z.infer<typeof removeMemberSchema>['body']

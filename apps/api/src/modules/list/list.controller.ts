@@ -5,7 +5,8 @@ import {
   ListIdInput,
   ListAddMemberInput,
   ListUpdateInput,
-  ListRemoveMemberInput
+  ListRemoveMemberInput,
+  ListChangeMemberRoleInput
 } from './list.schema'
 import { HTTP_STATUS } from '../../types/http'
 
@@ -180,6 +181,22 @@ export class ListController {
       res.status(HTTP_STATUS.OK).json({
         message: 'List unarchived successfully',
         data: updatedList
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  changeMemberRole = async (req: Request, res: Response, next: NextFunction) => {
+    const { id: userId } = req.user!
+    const params = req.validated!.params as ListIdInput
+    const body = req.validated!.body as ListChangeMemberRoleInput
+
+    try {
+      await this.service.changeMemberRole(params.id, userId, body.memberId, body.role)
+
+      res.status(HTTP_STATUS.OK).json({
+        message: 'Member role changed successfully'
       })
     } catch (error) {
       next(error)

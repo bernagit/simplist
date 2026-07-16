@@ -5,7 +5,8 @@ import {
   listIdSchema,
   addMemberSchema,
   updateListSchema,
-  removeMemberSchema
+  removeMemberSchema,
+  changeMemberRoleSchema
 } from './list.schema'
 import { ListController } from './list.controller'
 import { requireAuth } from '../../infrastructure/middleware/auth'
@@ -24,5 +25,6 @@ route.post('/:id/share', validate(addMemberSchema), controller.share)
 route.delete('/:id/share', validate(removeMemberSchema), controller.removeMember)
 route.patch('/:id/archive', validate(listIdSchema), controller.archive)
 route.patch('/:id/unarchive', validate(listIdSchema), controller.unarchive)
+route.patch('/:id/share/role', validate(changeMemberRoleSchema), controller.changeMemberRole)
 
 export default route

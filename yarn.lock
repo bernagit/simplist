@@ -1386,18 +1386,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mantine/dates@npm:^9.3.2":
-  version: 9.3.2
-  resolution: "@mantine/dates@npm:9.3.2"
+"@mantine/dates@npm:^9.4.1":
+  version: 9.4.1
+  resolution: "@mantine/dates@npm:9.4.1"
   dependencies:
     clsx: "npm:^2.1.1"
   peerDependencies:
-    "@mantine/core": 9.3.2
-    "@mantine/hooks": 9.3.2
+    "@mantine/core": 9.4.1
+    "@mantine/hooks": 9.4.1
     dayjs: ">=1.0.0"
     react: ^19.2.0
     react-dom: ^19.2.0
-  checksum: 10c0/99371a1332b4bf6035a22973e2012b4d54d5feafae79378bc2911225afe567ad0286434ead150fcf40def9b38b946a4f11b5599317b810f59dfe67a10375fa4f
+  checksum: 10c0/d342a66f617e943b3fb7f8116fa85d42579ae37fa073181e8a90eeaa3f68fdf4ab6091628bdfbcd145ab7c14c1820202bfae10433e5b28f0675d6c98e17cee79
   languageName: node
   linkType: hard
 
@@ -1447,6 +1447,21 @@ __metadata:
     react: ^19.2.0
     react-dom: ^19.2.0
   checksum: 10c0/2b0aa556729efa373082a8584377dec2cd89bc298815d1f25a2cce0a7a408b1fd5f0bb6cd4d732eb2c4b9e51b02f476210c4ec48a629eebd07a7f9f1a88b8ec8
+  languageName: node
+  linkType: hard
+
+"@mantine/schedule@npm:^9.4.1":
+  version: 9.4.1
+  resolution: "@mantine/schedule@npm:9.4.1"
+  dependencies:
+    rrule: "npm:^2.8.1"
+  peerDependencies:
+    "@mantine/core": 9.4.1
+    "@mantine/dates": 9.4.1
+    "@mantine/hooks": 9.4.1
+    react: ^19.2.0
+    react-dom: ^19.2.0
+  checksum: 10c0/d8447e7bd44d38d85561599d4381242c0f2c224cee31d892f19d5925bbe0bec3659f60cf84c064299def3d796b7c34dc457c7696b0d479443596e30d127f2398
   languageName: node
   linkType: hard
 
@@ -2500,11 +2515,12 @@ __metadata:
     "@dnd-kit/sortable": "npm:^10.0.0"
     "@dnd-kit/utilities": "npm:^3.2.2"
     "@mantine/core": "npm:^9.3.2"
-    "@mantine/dates": "npm:^9.3.2"
+    "@mantine/dates": "npm:^9.4.1"
     "@mantine/form": "npm:^9.3.2"
     "@mantine/hooks": "npm:^9.3.2"
     "@mantine/modals": "npm:^9.3.2"
     "@mantine/notifications": "npm:^9.3.2"
+    "@mantine/schedule": "npm:^9.4.1"
     "@mantine/spotlight": "npm:^9.3.2"
     "@tabler/icons-react": "npm:^3.44.0"
     "@tanstack/react-query": "npm:^5.101.1"
@@ -6420,6 +6436,15 @@ __metadata:
     parseurl: "npm:^1.3.3"
     path-to-regexp: "npm:^8.0.0"
   checksum: 10c0/3279de7450c8eae2f6e095e9edacbdeec0abb5cb7249c6e719faa0db2dba43574b4fff5892d9220631c9abaff52dd3cad648cfea2aaace845e1a071915ac8867
+  languageName: node
+  linkType: hard
+
+"rrule@npm:^2.8.1":
+  version: 2.8.1
+  resolution: "rrule@npm:2.8.1"
+  dependencies:
+    tslib: "npm:^2.4.0"
+  checksum: 10c0/c9350620bbd57d0cdf99320b576121a2d7ed579fda4ae50891e2779c7dfd6dc7b174b558b6598adefb1f0e053549dc977740e1a265f77dcf0827aaeea60b45e7
   languageName: node
   linkType: hard
 

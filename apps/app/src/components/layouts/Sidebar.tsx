@@ -340,8 +340,10 @@ export function Sidebar() {
                     }
                     rightSection={
                       list.shared ? (
-                        <IconUsers size={16} />
-                      ) : null
+                        <Tooltip label="List is shared" position="right" withArrow>
+                          <IconUsers size={16} />
+                        </Tooltip>
+                       ) : null
                     }
                     active={pathname === `/lists/${list.id}`}
                     onClick={() => handleNavigate(`/lists/${list.id}`)}

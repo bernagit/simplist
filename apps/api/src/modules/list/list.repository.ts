@@ -184,6 +184,16 @@ export class ListRepository {
     return removedMember
   }
 
+  async changeMemberRole(listId: string, memberId: string, role: 'editor' | 'viewer') {
+    const [updatedMember] = await db
+      .update(listMembers)
+      .set({ role })
+      .where(and(eq(listMembers.listId, listId), eq(listMembers.id, memberId)))
+      .returning()
+
+    return updatedMember
+  }
+
   async getMembers(listId: string) {
     const query = db
       .select({

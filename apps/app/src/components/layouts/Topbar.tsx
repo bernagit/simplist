@@ -26,74 +26,24 @@ import {
   IconUserShare
 } from '@tabler/icons-react'
 import { useQueryClient } from '@tanstack/react-query'
-import { usePathname, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useMemo } from 'react'
 import { MENU_WIDTH } from './Sidebar'
 import { shareListModal, updateListModal } from '@/lib/modals/list'
+import { useAppRoute } from '@/hooks/use-app-route'
 
 export const TOPBAR_HEIGHT = 50
-
-const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 
 export function Topbar() {
   const router = useRouter()
   const { toggle, opened } = useSidebar()
   const { isMobile } = useSidebar()
   const { breadcrumbs, setBreadcrumbs, showTitle, title, description } = useTopbar()
-  const path = usePathname()
   const queryClient = useQueryClient()
   const archiveList = useArchiveList()
   const unarchiveList = useUnarchiveList()
 
-  const route = useMemo(() => {
-    const segments = path.split('/').filter(Boolean)
-
-    const isLists = segments[0] === 'lists'
-    const isShared = isLists && segments[1] === 'shared'
-
-    const listId = isLists ? (isShared ? (segments[2] ?? null) : (segments[1] ?? null)) : null
-
-    return {
-      segments,
-      isLists,
-      isShared,
-      listId
-    }
-  }, [path])
-
-  const localBreadcrumbs = useMemo(() => {
-    if (path === '/') return []
-
-    const segments = route.segments
-
-    switch (segments[0]) {
-      case 'lists': {
-        if (segments.length === 1) {
-          return [{ label: 'My Lists', href: '/lists' }]
-        }
-
-        if (route.isShared) {
-          return [{ label: 'Shared', href: '/lists/shared' }]
-        }
-
-        if (route.listId) {
-          return [{ label: 'My Lists', href: '/lists' }]
-        }
-
-        break
-      }
-
-      default:
-        return [
-          {
-            label: capitalize(segments.join(' ')),
-            href: path
-          }
-        ]
-    }
-
-    return []
-  }, [path, route])
+  const route = useAppRoute()
 
   const handleEdit = useCallback(() => {
     if (!route.listId) return
@@ -138,10 +88,8 @@ export function Topbar() {
   }, [route.listId])
 
   useEffect(() => {
-    setBreadcrumbs(localBreadcrumbs)
-  }, [localBreadcrumbs, setBreadcrumbs])
-
-  const canShare = route.listId && !route.isShared
+    setBreadcrumbs(route.breadcrumbs)
+  }, [route.breadcrumbs, setBreadcrumbs])
 
   return (
     <Box h={50} style={{ flexShrink: 0 }}>
@@ -211,9 +159,9 @@ export function Topbar() {
           </Stack>
         )}
         <Group gap={'xs'}>
-          {canShare && (
+          {route.canShare && (
             <>
-              <Tooltip label="Share list" openDelay={500}>
+              <Tooltip label="Share list" openDelay={300}>
                 <Button variant="light" mt="sm" onClick={handleShare}>
                   <Group>
                     <IconUserShare size={16} />

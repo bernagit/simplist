@@ -41,6 +41,10 @@ async function unarchiveList(listId: string): Promise<Resp<void>> {
   return await api.patch(`lists/${listId}/unarchive`).json()
 }
 
+async function changeListMemberRole(listId: string, memberId: string, role: 'editor' | 'viewer'): Promise<Resp<void>> {
+  return await api.patch(`lists/${listId}/share/role`, { json: { memberId, role } }).json()
+}
+
 export const listsService = {
   getLists,
   getListById,
@@ -49,5 +53,6 @@ export const listsService = {
   shareList,
   deleteListMember,
   archiveList,
-  unarchiveList
+  unarchiveList,
+  changeListMemberRole
 }

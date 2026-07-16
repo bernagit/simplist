@@ -214,6 +214,46 @@ export const useDeleteListMember = () => {
   })
 }
 
+export const useChangeListMemberRole = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ listId, memberId, role }: { listId: string; memberId: string; role: 'editor' | 'viewer' }) =>
+      listsService.changeListMemberRole(listId, memberId, role),
+
+    onError: async error => {
+      let message = 'Something went wrong. Please try again.'
+
+      if (error instanceof HTTPError) {
+        try {
+          const body = await error.response.json<ErrorResponse>()
+          message = body.message
+        } catch {
+          // Ignore JSON parsing errors
+        }
+      }
+
+      showNotification({
+        title: 'Unable to change member role',
+        message,
+        color: 'red'
+      })
+    },
+
+    onSuccess: (_data, variables) => {
+      // reload the list details to get the updated members
+      queryClient.invalidateQueries({
+        queryKey: listKeys.detail(variables.listId)
+      })
+      showNotification({
+        title: 'Success',
+        message: `Member role changed to ${variables.role}.`,
+        color: 'green'
+      })
+    }
+  })
+}
+
 export const useArchiveList = () => {
   const queryClient = useQueryClient()
 
