@@ -30,7 +30,7 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useMemo } from 'react'
 import { MENU_WIDTH } from './Sidebar'
 import { shareListModal, updateListModal } from '@/lib/modals/list'
-import { useAppRoute } from '@/hooks/use-app-route'
+import { useAppRoute } from '@/hooks/useAppRoute'
 
 export const TOPBAR_HEIGHT = 50
 

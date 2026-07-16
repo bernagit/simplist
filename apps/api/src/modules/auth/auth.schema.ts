@@ -17,7 +17,10 @@ export const changePasswordSchema = z.object({
 
 export const inviteSchema = z.object({
   body: z.object({
-    email: z.email().max(255),
+    email: z
+      .email()
+      .max(255)
+      .transform(email => email.toLowerCase()),
     secret: z.string().min(1)
   })
 })
@@ -38,20 +41,29 @@ export const registerSchema = z.object({
 
 export const loginSchema = z.object({
   body: z.object({
-    email: z.email().max(255),
+    email: z
+      .email()
+      .max(255)
+      .transform(email => email.toLowerCase()),
     password: z.string().min(1)
   })
 })
 
 export const forgotPasswordSchema = z.object({
   body: z.object({
-    email: z.email().max(255)
+    email: z
+      .email()
+      .max(255)
+      .transform(email => email.toLowerCase())
   })
 })
 
 export const passwordResetSchema = z.object({
   body: z.object({
-    email: z.email().max(255),
+    email: z
+      .email()
+      .max(255)
+      .transform(email => email.toLowerCase()),
     token: z.string().min(1),
     newPassword: z.string().min(10).max(128)
   })

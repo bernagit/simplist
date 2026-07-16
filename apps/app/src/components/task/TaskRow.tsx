@@ -24,6 +24,7 @@ import { Resp } from '@/models/base'
 import { CompleteList } from '@/models/lists'
 import { listKeys } from '@/queries/lists'
 import { useRouter } from 'next/navigation'
+import { useMe } from '@/queries/auth'
 
 type TaskRowProps = {
   task: Task
@@ -40,6 +41,22 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
   const [hovered, setHovered] = useState(false)
   const [selected, setSelected] = useState(false)
   const queryClient = useQueryClient()
+  const { data: me } = useMe()
+  
+  const linkMemo = useMemo(() => {
+    const list = queryClient.getQueryData<Resp<CompleteList>>(listKeys.detail(task.listId))?.data
+    // check if it is a shared list and if the user is the owner
+    const isSharedList = list?.ownerId !== me?.id
+    const listUrl = isSharedList ? `/lists/shared/${task.listId}` : `/lists/${task.listId}`
+    let sectionUrl = listUrl
+    if (task.sectionId && task.sectionId !== list?.defaultSectionId) {
+      sectionUrl += `#${getHTMLSectionId(task.sectionId)}`
+    }
+    return {
+      listUrl,
+      sectionUrl
+    }
+  }, [task.listId, task.sectionId, queryClient, me?.id])
 
   const handleToggleTask = async (task: Task) => {
     if (!task.listId) return
@@ -51,14 +68,10 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
       const list = queryClient.getQueryData<Resp<CompleteList>>(listKeys.detail(task.listId))?.data
       const navigation = {
         onOpenList: () => {
-          router.push(`/lists/${task.listId}`)
+          router.push(linkMemo.listUrl)
         },
         onOpenSection: () => {
-          let sectionUrl = `/lists/${task.listId}`
-          if (task.sectionId && task.sectionId !== list?.defaultSectionId) {
-            sectionUrl += `#${getHTMLSectionId(task.sectionId)}`
-          }
-          router.push(sectionUrl)
+          router.push(linkMemo.sectionUrl)
         }
       }
       editTaskModal({
@@ -68,7 +81,7 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
         sectionTitle: list?.sections.find(section => section.id === task.sectionId)?.title ?? null
       }, isMobile, canEdit, navigation)
     },
-    [queryClient, isMobile, canEdit, router]
+    [queryClient, isMobile, canEdit, router, linkMemo]
   )
 
   const handleDeleteTask = useCallback(

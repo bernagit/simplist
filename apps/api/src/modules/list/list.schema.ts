@@ -33,7 +33,11 @@ export const addMemberSchema = z.object({
     id: z.uuid()
   }),
   body: z.object({
-    shareWithEmail: z.email(),
+    shareWithEmail: z
+      .email()
+      .min(1)
+      .max(255)
+      .transform(email => email.toLowerCase()),
     role: z.enum(['viewer', 'editor'])
   })
 })
