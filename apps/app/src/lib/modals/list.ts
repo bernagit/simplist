@@ -10,7 +10,7 @@ export function createListModal() {
   })
 }
 
-export function updateListModal(listId: string, data: CreateListInput) {
+export function updateListModal(listId: string, data?: CreateListInput) {
   modals.openContextModal({
     modal: 'addList',
     title: 'Update list',
