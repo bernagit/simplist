@@ -16,31 +16,18 @@ import {
   verticalListSortingStrategy,
   sortableKeyboardCoordinates
 } from '@dnd-kit/sortable'
-import { Group, Modal, Stack, Text } from '@mantine/core'
-import { useMemo, useState } from 'react'
+import { Stack } from '@mantine/core'
+import { useMemo } from 'react'
 import TaskRow from './TaskRow'
-import { useDisclosure } from '@mantine/hooks'
-import { useSidebar } from '@/providers/SidebarProvider'
-import EditTask from '../modals/EditTask'
-import { IconList } from '@tabler/icons-react'
 
 type TaskListProps = {
-  title: string
   data: Task[]
   canEdit?: boolean
   onReorder?: (movedTaskId: string, targetTaskId: string, sectionId: string) => void | Promise<void>
-  onUpdate: (taskId: string, updates: Partial<Task>) => void | Promise<void>
 }
 
-export default function TaskList({ title, data, canEdit, onReorder, onUpdate }: TaskListProps) {
-  const { isMobile } = useSidebar()
+export default function TaskList({ data, canEdit, onReorder }: TaskListProps) {
   const tasks = useMemo(() => [...data].sort((a, b) => a.order - b.order), [data])
-  const [opened, { open, close }] = useDisclosure(false)
-  const [selectedTaskId, setSelectedTask] = useState<string | null>(null)
-  const task = useMemo(
-    () => tasks.find(t => t.id === selectedTaskId) ?? null,
-    [tasks, selectedTaskId]
-  )
 
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -58,11 +45,6 @@ export default function TaskList({ title, data, canEdit, onReorder, onUpdate }: 
       coordinateGetter: sortableKeyboardCoordinates
     })
   )
-
-  const taskClickHandler = (task: Task) => {
-    setSelectedTask(task.id)
-    open()
-  }
 
   const ids = useMemo(() => tasks.map(t => t.id), [tasks])
 
@@ -89,28 +71,11 @@ export default function TaskList({ title, data, canEdit, onReorder, onUpdate }: 
         <SortableContext items={ids} strategy={verticalListSortingStrategy}>
           <Stack gap={0}>
             {tasks.map(task => (
-              <TaskRow key={task.id} task={task} onClick={taskClickHandler} canEdit={canEdit} />
+              <TaskRow key={task.id} task={task} canEdit={canEdit} />
             ))}
           </Stack>
         </SortableContext>
       </DndContext>
-      {task && (
-        <Modal
-          opened={opened}
-          onClose={close}
-          fullScreen={isMobile}
-          size="xl"
-          title={
-            <Group gap="xs" onClick={close} align="center">
-              <IconList size={18} stroke={1.8} />
-              <Text fw={600}>{title}</Text>
-            </Group>
-          }
-          p={0}
-        >
-          <EditTask task={task} onUpdate={onUpdate} canEdit={canEdit} />
-        </Modal>
-      )}
     </>
   )
 }

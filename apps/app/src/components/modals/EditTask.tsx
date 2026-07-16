@@ -1,7 +1,6 @@
 'use client'
 
-import { Task } from '@/models/task'
-import { useSidebar } from '@/providers/SidebarProvider'
+import { CreateTaskInput, Task } from '@/models/task'
 import { getPriorityColor } from '@/utils/color'
 import {
   Checkbox,
@@ -22,18 +21,19 @@ import { IconCalendar, IconFlag, IconX } from '@tabler/icons-react'
 import { formatDate } from '@/utils/date'
 import { DatePicker } from '@mantine/dates'
 import { PRIORITY_OPTIONS } from '@/utils/constants'
-import { useToggleTask } from '@/queries/task'
+import { useToggleTask, useUpdateTask } from '@/queries/task'
+import { ContextModalProps } from '@mantine/modals'
 
 type EditTaskProps = {
   task: Task
   canEdit: boolean | undefined
-  onUpdate?: (taskId: string, updates: Partial<Task>) => void | Promise<void>
 }
 
-export default function EditTask({ task, canEdit, onUpdate }: EditTaskProps) {
-  const { isMobile } = useSidebar()
+export default function EditTask({ innerProps }: ContextModalProps<EditTaskProps>) {
   const colorScheme = useComputedColorScheme()
   const toggleTask = useToggleTask()
+  const updateTask = useUpdateTask()
+  const { task, canEdit } = innerProps
   const colorMemo = useMemo(() => getPriorityColor(task.priority), [task.priority])
   const [isEditing, setIsEditing] = useState(false)
   const [title, setTitle] = useState(task.title)
@@ -44,29 +44,46 @@ export default function EditTask({ task, canEdit, onUpdate }: EditTaskProps) {
   const shortDate = formatDate(selectedDate)
   const [selectedPriority, setSelectedPriority] = useState<string | null>(task.priority)
   const priorityLabel = selectedPriority
-    ? (PRIORITY_OPTIONS.find(option => option.value === selectedPriority)?.label ?? 'Priority')
-    : 'Priority'
+  ? (PRIORITY_OPTIONS.find(option => option.value === selectedPriority)?.label ?? 'Priority')
+  : 'Priority'
+  
+  const [completed, setCompleted] = useState(task.completed)
 
-  const handleToggleTask = async (task: Task) => {
-    if (!task.listId) return
-    await toggleTask.mutateAsync({ listId: task.listId, taskId: task.id })
+  const handleToggle = async () => {
+    const next = !completed
+
+    setCompleted(next)
+
+    try {
+      await toggleTask.mutateAsync({
+        listId: task.listId,
+        taskId: task.id,
+      })
+    } catch {
+      setCompleted(!next)
+    }
   }
+
+  const handleUpdateTask = async (taskId: string, updates: Partial<CreateTaskInput>) => {
+    if (!task.listId) return
+    await updateTask.mutateAsync({ taskId, listId: task.listId, updates })
+  }  
 
   const handlePrioritySelect = (priority: string | null) => {
     setSelectedPriority(priority)
-    onUpdate?.(task.id, { priority: priority ?? null })
+    handleUpdateTask(task.id, { priority: priority ?? null })
   }
 
   const handleDateSelect = (date: string | null) => {
     setSelectedDate(date)
 
-    onUpdate?.(task.id, {
+    handleUpdateTask(task.id, {
       dueDate: date ? new Date(date) : null
     })
   }
 
   const handleSaveEdit = async () => {
-    await onUpdate?.(task.id, {
+    await handleUpdateTask(task.id, {
       title,
       description
     })
@@ -85,28 +102,28 @@ export default function EditTask({ task, canEdit, onUpdate }: EditTaskProps) {
       style={{
         borderTop: '1px solid var(--mantine-color-gray-4)'
       }}
-      py={isMobile ? 'sm' : 'md'}
+      py={'sm'}
       h={'100%'}
     >
       <Group align="start">
         <Checkbox
           size="lg"
           radius="xl"
-          checked={task.completed}
+          checked={completed}
           mt={task.description ? 10 : 0}
           onChange={() => {
-            handleToggleTask(task)
+            handleToggle()
           }}
           disabled={!canEdit}
           color={colorMemo}
           styles={{
             root: {
-              opacity: task.completed ? 0.6 : 1,
+              opacity: completed ? 0.6 : 1,
               transition: 'opacity 150ms ease'
             },
             input: {
               border: `1px solid ${colorMemo}`,
-              backgroundColor: task.completed ? colorMemo : undefined
+              backgroundColor: completed ? colorMemo : undefined
             }
           }}
         />
@@ -114,13 +131,13 @@ export default function EditTask({ task, canEdit, onUpdate }: EditTaskProps) {
           flex={1}
           gap={4}
           style={{
-            opacity: !isEditing && task.completed ? 0.6 : 1,
+            opacity: !isEditing && completed ? 0.6 : 1,
             transition: 'opacity 150ms ease',
             border: isEditing ? '1px solid var(--mantine-color-gray-4)' : undefined,
             borderRadius: 6,
             padding: isEditing ? 8 : 0
           }}
-          onClick={() => canEdit && !task.completed && setIsEditing(true)}
+          onClick={() => canEdit && !completed && setIsEditing(true)}
         >
           {isEditing ? (
             <>
@@ -168,7 +185,7 @@ export default function EditTask({ task, canEdit, onUpdate }: EditTaskProps) {
           )}
         </Stack>
       </Group>
-      <Popover disabled={!canEdit} position="bottom-start" shadow="md">
+      <Popover disabled={!canEdit} position="bottom-start" shadow="md" zIndex={500}>
         <Popover.Target>
           <Box
             onMouseEnter={e => {
@@ -199,6 +216,8 @@ export default function EditTask({ task, canEdit, onUpdate }: EditTaskProps) {
                   variant="subtle"
                   color="gray"
                   size="xs"
+                  m={0}
+                  p={0}
                   onClick={e => {
                     if (!canEdit) return
                     e.stopPropagation()
@@ -215,7 +234,7 @@ export default function EditTask({ task, canEdit, onUpdate }: EditTaskProps) {
           <DatePicker highlightToday allowDeselect onChange={handleDateSelect} />
         </Popover.Dropdown>
       </Popover>
-      <Popover disabled={!canEdit} position="bottom-start" shadow="md">
+      <Popover disabled={!canEdit} position="bottom-start" shadow="md" zIndex={500}>
         <Popover.Target>
           <Box
             onMouseEnter={e => {

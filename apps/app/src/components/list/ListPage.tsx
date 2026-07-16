@@ -19,7 +19,7 @@ import {
 import { EditableTitle } from '@/components/list/EditableText'
 import AddTask from '@/components/list/AddTask'
 import { CreateTaskInput } from '@/models/task'
-import { useCreateTask, useReorderTasks, useUpdateTask } from '@/queries/task'
+import { useCreateTask, useReorderTasks } from '@/queries/task'
 import TaskList from '@/components/task/TaskList'
 import { useEffect, useMemo, useRef } from 'react'
 import { IconLock } from '@tabler/icons-react'
@@ -38,7 +38,6 @@ export default function ListPage() {
   const updateList = useUpdateList()
   const createTask = useCreateTask()
   const createSection = useCreateSection()
-  const updateTask = useUpdateTask()
   const reorderTasks = useReorderTasks()
   const { data: me } = useMe()
 
@@ -76,11 +75,6 @@ export default function ListPage() {
 
   const handleAddSection = async (listId: string, title: string, order: number | undefined) => {
     await createSection.mutateAsync({ listId, title, order })
-  }
-
-  const handleUpdateTask = async (taskId: string, updates: Partial<CreateTaskInput>) => {
-    if (!list) return
-    await updateTask.mutateAsync({ taskId, listId: list.id, updates })
   }
 
   const handleReorderTasks = async (
@@ -200,11 +194,9 @@ export default function ListPage() {
                   return (
                     <div key={section.id}>
                       <TaskList
-                        title={list.title}
                         data={sectionTasks}
                         canEdit={canEdit}
                         onReorder={handleReorderTasks}
-                        onUpdate={handleUpdateTask}
                       />
                       {canEdit && (
                         <AddTask
@@ -236,10 +228,8 @@ export default function ListPage() {
                         <Divider ml={28} mr={8} />
                         <TaskList
                           canEdit={canEdit}
-                          title={`${list.title} / ${section.title}`}
                           data={list.tasks.filter(task => task.sectionId === section.id)}
                           onReorder={handleReorderTasks}
-                          onUpdate={handleUpdateTask}
                         />
                         {canEdit && (
                           <AddTask

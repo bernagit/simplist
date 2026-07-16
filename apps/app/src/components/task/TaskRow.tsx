@@ -18,14 +18,14 @@ import { useSidebar } from '@/providers/SidebarProvider'
 import { useDeleteTask, useToggleTask } from '@/queries/task'
 import { useContextMenu } from 'mantine-contextmenu'
 import { contextMenuStyles } from '@/utils/misc'
+import { editTaskModal } from '@/lib/modals/task'
 
 type TaskRowProps = {
   task: Task
   canEdit: boolean | undefined
-  onClick?: (task: Task) => void | Promise<void>
 }
 
-export default function TaskRow({ task, canEdit, onClick }: TaskRowProps) {
+export default function TaskRow({ task, canEdit }: TaskRowProps) {
   const { isMobile } = useSidebar()
   const colorMemo = useMemo(() => getPriorityColor(task.priority), [task.priority])
   const toggleTask = useToggleTask()
@@ -38,6 +38,13 @@ export default function TaskRow({ task, canEdit, onClick }: TaskRowProps) {
     if (!task.listId) return
     await toggleTask.mutateAsync({ listId: task.listId, taskId: task.id })
   }
+
+  const handleClick = useCallback(
+    (task: Task) => {
+      editTaskModal(task, isMobile, canEdit)
+    },
+    [isMobile, canEdit]
+  )
 
   const handleDeleteTask = useCallback(
     async (task: Task) => {
@@ -73,7 +80,7 @@ export default function TaskRow({ task, canEdit, onClick }: TaskRowProps) {
         icon: <IconEdit size={20} />,
         title: 'Edit',
         onClick: () => {
-          onClick?.(task)
+          handleClick(task)
         },
         disabled: !canEdit
       },
@@ -88,7 +95,7 @@ export default function TaskRow({ task, canEdit, onClick }: TaskRowProps) {
         disabled: !canEdit
       }
     ],
-    [canEdit, handleDeleteTask, onClick, task]
+    [canEdit, handleClick, handleDeleteTask, task]
   )
 
   useEffect(() => {
@@ -154,7 +161,7 @@ export default function TaskRow({ task, canEdit, onClick }: TaskRowProps) {
           onClick={e => {
             if ((e.target as HTMLElement).closest('input[type="checkbox"]')) return
             if ((e.target as HTMLElement).closest('button')) return
-            onClick?.(task)
+            handleClick(task)
           }}
         >
           <Checkbox

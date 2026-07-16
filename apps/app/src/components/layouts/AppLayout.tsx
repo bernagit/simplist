@@ -17,6 +17,7 @@ import { HelpProvider } from '@/providers/HelpProvider'
 import { PUBLIC_ROUTES } from '@/proxy'
 import AuthLayout from '../auth/AuthLayout'
 import UserSettings from '../modals/UserSettings'
+import EditTask from '../modals/EditTask'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -30,7 +31,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       modals={{
         addList: AddList,
         shareList: ShareList,
-        userSettings: UserSettings
+        userSettings: UserSettings,
+        editTask: EditTask
       }}
       modalProps={{
         withinPortal: true,

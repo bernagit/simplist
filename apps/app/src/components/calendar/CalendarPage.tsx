@@ -1,16 +1,19 @@
 'use client'
 
 import dayjs from 'dayjs'
-import { useEffect, useMemo, useState } from 'react'
-import { Box, Group, SegmentedControl, useMantineTheme } from '@mantine/core'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Box, Center, Group, Loader, SegmentedControl, useMantineTheme } from '@mantine/core'
 import {
   DateStringValue,
   getStartOfWeek,
   Schedule,
+  ScheduleEventData,
   ScheduleHeader,
   ScheduleViewLevel
 } from '@mantine/schedule'
 import { usePlannedTasks } from '@/queries/task'
+import { useSidebar } from '@/providers/SidebarProvider'
+import { editTaskModal } from '@/lib/modals/task'
 
 function getNavigationHandlers(date: DateStringValue, view: Exclude<ScheduleViewLevel, 'year'>) {
   const d = dayjs(date)
@@ -66,7 +69,7 @@ function getHeaderLabel(date: DateStringValue, view: Exclude<ScheduleViewLevel, 
 
 export default function CustomSchedule() {
   const [date, setDate] = useState<DateStringValue>(dayjs().format('YYYY-MM-DD') as DateStringValue)
-
+  const { isMobile } = useSidebar()
   const [view, setView] = useState<Exclude<ScheduleViewLevel, 'year'>>('week')
   const theme = useMantineTheme()
   const [mounted, setMounted] = useState(false)
@@ -129,8 +132,40 @@ export default function CustomSchedule() {
       }))
   }, [plannedTasks])
 
+  const handleEventClick = useCallback((event: ScheduleEventData) => {
+    const task = events.find(e => e.id === event.id)?.data
+    if (!task) return
+    editTaskModal(task, isMobile, true)
+  }, [events, isMobile])
+
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), [])
+
+  if (isLoading) {
+    return (
+      <Box
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
+          minHeight: 0
+        }}
+      >
+        <ScheduleHeader mb="md">
+          <ScheduleHeader.Previous />
+          <ScheduleHeader.Control interactive={false} miw={220}>
+            Loading...
+          </ScheduleHeader.Control>
+          <ScheduleHeader.Next />
+          <ScheduleHeader.Today />
+        </ScheduleHeader>
+
+        <Center style={{ flex: 1, minHeight: 0 }}>
+          <Loader size="xl" />
+        </Center>
+      </Box>
+    )
+  }
 
   return (
     <Box
@@ -179,10 +214,11 @@ export default function CustomSchedule() {
         view={view}
         onViewChange={value => setView(value as Exclude<ScheduleViewLevel, 'year'>)}
         events={events}
+        onEventClick={handleEventClick}
         dayViewProps={{
           withHeader: false,
-          startTime: '08:00:00',
-          endTime: '24:00:00',
+          // startTime: '08:00:00',
+          // endTime: '24:00:00',
           intervalMinutes: 30,
           scrollAreaProps: { mah: '100%' },
           withCurrentTimeIndicator: mounted
