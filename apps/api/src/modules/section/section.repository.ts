@@ -76,4 +76,10 @@ export class SectionRepository {
 
     return res
   }
+
+  async delete(sectionId: string) {
+    const query = db.delete(sections).where(eq(sections.id, sectionId))
+
+    await query.execute()
+  }
 }

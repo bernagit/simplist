@@ -28,7 +28,12 @@ async function updateSection(
     .json()
 }
 
+async function deleteSection(sectionId: string): Promise<Resp<null>> {
+  return await api.delete<Resp<null>>(`sections/${sectionId}`).json()
+}
+
 export const sectionService = {
   createSection,
-  updateSection
+  updateSection,
+  deleteSection
 }

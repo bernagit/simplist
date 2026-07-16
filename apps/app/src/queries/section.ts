@@ -119,3 +119,48 @@ export function useUpdateSection() {
     }
   })
 }
+
+export function useDeleteSection() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (input: { listId: string; sectionId: string }) =>
+      sectionService.deleteSection(input.sectionId),
+
+    onMutate: async input => {
+      await queryClient.cancelQueries({
+        queryKey: listKeys.detail(input.listId)
+      })
+
+      const previousList = queryClient.getQueryData<Resp<CompleteList>>(
+        listKeys.detail(input.listId)
+      )
+
+      queryClient.setQueryData<Resp<CompleteList>>(listKeys.detail(input.listId), old => {
+        if (!old) return old
+
+        return {
+          ...old,
+          data: {
+            ...old.data,
+            sections: old.data.sections.filter(section => section.id !== input.sectionId)
+          }
+        }
+      })
+
+      return { previousList }
+    },
+
+    onError: (err, variables, context) => {
+      if (context?.previousList) {
+        queryClient.setQueryData(listKeys.detail(variables.listId), context.previousList)
+      }
+    },
+
+    onSettled: (_data, _error, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: listKeys.detail(variables.listId)
+      })
+    }
+  })
+}

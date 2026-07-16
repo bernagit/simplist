@@ -5,7 +5,7 @@ import {
   Center,
   Collapse,
   Group,
-  Popover,
+  Menu,
   RingProgress,
   Text,
   useMantineTheme
@@ -14,7 +14,7 @@ import { IconChevronDown, IconChevronRight, IconDots } from '@tabler/icons-react
 import { EditableTitle } from './EditableText'
 import { useState } from 'react'
 import { Section } from '@/models/section'
-import { useUpdateSection } from '@/queries/section'
+import { useDeleteSection, useUpdateSection } from '@/queries/section'
 import { getHTMLSectionId } from '@/utils/misc'
 
 type SectionPanelProps = {
@@ -36,6 +36,15 @@ export default function SectionPanel({
   const theme = useMantineTheme()
 
   const updateSection = useUpdateSection()
+  const deleteSection = useDeleteSection()
+
+  const handleDeleteSection = async (sectionId: string) => {
+    await deleteSection.mutateAsync({
+      listId: section.listId,
+      sectionId
+    })
+  }
+
   const handleUpdateSection = async (sectionId: string, newTitle: string) => {
     await updateSection.mutateAsync({
       listId: section.listId,
@@ -87,18 +96,18 @@ export default function SectionPanel({
               handleUpdateSection(section.id, newTitle)
             }}
           />
-          <Popover>
-            <Popover.Target>
+          <Menu>
+            <Menu.Target>
               <ActionIcon variant="subtle" color="gray" size="sm">
                 <IconDots />
               </ActionIcon>
-            </Popover.Target>
-            <Popover.Dropdown>
-              <Text size="sm" c="dimmed">
-                Section actions will go here
-              </Text>
-            </Popover.Dropdown>
-          </Popover>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item color="red" onClick={() => handleDeleteSection(section.id)}>
+                Delete Section
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
         </Group>
       </Group>
       <Collapse expanded={isExpanded}>{children}</Collapse>

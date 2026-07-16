@@ -108,5 +108,7 @@ export class SectionService {
     if (!isMember) {
       throw Errors.forbidden('You do not have permission to delete this section')
     }
+
+    return await this.repository.delete(sectionId)
   }
 }
