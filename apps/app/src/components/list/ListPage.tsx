@@ -83,7 +83,11 @@ export default function ListPage() {
     await updateTask.mutateAsync({ taskId, listId: list.id, updates })
   }
 
-  const handleReorderTasks = async (movedTaskId: string, targetTaskId: string, sectionId: string) => {
+  const handleReorderTasks = async (
+    movedTaskId: string,
+    targetTaskId: string,
+    sectionId: string
+  ) => {
     if (!list) return
     await reorderTasks.mutateAsync({ listId: list.id, sectionId, movedTaskId, targetTaskId })
   }

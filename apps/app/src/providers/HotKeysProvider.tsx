@@ -23,7 +23,7 @@ export function HotkeyProvider({ children }: { children: ReactNode }) {
   const { toggle: toggleSidebar } = useSidebar()
   const { toggle: toggleHelp } = useHelp()
   const queryClient = useQueryClient()
-  
+
   const handleShareList = useCallback(() => {
     if (route.listId) {
       shareListModal(route.listId)
@@ -34,7 +34,7 @@ export function HotkeyProvider({ children }: { children: ReactNode }) {
     if (route.listId) {
       const cachedData = queryClient.getQueryData<Resp<CompleteList>>(listKeys.detail(route.listId))
       const list = cachedData?.data
-      
+
       if (!list) return
       updateListModal(route.listId, {
         title: list.title,

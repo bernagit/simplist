@@ -79,7 +79,7 @@ export default function TaskList({ title, data, canEdit, onReorder, onUpdate }: 
     if (onReorder) {
       try {
         await onReorder(movedTask.id, targetTask.id, sectionId)
-      } catch { }
+      } catch {}
     }
   }
 
@@ -101,11 +101,9 @@ export default function TaskList({ title, data, canEdit, onReorder, onUpdate }: 
           fullScreen={isMobile}
           size="xl"
           title={
-            <Group gap="xs" onClick={close} align='center'>
+            <Group gap="xs" onClick={close} align="center">
               <IconList size={18} stroke={1.8} />
-              <Text fw={600}>
-                {title}
-              </Text>
+              <Text fw={600}>{title}</Text>
             </Group>
           }
           p={0}

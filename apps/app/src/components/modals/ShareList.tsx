@@ -1,5 +1,10 @@
 import { useCallback, useMemo, useState } from 'react'
-import { useChangeListMemberRole, useDeleteListMember, useListById, useShareList } from '@/queries/lists'
+import {
+  useChangeListMemberRole,
+  useDeleteListMember,
+  useListById,
+  useShareList
+} from '@/queries/lists'
 import {
   ActionIcon,
   Avatar,
@@ -52,11 +57,7 @@ export default function ShareList({ innerProps }: ContextModalProps<ShareListPro
     (memberId: string) => () => {
       modals.openConfirmModal({
         title: 'Confirm Remove Member',
-        children: (
-          <Text size="sm">
-            Are you sure you want to remove this member from the list?
-          </Text>
-        ),
+        children: <Text size="sm">Are you sure you want to remove this member from the list?</Text>,
         labels: {
           confirm: 'Remove',
           cancel: 'Cancel'
@@ -89,7 +90,7 @@ export default function ShareList({ innerProps }: ContextModalProps<ShareListPro
           label="Email"
           placeholder="Enter email"
           value={shareWithEmail}
-          onChange={(e) => setShareWithEmail(e.currentTarget.value)}
+          onChange={e => setShareWithEmail(e.currentTarget.value)}
         />
 
         <Select
@@ -104,11 +105,7 @@ export default function ShareList({ innerProps }: ContextModalProps<ShareListPro
           comboboxProps={{ withinPortal: false }}
         />
 
-        <Button
-          mb={1}
-          disabled={!shareWithEmail}
-          onClick={handleShare}
-        >
+        <Button mb={1} disabled={!shareWithEmail} onClick={handleShare}>
           Share
         </Button>
       </Flex>
@@ -143,7 +140,7 @@ export default function ShareList({ innerProps }: ContextModalProps<ShareListPro
                       { value: 'editor', label: 'Editor' },
                       { value: 'viewer', label: 'Viewer' }
                     ]}
-                    onChange={(newRole) => {
+                    onChange={newRole => {
                       if (!listId || !newRole) return
                       changeRole.mutate({
                         listId,
@@ -151,7 +148,6 @@ export default function ShareList({ innerProps }: ContextModalProps<ShareListPro
                         role: newRole as 'editor' | 'viewer'
                       })
                     }}
-
                     comboboxProps={{ withinPortal: false }}
                   />
 

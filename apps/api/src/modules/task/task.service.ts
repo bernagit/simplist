@@ -131,4 +131,16 @@ export class TaskService {
 
     return await this.repository.getBySectionId(sectionId)
   }
+
+  async getPlannedTasks(
+    startDate: Date,
+    endDate: Date,
+    userId: string,
+    filters: {
+      listId?: string | undefined
+    }
+  ) {
+    const tasks = await this.repository.getPlannedTasks(startDate, endDate, userId, filters)
+    return tasks
+  }
 }

@@ -37,7 +37,7 @@ export function LoginForm() {
 
     try {
       await login(values.identifier, values.password)
-      
+
       let redirectTo = '/'
       try {
         const res = await queryClient.fetchQuery({
@@ -45,7 +45,7 @@ export function LoginForm() {
           queryFn: preferencesService.getPreferences,
           staleTime: 1000 * 60 * 10
         })
-        
+
         const defaultView = res.data.defaultView
         redirectTo = getDefaultViewFromString(defaultView)
       } catch {

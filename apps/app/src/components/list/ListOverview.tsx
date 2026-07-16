@@ -22,7 +22,7 @@ import {
   Divider,
   SegmentedControl,
   Collapse,
-  Indicator,
+  Indicator
 } from '@mantine/core'
 import { useDebouncedValue, useDisclosure, useLocalStorage } from '@mantine/hooks'
 import {
@@ -54,7 +54,7 @@ export default function ListOverview({ shared, data, isLoading }: ListOverviewPr
 
   const archiveList = useArchiveList()
   const unarchiveList = useUnarchiveList()
-  const [expanded, { toggle }] = useDisclosure(false);
+  const [expanded, { toggle }] = useDisclosure(false)
 
   type StatusFilter = 'active' | 'all' | 'archived'
 
@@ -166,7 +166,7 @@ export default function ListOverview({ shared, data, isLoading }: ListOverviewPr
             flex={1}
           />
           {activeFilters && !expanded ? (
-            <Indicator label="!" color='red' size={16} offset={4}>
+            <Indicator label="!" color="red" size={16} offset={4}>
               <ActionIcon
                 size="lg"
                 radius="md"
@@ -186,7 +186,6 @@ export default function ListOverview({ shared, data, isLoading }: ListOverviewPr
               <IconAdjustmentsHorizontal size={20} />
             </ActionIcon>
           )}
-
         </Group>
 
         <Collapse expanded={expanded}>
@@ -212,11 +211,7 @@ export default function ListOverview({ shared, data, isLoading }: ListOverviewPr
               <Divider />
 
               <Group justify="flex-end">
-                <Button
-                  variant="subtle"
-                  size="xs"
-                  onClick={() => setStatus('active')}
-                >
+                <Button variant="subtle" size="xs" onClick={() => setStatus('active')}>
                   Reset
                 </Button>
               </Group>
@@ -238,7 +233,7 @@ export default function ListOverview({ shared, data, isLoading }: ListOverviewPr
               }}
               onClick={() => handleListClick(list.id)}
               onContextMenu={showContextMenu(getMenuOptions(list), {
-                styles: contextMenuStyles,
+                styles: contextMenuStyles
               })}
             >
               <Stack gap="md">

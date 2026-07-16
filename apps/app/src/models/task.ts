@@ -12,6 +12,11 @@ export type Task = {
   updatedAt: Date
 }
 
+export type PlannedTask = Task & {
+  color: string
+  listTitle: string
+}
+
 export type CreateTaskInput = {
   listId: string
   sectionId: string | null

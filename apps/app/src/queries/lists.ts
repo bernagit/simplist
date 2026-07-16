@@ -42,7 +42,7 @@ export function useCreateList() {
 
       const optimisticList = {
         ...newList,
-        id: `temp-id-${Math.random()}`,
+        id: `temp-id-${Math.random()}`
       }
       queryClient.setQueryData(listKeys.all, (old: Resp<AllList> | undefined) => {
         if (!old) return old
@@ -51,7 +51,7 @@ export function useCreateList() {
           ...old,
           data: {
             ...old.data,
-            owned: [...old.data.owned, optimisticList],
+            owned: [...old.data.owned, optimisticList]
           }
         }
       })
@@ -218,8 +218,15 @@ export const useChangeListMemberRole = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ listId, memberId, role }: { listId: string; memberId: string; role: 'editor' | 'viewer' }) =>
-      listsService.changeListMemberRole(listId, memberId, role),
+    mutationFn: ({
+      listId,
+      memberId,
+      role
+    }: {
+      listId: string
+      memberId: string
+      role: 'editor' | 'viewer'
+    }) => listsService.changeListMemberRole(listId, memberId, role),
 
     onError: async error => {
       let message = 'Something went wrong. Please try again.'

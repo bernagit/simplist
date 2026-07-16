@@ -327,29 +327,30 @@ export function Sidebar() {
               >
                 {ownedLists.map(list => {
                   return (
-                  <NavLink
-                    key={list.id}
-                    label={list.title}
-                    // color={list.color ? `${list.color}` : 'gray'}
-                    leftSection={
-                      <IconPoint
-                        size={24}
-                        color={list.color ? `${list.color}` : 'var(--mantine-color-gray-6)'}
-                        fill={list.color ? `${list.color}` : 'var(--mantine-color-gray-6)'}
-                      />
-                    }
-                    rightSection={
-                      list.shared ? (
-                        <Tooltip label="List is shared" position="right" withArrow>
-                          <IconUsers size={16} />
-                        </Tooltip>
-                       ) : null
-                    }
-                    active={pathname === `/lists/${list.id}`}
-                    onClick={() => handleNavigate(`/lists/${list.id}`)}
-                    style={{ borderRadius: 'var(--mantine-radius-md)' }}
-                  />
-                )})}
+                    <NavLink
+                      key={list.id}
+                      label={list.title}
+                      // color={list.color ? `${list.color}` : 'gray'}
+                      leftSection={
+                        <IconPoint
+                          size={24}
+                          color={list.color ? `${list.color}` : 'var(--mantine-color-gray-6)'}
+                          fill={list.color ? `${list.color}` : 'var(--mantine-color-gray-6)'}
+                        />
+                      }
+                      rightSection={
+                        list.shared ? (
+                          <Tooltip label="List is shared" position="right" withArrow>
+                            <IconUsers size={16} />
+                          </Tooltip>
+                        ) : null
+                      }
+                      active={pathname === `/lists/${list.id}`}
+                      onClick={() => handleNavigate(`/lists/${list.id}`)}
+                      style={{ borderRadius: 'var(--mantine-radius-md)' }}
+                    />
+                  )
+                })}
               </NavLink>
               <Divider my="xs" />
               <NavLink

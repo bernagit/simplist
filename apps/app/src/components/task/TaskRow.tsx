@@ -2,7 +2,13 @@
 
 import { Task } from '@/models/task'
 import { ActionIcon, Checkbox, Group, Stack, Text } from '@mantine/core'
-import { IconCalendar, IconChecklist, IconEdit, IconGripVertical, IconTrash } from '@tabler/icons-react'
+import {
+  IconCalendar,
+  IconChecklist,
+  IconEdit,
+  IconGripVertical,
+  IconTrash
+} from '@tabler/icons-react'
 import { CSS } from '@dnd-kit/utilities'
 import { useSortable } from '@dnd-kit/sortable'
 import dayjs from 'dayjs'
@@ -33,51 +39,57 @@ export default function TaskRow({ task, canEdit, onClick }: TaskRowProps) {
     await toggleTask.mutateAsync({ listId: task.listId, taskId: task.id })
   }
 
-  const handleDeleteTask = useCallback(async (task: Task) => {
-    if (!canEdit) return
-    if (!task.listId) return
-    await deleteTask.mutateAsync({ listId: task.listId, taskId: task.id })
-  }, [canEdit, deleteTask])
+  const handleDeleteTask = useCallback(
+    async (task: Task) => {
+      if (!canEdit) return
+      if (!task.listId) return
+      await deleteTask.mutateAsync({ listId: task.listId, taskId: task.id })
+    },
+    [canEdit, deleteTask]
+  )
 
   const { attributes, listeners, setNodeRef, transform, isDragging } = useSortable({
     id: task.id,
     disabled: !canEdit
   })
 
-  const menuOptions = useMemo(() => [
-    {
-      key: 'item',
-      title: task.title.length > 20 ? task.title.slice(0, 20) + '...' : task.title,
-      icon: <IconChecklist size={20} />,
-      disabled: true,
-      onClick: () => { },
-      style: {
-        cursor: 'default',
+  const menuOptions = useMemo(
+    () => [
+      {
+        key: 'item',
+        title: task.title.length > 20 ? task.title.slice(0, 20) + '...' : task.title,
+        icon: <IconChecklist size={20} />,
+        disabled: true,
+        onClick: () => {},
+        style: {
+          cursor: 'default'
+        }
+      },
+      {
+        key: 'divider'
+      },
+      {
+        key: 'edit',
+        icon: <IconEdit size={20} />,
+        title: 'Edit',
+        onClick: () => {
+          onClick?.(task)
+        },
+        disabled: !canEdit
+      },
+      {
+        key: 'delete',
+        icon: <IconTrash size={20} />,
+        title: 'Delete',
+        color: 'red',
+        onClick: () => {
+          handleDeleteTask(task)
+        },
+        disabled: !canEdit
       }
-    },
-    {
-      key: 'divider'
-    },
-    {
-      key: 'edit',
-      icon: <IconEdit size={20} />,
-      title: 'Edit',
-      onClick: () => {
-        onClick?.(task)
-      },
-      disabled: !canEdit,
-    },
-    {
-      key: 'delete',
-      icon: <IconTrash size={20} />,
-      title: 'Delete',
-      color: 'red',
-      onClick: () => {
-        handleDeleteTask(task)
-      },
-      disabled: !canEdit
-    }
-  ], [canEdit, handleDeleteTask, onClick, task])
+    ],
+    [canEdit, handleDeleteTask, onClick, task]
+  )
 
   useEffect(() => {
     if (!isContextMenuVisible) {
@@ -103,19 +115,17 @@ export default function TaskRow({ task, canEdit, onClick }: TaskRowProps) {
           ? 'light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))'
           : undefined,
 
-        outline: selected
-          ? '1px solid var(--mantine-primary-color-filled)'
-          : undefined,
+        outline: selected ? '1px solid var(--mantine-primary-color-filled)' : undefined,
 
         outlineOffset: -1,
 
         boxShadow: [
           selected && 'inset 0 0 0 1px var(--mantine-primary-color-filled)',
-          isDragging && '0 8px 24px rgba(0,0,0,.18)',
+          isDragging && '0 8px 24px rgba(0,0,0,.18)'
         ]
           .filter(Boolean)
           .join(', '),
-        
+
         opacity: isDragging ? 0.95 : 1,
         zIndex: isDragging ? 100 : 1
       }}
@@ -149,7 +159,7 @@ export default function TaskRow({ task, canEdit, onClick }: TaskRowProps) {
         >
           <Checkbox
             radius="xl"
-            size='md'
+            size="md"
             checked={task.completed}
             disabled={!canEdit}
             onChange={() => {
@@ -171,14 +181,13 @@ export default function TaskRow({ task, canEdit, onClick }: TaskRowProps) {
           <Stack
             gap={2}
             flex={1}
-            onContextMenu={(e) => {
+            onContextMenu={e => {
               e.stopPropagation()
               e.preventDefault()
               setSelected(true)
               showContextMenu(menuOptions, {
                 styles: contextMenuStyles
-              }
-              )(e)
+              })(e)
             }}
           >
             <Text

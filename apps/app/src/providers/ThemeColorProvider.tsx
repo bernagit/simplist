@@ -7,8 +7,20 @@ import { useAuth } from './AuthProvider'
 import { usePreferences, useUpdatePreferences } from '@/queries/preferences'
 
 export const AVAILABLE_THEME_COLORS: MantineColor[] = [
-  'dark', 'gray', 'red', 'pink', 'grape', 'violet', 'indigo',
-  'blue', 'cyan', 'teal', 'green', 'lime', 'yellow', 'orange'
+  'dark',
+  'gray',
+  'red',
+  'pink',
+  'grape',
+  'violet',
+  'indigo',
+  'blue',
+  'cyan',
+  'teal',
+  'green',
+  'lime',
+  'yellow',
+  'orange'
 ]
 
 type ThemeColorContextValue = {

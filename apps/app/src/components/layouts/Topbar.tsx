@@ -62,7 +62,7 @@ export function Topbar() {
 
   const isArchived = useMemo(() => {
     if (!route.listId) return false
-    
+
     const cachedData = queryClient.getQueryData<Resp<CompleteList>>(listKeys.detail(route.listId))
     const list = cachedData?.data
 

@@ -16,7 +16,7 @@ export const HOTKEYS = {
     description: 'Edit current list',
     category: 'Actions'
   },
-  
+
   TOGGLE_THEME: {
     keys: ['mod+j'],
     description: 'Toggle theme',

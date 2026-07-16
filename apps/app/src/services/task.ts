@@ -1,5 +1,5 @@
 import { Resp } from '@/models/base'
-import { CreateTaskInput, Task } from '@/models/task'
+import { CreateTaskInput, PlannedTask, Task } from '@/models/task'
 import api from '@/utils/ky'
 
 async function createTask(data: CreateTaskInput): Promise<Resp<Task>> {
@@ -29,7 +29,24 @@ async function reorderTasks(
   listId: string,
   sectionId: string
 ): Promise<Resp<Task[]>> {
-  return await api.put(`tasks/${listId}/${sectionId}/reorder`, { json: { movedTaskId, targetTaskId } }).json()
+  return await api
+    .put(`tasks/${listId}/${sectionId}/reorder`, { json: { movedTaskId, targetTaskId } })
+    .json()
+}
+
+async function getPlannedTasks(
+  startDate: Date,
+  endDate: Date,
+  listId?: string
+): Promise<Resp<PlannedTask[]>> {
+  const body: { startDate: string; endDate: string; listId?: string } = {
+    startDate: startDate.toISOString(),
+    endDate: endDate.toISOString()
+  }
+  if (listId) {
+    body.listId = listId
+  }
+  return await api.post('tasks/planned', { json: body }).json()
 }
 
 export const tasksService = {
@@ -37,5 +54,6 @@ export const tasksService = {
   toggleCompleteTask,
   updateTask,
   deleteTask,
-  reorderTasks
+  reorderTasks,
+  getPlannedTasks
 }

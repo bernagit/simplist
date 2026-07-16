@@ -1,6 +1,6 @@
 import { CreateTaskInput, UpdateTaskInput } from '@/models/task'
 import { tasksService } from '@/services/task'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { listKeys } from './lists'
 import { CompleteList } from '@/models/lists'
 import { Resp } from '@/models/base'
@@ -142,10 +142,10 @@ export function useUpdateTask() {
             tasks: old.data.tasks.map(task =>
               task.id === taskId
                 ? {
-                  ...task,
-                  ...updates,
-                  updatedAt: new Date()
-                }
+                    ...task,
+                    ...updates,
+                    updatedAt: new Date()
+                  }
                 : task
             )
           }
@@ -213,7 +213,7 @@ export function useReorderTasks() {
         input.movedTaskId,
         input.targetTaskId,
         input.listId,
-        input.sectionId,
+        input.sectionId
       ),
 
     onMutate: async input => {
@@ -266,33 +266,42 @@ export function useReorderTasks() {
     },
 
     onSuccess: ({ data: tasks }, variables) => {
-      queryClient.setQueryData<Resp<CompleteList>>(
-        listKeys.detail(variables.listId),
-        old => {
-          if (!old) return old
+      queryClient.setQueryData<Resp<CompleteList>>(listKeys.detail(variables.listId), old => {
+        if (!old) return old
 
-          const updated = new Map(tasks.map(t => [t.id, t]))
+        const updated = new Map(tasks.map(t => [t.id, t]))
 
-          return {
-            ...old,
-            data: {
-              ...old.data,
-              tasks: old.data.tasks.map(
-                task => updated.get(task.id) ?? task
-              )
-            }
+        return {
+          ...old,
+          data: {
+            ...old.data,
+            tasks: old.data.tasks.map(task => updated.get(task.id) ?? task)
           }
         }
-      )
+      })
     },
 
     onError: (_err, variables, context) => {
       if (context?.previousList) {
-        queryClient.setQueryData(
-          listKeys.detail(variables.listId),
-          context.previousList
-        )
+        queryClient.setQueryData(listKeys.detail(variables.listId), context.previousList)
       }
     }
+  })
+}
+
+export function usePlannedTasks(
+  startDate: Date,
+  endDate: Date,
+  listId?: string
+) {
+  return useQuery({
+    queryKey: [
+      'plannedTasks',
+      startDate.toISOString(),
+      endDate.toISOString(),
+      listId,
+    ],
+    queryFn: () =>
+      tasksService.getPlannedTasks(startDate, endDate, listId),
   })
 }

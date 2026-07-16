@@ -122,7 +122,7 @@ export function AccountSection() {
             Change photo
           </Button>
         </Group>
-    
+
         <TextInput
           label="Email"
           value={email}

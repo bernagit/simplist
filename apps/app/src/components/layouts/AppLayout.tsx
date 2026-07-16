@@ -62,10 +62,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     style={{
                       display: 'flex',
                       justifyContent: 'center',
-                      overflow: 'hidden'
+                      overflow: 'hidden',
+                      minHeight: 0
                     }}
                   >
-                    <Box w={{ base: '100%', lg: '60%' }} p="md" h="100%">
+                    <Box
+                      w={{ base: '100%', lg: '60%' }}
+                      p="md"
+                      style={{
+                        flex: 1,
+                        minHeight: 0,
+                        overflow: 'hidden'
+                      }}
+                    >
                       {children}
                     </Box>
                   </Box>

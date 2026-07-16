@@ -14,25 +14,18 @@ export function useAppRoute() {
     const isLists = segments[0] === 'lists'
     const isShared = isLists && segments[1] === 'shared'
 
-    const listId = isLists
-      ? isShared
-        ? (segments[2] ?? null)
-        : (segments[1] ?? null)
-      : null
+    const listId = isLists ? (isShared ? (segments[2] ?? null) : (segments[1] ?? null)) : null
 
     const breadcrumbs = (() => {
       if (pathname === '/') return []
 
       switch (segments[0]) {
         case 'lists':
-          if (segments.length === 1)
-            return [{ label: 'My Lists', href: '/lists' }]
+          if (segments.length === 1) return [{ label: 'My Lists', href: '/lists' }]
 
-          if (isShared)
-            return [{ label: 'Shared', href: '/lists/shared' }]
+          if (isShared) return [{ label: 'Shared', href: '/lists/shared' }]
 
-          if (listId)
-            return [{ label: 'My Lists', href: '/lists' }]
+          if (listId) return [{ label: 'My Lists', href: '/lists' }]
 
           return []
 

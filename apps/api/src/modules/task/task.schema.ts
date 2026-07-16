@@ -45,6 +45,14 @@ export const updateTaskSchema = z.object({
   })
 })
 
+export const plannedTaskSchema = z.object({
+  body: z.object({
+    startDate: z.coerce.date(),
+    endDate: z.coerce.date(),
+    listId: z.string().optional()
+  })
+})
+
 export type TaskIdInput = z.infer<typeof taskIdSchema>['params']
 export type CreateTaskInput = z.infer<typeof createTaskSchema>['body']
 export type CreateTaskParams = z.infer<typeof createTaskSchema>['params']
@@ -52,3 +60,4 @@ export type UpdateTaskInput = z.infer<typeof updateTaskSchema>['body']
 export type UpdateTaskParams = z.infer<typeof updateTaskSchema>['params']
 export type ReorderTasksInput = z.infer<typeof reorderTasksSchema>['body']
 export type ReorderTasksParams = z.infer<typeof reorderTasksSchema>['params']
+export type PlannedTaskInput = z.infer<typeof plannedTaskSchema>['body']

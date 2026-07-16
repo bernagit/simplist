@@ -1,1 +1,9 @@
 @layer mantine, mantine-contextmenu;
+
+.mantine-WeekView-weekView,
+.mantine-WeekView-weekViewRoot,
+.mantine-DayView-dayView,
+.mantine-DayView-dayViewRoot,
+.mantine-ScrollArea-root[data-autosize] {
+  height: 100%;
+}

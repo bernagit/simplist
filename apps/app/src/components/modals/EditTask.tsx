@@ -90,7 +90,7 @@ export default function EditTask({ task, canEdit, onUpdate }: EditTaskProps) {
     >
       <Group align="start">
         <Checkbox
-          size='lg'
+          size="lg"
           radius="xl"
           checked={task.completed}
           mt={task.description ? 10 : 0}

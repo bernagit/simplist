@@ -36,36 +36,45 @@ export function AppearanceSection() {
     ? ((preferences?.settings?.syncAppearance as boolean | undefined) ?? false)
     : false
 
-  const handleColorSchemeChange = useCallback((scheme: MantineColorScheme) => {
-    setColorScheme(scheme)
+  const handleColorSchemeChange = useCallback(
+    (scheme: MantineColorScheme) => {
+      setColorScheme(scheme)
 
-    if (!isAuthenticated || !syncAppearance) return
+      if (!isAuthenticated || !syncAppearance) return
 
-    updatePreferences.mutate({
-      colorScheme: scheme
-    })
-  }, [isAuthenticated, setColorScheme, syncAppearance, updatePreferences])
+      updatePreferences.mutate({
+        colorScheme: scheme
+      })
+    },
+    [isAuthenticated, setColorScheme, syncAppearance, updatePreferences]
+  )
 
-  const handleThemeColorChange = useCallback((color: MantineColor) => {
-    setThemeColor(color)
+  const handleThemeColorChange = useCallback(
+    (color: MantineColor) => {
+      setThemeColor(color)
 
-    if (!isAuthenticated || !syncAppearance) return
+      if (!isAuthenticated || !syncAppearance) return
 
-    updatePreferences.mutate({
-      themeColor: color
-    })
-  }, [isAuthenticated, setThemeColor, syncAppearance, updatePreferences])
+      updatePreferences.mutate({
+        themeColor: color
+      })
+    },
+    [isAuthenticated, setThemeColor, syncAppearance, updatePreferences]
+  )
 
-  const handleSyncToggle = useCallback((checked: boolean) => {
-    if (!isAuthenticated) return
+  const handleSyncToggle = useCallback(
+    (checked: boolean) => {
+      if (!isAuthenticated) return
 
-    updatePreferences.mutate({
-      settings: {
-        ...preferences?.settings,
-        syncAppearance: checked
-      }
-    })
-  }, [isAuthenticated, preferences?.settings, updatePreferences])
+      updatePreferences.mutate({
+        settings: {
+          ...preferences?.settings,
+          syncAppearance: checked
+        }
+      })
+    },
+    [isAuthenticated, preferences?.settings, updatePreferences]
+  )
 
   return (
     <Stack gap="xl">

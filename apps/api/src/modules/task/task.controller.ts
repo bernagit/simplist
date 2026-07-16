@@ -3,6 +3,7 @@ import { HTTP_STATUS } from '../../types/http'
 import {
   CreateTaskInput,
   CreateTaskParams,
+  PlannedTaskInput,
   ReorderTasksInput,
   ReorderTasksParams,
   TaskIdInput,
@@ -95,6 +96,26 @@ export class TaskController {
       res.status(HTTP_STATUS.OK).json({
         message: 'Tasks reordered successfully',
         data: result
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  getPlannedTasks = async (req: Request, res: Response, next: NextFunction) => {
+    const { id: userId } = req.user!
+    const { startDate, endDate, listId } = req.validated!.body as PlannedTaskInput
+
+    const filters = {
+      listId: listId || undefined
+    }
+
+    try {
+      const tasks = await this.service.getPlannedTasks(startDate, endDate, userId, filters)
+
+      res.status(HTTP_STATUS.OK).json({
+        message: 'Planned tasks retrieved successfully',
+        data: tasks
       })
     } catch (error) {
       next(error)
