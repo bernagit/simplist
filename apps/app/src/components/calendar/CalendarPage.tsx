@@ -2,7 +2,7 @@
 
 import dayjs from 'dayjs'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Box, Button, Center, Group, Loader, SegmentedControl, useMantineTheme, Text } from '@mantine/core'
+import { Box, Button, Center, Group, Loader, SegmentedControl, useMantineTheme } from '@mantine/core'
 import {
   AgendaView,
   DateStringValue,
@@ -17,6 +17,7 @@ import { useSidebar } from '@/providers/SidebarProvider'
 import { editTaskModal } from '@/lib/modals/task'
 import { getHTMLSectionId } from '@/utils/misc'
 import { useRouter } from 'next/navigation'
+import { PlannedTask } from '@/models/task'
 
 function getNavigationHandlers(date: DateStringValue, view: Exclude<ScheduleViewLevel, 'year'>) {
   const d = dayjs(date)
@@ -78,6 +79,7 @@ export default function CustomSchedule() {
   const theme = useMantineTheme()
   const [mounted, setMounted] = useState(false)
   const [withAgenda, setWithAgenda] = useState(false)
+  const [updatedTasks, setUpdatedTasks] = useState<Record<string, PlannedTask>>({})
 
   const nav = getNavigationHandlers(date, view)
 
@@ -118,20 +120,50 @@ export default function CustomSchedule() {
     visibleRange.end.toDate()
   )
 
-  const events = useMemo(() => {
+  const tasks = useMemo(() => {
     if (!plannedTasks?.data) return []
 
-    return plannedTasks.data
-      .filter(task => task.dueDate)
-      .map(task => ({
-        id: task.id,
-        title: task.title,
-        start: task.dueDate!,
-        end: dayjs(task.dueDate!).add(30, 'minute').toDate(),
-        color: task.color,
-        data: task,
-      }))
-  }, [plannedTasks])
+    return plannedTasks.data.map(task => updatedTasks[task.id] ?? task)
+  }, [plannedTasks, updatedTasks])
+
+  const events = useMemo(() => {
+    if (!tasks) return []
+
+    return tasks
+      .filter((task) => task.dueDate)
+      .map((task) => {
+        let start: string
+        let end: string
+
+        if (task.dueTime) {
+          const startDate = dayjs(`${task.dueDate} ${task.dueTime}`)
+          // If duration is not specified, default to 30 minutes
+          const endDate = startDate.add(task.durationMinutes ?? 30, "minute")
+
+          start = startDate.format("YYYY-MM-DD HH:mm:ss")
+          end = endDate.format("YYYY-MM-DD HH:mm:ss")
+        } else {
+          // All-day event
+          start = dayjs(task.dueDate)
+            .startOf("day")
+            .format("YYYY-MM-DD HH:mm:ss")
+
+          end = dayjs(task.dueDate)
+            .add(1, "day")
+            .startOf("day")
+            .format("YYYY-MM-DD HH:mm:ss")
+        }
+
+        return {
+          id: task.id,
+          title: task.title,
+          start,
+          end,
+          color: task.color,
+          data: task,
+        }
+      })
+  }, [tasks])
 
   const handleEventClick = useCallback((event: ScheduleEventData) => {
     const task = events.find(e => e.id === event.id)?.data
@@ -148,7 +180,18 @@ export default function CustomSchedule() {
         router.push(sectionUrl)
       }
     }
-    editTaskModal(task, isMobile, true, navigation)
+    editTaskModal(
+      task,
+      isMobile,
+      true,
+      navigation,
+      (updatedTask: PlannedTask) => {
+        setUpdatedTasks(prev => ({
+          ...prev,
+          [updatedTask.id]: updatedTask,
+        }))
+      }
+    )
   }, [events, isMobile, router])
 
   useEffect(() => {

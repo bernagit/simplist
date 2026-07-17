@@ -1,11 +1,28 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
+import { RRule } from 'rrule/dist/esm/rrule'
 import z from 'zod'
+
+export const recurrenceRuleSchema = z
+  .string()
+  .refine(value => {
+    try {
+      RRule.fromString(value)
+      return true
+    } catch {
+      return false
+    }
+  }, 'Invalid recurrence rule')
+  .optional()
+  .nullable()
 
 export const createTaskSchema = z.object({
   body: z.object({
     title: z.string().max(200),
     description: z.string().max(1000).optional().nullable(),
-    dueDate: z.coerce.date().optional().nullable(),
+    dueDate: z.iso.date().optional().nullable(),
+    dueTime: z.iso.time({ precision: -1 }).optional().nullable(),
+    durationMinutes: z.number().int().positive().optional().nullable(),
+    recurrenceRule: recurrenceRuleSchema,
     priority: z.enum(['high', 'medium', 'low']).optional().nullable(),
     order: z.number().int().optional()
   }),
@@ -36,7 +53,10 @@ export const updateTaskSchema = z.object({
   body: z.object({
     title: z.string().max(200).optional(),
     description: z.string().max(1000).optional().nullable(),
-    dueDate: z.coerce.date().optional().nullable(),
+    dueDate: z.iso.date().optional().nullable(),
+    dueTime: z.iso.time({ precision: -1 }).optional().nullable(),
+    durationMinutes: z.number().int().positive().optional().nullable(),
+    recurrenceRule: recurrenceRuleSchema,
     priority: z.enum(['high', 'medium', 'low']).optional().nullable(),
     completed: z.boolean().optional()
   }),

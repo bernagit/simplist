@@ -1,10 +1,11 @@
 import { tasks } from '../../db/schema/tasks'
 import db from '../../infrastructure/database/db'
-import { and, eq, gt, gte, lt, lte, max, ne, sql } from 'drizzle-orm'
+import { and, eq, gt, gte, isNotNull, lt, lte, max, ne, sql } from 'drizzle-orm'
 import { CreateTaskInput, UpdateTaskInput } from './task.schema'
 import { logger } from '../../infrastructure/logging/logger'
 import { lists } from '../../db/schema/lists'
 import { sections } from '../../db/schema/sections'
+import { format } from 'date-fns'
 
 export class TaskRepository {
   constructor() {}
@@ -38,6 +39,9 @@ export class TaskRepository {
       title: data.title,
       description: data.description,
       dueDate: data.dueDate,
+      dueTime: data.dueTime,
+      durationMinutes: data.durationMinutes,
+      recurrenceRule: data.recurrenceRule,
       order: data.order,
       priority: data.priority
     }
@@ -117,6 +121,8 @@ export class TaskRepository {
     userId: string,
     filters: { listId?: string | undefined }
   ) {
+    const start = format(startDate, 'yyyy-MM-dd')
+    const end = format(endDate, 'yyyy-MM-dd')
     // get all tasks that belongs to the user and have dueDate between startDate and endDate
     const query = db
       .select({
@@ -124,6 +130,9 @@ export class TaskRepository {
         title: tasks.title,
         description: tasks.description,
         dueDate: tasks.dueDate,
+        dueTime: tasks.dueTime,
+        durationMinutes: tasks.durationMinutes,
+        recurrenceRule: tasks.recurrenceRule,
         completed: tasks.completed,
         priority: tasks.priority,
         order: tasks.order,
@@ -135,12 +144,13 @@ export class TaskRepository {
       })
       .from(tasks)
       .innerJoin(lists, eq(tasks.listId, lists.id))
-      .innerJoin(sections, eq(tasks.sectionId, sections.id))
+      .leftJoin(sections, eq(tasks.sectionId, sections.id))
       .where(
         and(
           eq(lists.ownerId, userId),
-          gte(tasks.dueDate, startDate),
-          lte(tasks.dueDate, endDate),
+          isNotNull(tasks.dueDate),
+          gte(tasks.dueDate, start),
+          lte(tasks.dueDate, end),
           filters.listId ? eq(tasks.listId, filters.listId) : undefined
         )
       )

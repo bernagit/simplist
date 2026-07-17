@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from 'react'
 import { ActionIcon, FocusTrap, Group, Stack } from '@mantine/core'
-import dayjs from 'dayjs'
 import { ContextModalProps } from '@mantine/modals'
 import { PlannedTask } from '@/models/task'
 import { getPriorityColor } from '@/utils/color'
@@ -23,31 +22,69 @@ export type NavigationCallbacks = {
 type EditTaskProps = {
   task: PlannedTask
   canEdit: boolean | undefined
-  navigation: NavigationCallbacks
+  navigation: NavigationCallbacks,
+  onUpdate?: (updatedTask: PlannedTask) => void
 }
 
 export default function EditTask({ context, id, innerProps }: ContextModalProps<EditTaskProps>) {
-  const { task, canEdit, navigation } = innerProps
+  const { task, canEdit, navigation, onUpdate } = innerProps
 
   const { updateField } = useTaskFieldUpdate(task)
   const { completed, toggle } = useTaskCompletion(task)
   const editForm = useTaskEditForm(task)
 
-  const [selectedDate, setSelectedDate] = useState<string | null>(
-    task.dueDate ? dayjs(task.dueDate).toISOString() : null
-  )
+  const [selectedDate, setSelectedDate] = useState<string | null>(task.dueDate)
+  const [selectedTime, setSelectedTime] = useState<string | null>(task.dueTime)
+  const [selectedDuration, setSelectedDuration] = useState<number | null>(task.durationMinutes)
+  const [selectedRecurrence, setSelectedRecurrence] = useState<string | null>(task.recurrenceRule)
+
   const [selectedPriority, setSelectedPriority] = useState<string | null>(task.priority)
 
   const color = useMemo(() => getPriorityColor(task.priority), [task.priority])
 
   const handleDateChange = (date: string | null) => {
     setSelectedDate(date)
-    updateField({ dueDate: date ? new Date(date) : null })
+    updateField({ dueDate: date })
+    onUpdate?.({
+      ...task,
+      dueDate: date
+    })
+  }
+
+  const handleTimeChange = (time: string | null) => {
+    setSelectedTime(time)
+    updateField({ dueTime: time })
+    onUpdate?.({
+      ...task,
+      dueTime: time
+    })
+  }
+
+  const handleDurationChange = (minutes: number | null) => {
+    setSelectedDuration(minutes)
+    updateField({ durationMinutes: minutes })
+    onUpdate?.({
+      ...task,
+      durationMinutes: minutes
+    })
+  }
+
+  const handleRecurrenceChange = (rrule: string | null) => {
+    setSelectedRecurrence(rrule)
+    updateField({ recurrenceRule: rrule })
+    onUpdate?.({
+      ...task,
+      recurrenceRule: rrule
+    })
   }
 
   const handlePriorityChange = (priority: string | null) => {
     setSelectedPriority(priority)
     updateField({ priority: priority ?? null })
+    onUpdate?.({
+      ...task,
+      priority: priority ?? null
+    })
   }
 
   const handleNavigateToList = () => {
@@ -84,7 +121,10 @@ export default function EditTask({ context, id, innerProps }: ContextModalProps<
 
       <TaskContent
         completed={completed}
-        onToggle={toggle}
+        onToggle={() => {
+          toggle()
+          onUpdate?.(task)
+        }}
         canEdit={canEdit ?? false}
         color={color}
         hasDescription={Boolean(task.description)}
@@ -94,11 +134,33 @@ export default function EditTask({ context, id, innerProps }: ContextModalProps<
         onTitleChange={editForm.setTitle}
         onDescriptionChange={editForm.setDescription}
         onStartEditing={editForm.startEditing}
-        onSave={editForm.save}
-        onCancel={editForm.cancel}
+        onSave={() => {
+          editForm.save()
+          onUpdate?.({
+            ...task,
+            title: editForm.title,
+            description: editForm.description
+          })
+        }}
+        onCancel={() => {
+          editForm.cancel()
+          onUpdate?.({
+            ...task
+          })
+        }}
       />
 
-      <TaskDueDateField date={selectedDate} canEdit={canEdit ?? false} onChange={handleDateChange} />
+      <TaskDueDateField
+        dueDate={selectedDate}
+        dueTime={selectedTime}
+        durationMinutes={selectedDuration}
+        recurrenceRule={selectedRecurrence}
+        canEdit={canEdit ?? false}
+        onDateChange={handleDateChange}
+        onTimeChange={handleTimeChange}
+        onDurationChange={handleDurationChange}
+        onRecurrenceChange={handleRecurrenceChange}
+      />
 
       <TaskPriorityField priority={selectedPriority} canEdit={canEdit ?? false} onChange={handlePriorityChange} />
 

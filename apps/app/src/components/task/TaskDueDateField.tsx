@@ -1,54 +1,128 @@
 'use client'
 
-import { Button, Group, Popover, Text } from '@mantine/core'
-import { DatePicker } from '@mantine/dates'
-import { IconCalendar, IconX } from '@tabler/icons-react'
-import { formatDate } from '@/utils/date'
+import { 
+  ActionIcon, 
+  Group, 
+  Popover, 
+  Stack, 
+  Text, 
+  ThemeIcon,
+  rem
+} from '@mantine/core'
+import { 
+  IconCalendar, 
+  IconX 
+} from '@tabler/icons-react'
+import dayjs from 'dayjs'
 import HoverableBox from './HoverableBox'
+import { RECURRENCE_PRESETS } from '@/utils/constants'
+import DueDateDropdown from './DueDateDropdown'
 
 type TaskDueDateFieldProps = {
-  date: string | null
+  dueDate: string | null
+  dueTime: string | null
+  durationMinutes: number | null
+  recurrenceRule: string | null
   canEdit?: boolean
-  onChange: (date: string | null) => void
+  onDateChange: (date: string | null) => void
+  onTimeChange: (time: string | null) => void
+  onDurationChange: (minutes: number | null) => void
+  onRecurrenceChange: (rrule: string | null) => void
 }
 
-export default function TaskDueDateField({ date, canEdit, onChange }: TaskDueDateFieldProps) {
-  const shortDate = formatDate(date)
+export default function TaskDueDateField({
+  dueDate,
+  dueTime,
+  durationMinutes,
+  recurrenceRule,
+  canEdit = true,
+  onDateChange,
+  onTimeChange,
+  onDurationChange,
+  onRecurrenceChange,
+}: TaskDueDateFieldProps) {
+
+  const displaySummary = (() => {
+    if (!dueDate) return 'Set due date'
+
+    const dateStr = dayjs(dueDate).format('MMM D, YYYY')
+    const timeStr = dueTime ? ` at ${dueTime}` : ''
+    const durationStr = durationMinutes ? ` (${durationMinutes}m)` : ''
+    
+    let recurStr = ''
+    if (recurrenceRule) {
+      const preset = RECURRENCE_PRESETS.find(p => p.value === recurrenceRule)
+      recurStr = preset ? ` • ${preset.label}` : ' • Recurring'
+    }
+
+    return `${dateStr}${timeStr}${durationStr}${recurStr}`
+  })()
+
+  const handleClearAll = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    onDateChange(null)
+    onTimeChange(null)
+    onDurationChange(null)
+    onRecurrenceChange(null)
+  }
 
   return (
-    <Popover disabled={!canEdit} position="bottom-start" shadow="md" zIndex={500}>
+    <Popover 
+      disabled={!canEdit} 
+      position="bottom-start" 
+      shadow="lg" 
+      radius="md"
+      withArrow
+      offset={8}
+      zIndex={500}
+    >
       <Popover.Target>
         <HoverableBox disabled={!canEdit}>
-          <Group flex={1} justify="space-between">
-            <Group align="flex-start" style={{ height: 'var(--button-height-xs)' }}>
-              <IconCalendar size={20} />
-              <Text size="sm" c="dimmed">
-                {shortDate ?? 'No due date'}
-              </Text>
+          <Group justify="space-between" wrap="nowrap" style={{ width: '100%' }}>
+            <Group gap="sm" wrap="nowrap">
+              <ThemeIcon 
+                variant="light" 
+                color={'gray'} 
+                radius="md" 
+                size="md"
+              >
+                <IconCalendar style={{ width: rem(18), height: rem(18) }} />
+              </ThemeIcon>
+              <Stack gap={2}>
+                <Text size="xs" c="dimmed" fw={500} style={{ lineHeight: 1 }}>
+                  Due Date
+                </Text>
+                <Text size="sm" fw={dueDate ? 600 : 400} c={dueDate ? 'dark.4' : 'dimmed'}>
+                  {displaySummary}
+                </Text>
+              </Stack>
             </Group>
 
-            {date && (
-              <Button
+            {dueDate && canEdit && (
+              <ActionIcon
                 variant="subtle"
                 color="gray"
-                size="xs"
-                m={0}
-                p={0}
-                onClick={e => {
-                  if (!canEdit) return
-                  e.stopPropagation()
-                  onChange(null)
-                }}
+                radius="xl"
+                onClick={handleClearAll}
               >
-                <IconX size={16} />
-              </Button>
+                <IconX style={{ width: rem(16), height: rem(16) }} />
+              </ActionIcon>
             )}
           </Group>
         </HoverableBox>
       </Popover.Target>
 
-      <Popover.Dropdown>
-        <DatePicker highlightToday allowDeselect onChange={onChange} />
+      <Popover.Dropdown p="md">
+        <DueDateDropdown
+          dueDate={dueDate}
+          dueTime={dueTime}
+          durationMinutes={durationMinutes}
+          recurrenceRule={recurrenceRule}
+          onDateChange={onDateChange}
+          onTimeChange={onTimeChange}
+          onDurationChange={onDurationChange}
+          onRecurrenceChange={onRecurrenceChange}
+        />
       </Popover.Dropdown>
     </Popover>
   )

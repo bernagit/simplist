@@ -1,4 +1,14 @@
-import { boolean, integer, pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import {
+  boolean,
+  date,
+  integer,
+  pgEnum,
+  pgTable,
+  text,
+  time,
+  timestamp,
+  uuid
+} from 'drizzle-orm/pg-core'
 
 import { lists } from './lists'
 import { sections } from './sections'
@@ -26,9 +36,13 @@ export const tasks = pgTable('tasks', {
 
   completed: boolean('completed').notNull().default(false),
 
-  dueDate: timestamp('due_date', {
-    withTimezone: true
-  }),
+  dueDate: date('due_date'),
+
+  dueTime: time('due_time'),
+
+  durationMinutes: integer('duration_minutes'),
+
+  recurrenceRule: text('recurrence_rule'),
 
   priority: priorityEnum('priority'),
 

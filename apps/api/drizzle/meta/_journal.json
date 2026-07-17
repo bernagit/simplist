@@ -57,6 +57,13 @@
       "when": 1784040434617,
       "tag": "0007_nostalgic_living_mummy",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1784221356927,
+      "tag": "0008_gorgeous_scalphunter",
+      "breakpoints": true
     }
   ]
 }

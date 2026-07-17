@@ -65,8 +65,6 @@ export default function RegisterPage() {
       try {
         const response = await authService.checkInvite(token)
 
-        console.log('Invite response:', response)
-
         if (!cancelled) {
           setEmail(response.data.email)
         }

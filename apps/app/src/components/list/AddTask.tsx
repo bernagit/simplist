@@ -34,13 +34,19 @@ export default function AddTask({ ml, listId, sectionId, onSave }: AddTaskProps)
 
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [selectedDate, setSelectedDate] = useState<string | null>(null)
+  const [dueDate, setDueDate] = useState<string | null>(null)
+  const [dueTime, setDueTime] = useState<string | null>(null)
+  const [durationMinutes, setDurationMinutes] = useState<number | null>(null)
+  const [recurrenceRule, setRecurrenceRule] = useState<string | null>(null)
   const [selectedPriority, setSelectedPriority] = useState<string | null>(null)
 
   const clearInputs = () => {
     setTitle('')
     setDescription('')
-    setSelectedDate(null)
+    setDueDate(null)
+    setDueTime(null)
+    setDurationMinutes(null)
+    setRecurrenceRule(null)
     setSelectedPriority(null)
   }
 
@@ -52,7 +58,10 @@ export default function AddTask({ ml, listId, sectionId, onSave }: AddTaskProps)
       sectionId: sectionId || null,
       title: title.trim(),
       description: description.trim() || null,
-      dueDate: selectedDate ? new Date(selectedDate) : null,
+      dueDate: dueDate,
+      dueTime: dueTime,
+      durationMinutes: durationMinutes,
+      recurrenceRule: recurrenceRule,
       priority: selectedPriority
     }
 
@@ -66,7 +75,7 @@ export default function AddTask({ ml, listId, sectionId, onSave }: AddTaskProps)
     requestAnimationFrame(() => {
       titleInputRef.current?.focus()
     })
-  }, [title, listId, sectionId, description, selectedDate, selectedPriority, onSave])
+  }, [title, listId, sectionId, description, dueDate, dueTime, durationMinutes, recurrenceRule, selectedPriority, onSave])
 
   useHotkeys(
     [
@@ -181,7 +190,16 @@ export default function AddTask({ ml, listId, sectionId, onSave }: AddTaskProps)
             }}
           />
           <Group gap={'xs'} m={0}>
-            <DateSelector selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
+            <DateSelector
+              dueDate={dueDate}
+              dueTime={dueTime}
+              durationMinutes={durationMinutes}
+              recurrenceRule={recurrenceRule}
+              onDateChange={setDueDate}
+              onTimeChange={setDueTime}
+              onDurationChange={setDurationMinutes}
+              onRecurrenceChange={setRecurrenceRule}
+            />
             <PrioritySelector
               selectedPriority={selectedPriority}
               setSelectedPriority={setSelectedPriority}

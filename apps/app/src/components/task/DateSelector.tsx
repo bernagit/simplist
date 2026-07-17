@@ -1,15 +1,22 @@
 import { formatDate } from '@/utils/date'
 import { Button, Group, Popover, Text } from '@mantine/core'
-import { DatePicker } from '@mantine/dates'
 import { IconCalendar, IconX } from '@tabler/icons-react'
+import DueDateDropdown from './DueDateDropdown'
 
 type DateSelectorProps = {
-  selectedDate: string | null
-  setSelectedDate: (date: string | null) => void
+  dueDate: string | null
+  dueTime: string | null
+  durationMinutes: number | null
+  recurrenceRule: string | null
+  canEdit?: boolean
+  onDateChange: (date: string | null) => void
+  onTimeChange: (time: string | null) => void
+  onDurationChange: (minutes: number | null) => void
+  onRecurrenceChange: (rrule: string | null) => void
 }
 
-export default function DateSelector({ selectedDate, setSelectedDate }: DateSelectorProps) {
-  const shortDate = formatDate(selectedDate)
+export default function DateSelector({ dueDate, dueTime, durationMinutes, recurrenceRule, canEdit, onDateChange, onTimeChange, onDurationChange, onRecurrenceChange }: DateSelectorProps) {
+  const shortDate = formatDate(dueDate)
 
   return (
     <Group gap={0}>
@@ -26,7 +33,7 @@ export default function DateSelector({ selectedDate, setSelectedDate }: DateSele
               fontSize: 13,
               fontWeight: 500,
               width: 'fit-content',
-              borderRadius: selectedDate ? '4px 0px 0px 4px' : 4
+              borderRadius: dueDate ? '4px 0px 0px 4px' : 4
             }}
           >
             <IconCalendar size={16} style={{ marginRight: 4 }} />
@@ -36,10 +43,19 @@ export default function DateSelector({ selectedDate, setSelectedDate }: DateSele
           </Button>
         </Popover.Target>
         <Popover.Dropdown>
-          <DatePicker highlightToday allowDeselect onChange={setSelectedDate} />
+          <DueDateDropdown
+            dueDate={dueDate}
+            dueTime={dueTime}
+            durationMinutes={durationMinutes}
+            recurrenceRule={recurrenceRule}
+            onDateChange={onDateChange}
+            onTimeChange={onTimeChange}
+            onDurationChange={onDurationChange}
+            onRecurrenceChange={onRecurrenceChange}
+          />
         </Popover.Dropdown>
       </Popover>
-      {selectedDate && (
+      {dueDate && (
         <Button
           variant="outline"
           color="gray"
@@ -54,7 +70,7 @@ export default function DateSelector({ selectedDate, setSelectedDate }: DateSele
             fontWeight: 500,
             width: 'fit-content'
           }}
-          onClick={() => setSelectedDate(null)}
+          onClick={() => onDateChange(null)}
         >
           <IconX size={16} />
         </Button>

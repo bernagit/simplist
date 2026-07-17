@@ -5,7 +5,10 @@ export type Task = {
   title: string
   description: string | null
   completed: boolean
-  dueDate: Date | null
+  dueDate: string | null
+  dueTime: string | null
+  durationMinutes: number | null
+  recurrenceRule: string | null
   priority: string | null
   order: number
   createdAt: Date
@@ -23,7 +26,10 @@ export type CreateTaskInput = {
   sectionId: string | null
   title: string
   description: string | null
-  dueDate: Date | null
+  dueDate: string | null
+  dueTime: string | null
+  durationMinutes: number | null
+  recurrenceRule: string | null
   priority: string | null
   order?: number
 }
@@ -31,7 +37,10 @@ export type CreateTaskInput = {
 export type UpdateTaskInput = {
   title?: string
   description?: string | null
-  dueDate?: Date | null
+  dueDate?: string | null
+  dueTime?: string | null
+  durationMinutes?: number | null
+  recurrenceRule?: string | null
   priority?: string | null
   listId?: string
   sectionId?: string | null

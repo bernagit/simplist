@@ -6,7 +6,8 @@ export function editTaskModal(
   task: PlannedTask,
   isMobile: boolean,
   canEdit: boolean | undefined,
-  navigation: NavigationCallbacks
+  navigation: NavigationCallbacks,
+  onUpdate?: (updatedTask: PlannedTask) => void
 ) {
   modals.openContextModal({
     modal: 'editTask',
@@ -18,7 +19,8 @@ export function editTaskModal(
     innerProps: {
       task,
       canEdit,
-      navigation
+      navigation,
+      onUpdate
     }
   })
 }
