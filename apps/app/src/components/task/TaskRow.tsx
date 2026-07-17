@@ -160,7 +160,7 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
           ? 'light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))'
           : undefined,
 
-        outline: selected ? '1px solid var(--mantine-primary-color-filled)' : undefined,
+        outline: selected || hovered ? '1px solid var(--mantine-primary-color-filled)' : undefined,
 
         outlineOffset: -1,
 
@@ -233,6 +233,9 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
               showContextMenu(menuOptions, {
                 styles: contextMenuStyles
               })(e)
+            }}
+            style={{
+              cursor: 'pointer'
             }}
           >
             <Text

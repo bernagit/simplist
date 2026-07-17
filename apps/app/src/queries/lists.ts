@@ -127,6 +127,43 @@ export function useUpdateList() {
   })
 }
 
+export function useDeleteList() {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: (listId: string) => listsService.deleteList(listId),
+    onError: async error => {
+      let message = 'Something went wrong. Please try again.'
+
+      if (error instanceof HTTPError) {
+        try {
+          const body = await error.response.json<ErrorResponse>()
+          message = body.message
+        } catch {
+          // Ignore JSON parsing errors
+        }
+      }
+
+      showNotification({
+        title: 'Unable to delete list',
+        message,
+        color: 'red'
+      })
+    },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    onSuccess: (_data, listId) => {
+      queryClient.invalidateQueries({
+        queryKey: listKeys.all
+      })
+      showNotification({
+        title: 'Success',
+        message: `List deleted successfully.`,
+        color: 'green'
+      })
+    }
+  })
+}
+
 export function useShareList() {
   const queryClient = useQueryClient()
 

@@ -2,7 +2,7 @@
 
 import dayjs from 'dayjs'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Box, Button, Center, Group, Loader, SegmentedControl, useMantineTheme } from '@mantine/core'
+import { Badge, Box, Button, Center, Group, Loader, SegmentedControl, Stack, UnstyledButton, useMantineTheme, Text } from '@mantine/core'
 import {
   AgendaView,
   DateStringValue,
@@ -10,7 +10,7 @@ import {
   Schedule,
   ScheduleEventData,
   ScheduleHeader,
-  ScheduleViewLevel
+  ScheduleViewLevel,
 } from '@mantine/schedule'
 import { usePlannedTasks } from '@/queries/task'
 import { useSidebar } from '@/providers/SidebarProvider'
@@ -18,6 +18,8 @@ import { editTaskModal } from '@/lib/modals/task'
 import { getHTMLSectionId } from '@/utils/misc'
 import { useRouter } from 'next/navigation'
 import { PlannedTask } from '@/models/task'
+import { IconReload } from '@tabler/icons-react'
+import { PRIORITY_OPTIONS } from '@/utils/constants'
 
 function getNavigationHandlers(date: DateStringValue, view: Exclude<ScheduleViewLevel, 'year'>) {
   const d = dayjs(date)
@@ -77,7 +79,7 @@ export default function CustomSchedule() {
   const { isMobile } = useSidebar()
   const [view, setView] = useState<Exclude<ScheduleViewLevel, 'year'>>('week')
   const theme = useMantineTheme()
-  const [mounted, setMounted] = useState(false)
+  // const [mounted, setMounted] = useState(false)
   const [withAgenda, setWithAgenda] = useState(false)
   const [updatedTasks, setUpdatedTasks] = useState<Record<string, PlannedTask>>({})
 
@@ -195,8 +197,7 @@ export default function CustomSchedule() {
   }, [events, isMobile, router])
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMounted(true)
+    // setMounted(true)
     refetch()
   }, [refetch])
 
@@ -278,6 +279,87 @@ export default function CustomSchedule() {
           rangeEnd={visibleRange.end}
           style={{ flex: 1, minHeight: 0 }}
           events={events}
+          renderEvent={(event, props) => {
+            console.log(event)
+            const task = event as unknown as { data: PlannedTask }
+            const isAllDay = !task.data.dueTime
+
+            return (
+              <UnstyledButton {...props}>
+                <Box
+                  style={{
+                    display: 'flex',
+                    gap: 'var(--mantine-spacing-sm)',
+                    padding: 'var(--mantine-spacing-xs) var(--mantine-spacing-sm)',
+                    opacity: task.data.completed ? 0.55 : 1,
+                  }}
+                >
+                  <Box
+                    style={{
+                      width: 4,
+                      borderRadius: 2,
+                      flexShrink: 0,
+                      backgroundColor: task.data.color,
+                    }}
+                  />
+
+                  <Stack gap={2} style={{ flex: 1, minWidth: 0 }}>
+                    <Group justify="space-between" wrap="nowrap" gap="xs">
+                      <Text
+                        size="sm"
+                        fw={500}
+                        td={task.data.completed ? 'line-through' : undefined}
+                        style={{
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {task.data.title}
+                      </Text>
+
+                      <Group gap={4} wrap="nowrap">
+                        {task.data.recurrenceRule && (
+                          <Badge size="xs" variant="light" color="gray">
+                            <IconReload size={12} />
+                          </Badge>
+                        )}
+                        {task.data.priority && (
+                          <Badge
+                            size="xs"
+                            variant="light"
+                            color={PRIORITY_OPTIONS.find((p) => p.value === task.data.priority)?.color ?? 'gray'}
+                          >
+                            {task.data.priority}
+                          </Badge>
+                        )}
+                      </Group>
+                    </Group>
+
+                    <Text size="xs" c="dimmed">
+                      {isAllDay
+                        ? 'All day'
+                        : `${dayjs(event.start).format('HH:mm')} – ${dayjs(event.end).format('HH:mm')}`}
+                    </Text>
+
+                    <Text
+                      size="xs"
+                      c="dimmed"
+                      mt={2}
+                      style={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {task.data.listTitle}
+                      {task.data.sectionTitle ? ` › ${task.data.sectionTitle}` : ''}
+                    </Text>
+                  </Stack>
+                </Box>
+              </UnstyledButton>
+            )
+          }}
           onEventClick={handleEventClick}
         />
       ) : (
@@ -296,12 +378,12 @@ export default function CustomSchedule() {
             // endTime: '24:00:00',
             intervalMinutes: 30,
             scrollAreaProps: { mah: '100%' },
-            withCurrentTimeIndicator: mounted
+            // withCurrentTimeIndicator: mounted
           }}
           weekViewProps={{
             withHeader: false,
             scrollAreaProps: { mah: '100%' },
-            withCurrentTimeIndicator: mounted
+            // withCurrentTimeIndicator: mounted
           }}
           monthViewProps={{
             withHeader: false,

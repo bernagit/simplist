@@ -2,7 +2,7 @@
 
 import { createListModal, shareListModal, updateListModal } from '@/lib/modals/list'
 import { List, OwnedList } from '@/models/lists'
-import { useArchiveList, useUnarchiveList } from '@/queries/lists'
+import { useArchiveList, useDeleteList, useUnarchiveList } from '@/queries/lists'
 import { contextMenuStyles } from '@/utils/misc'
 import {
   Center,
@@ -25,6 +25,7 @@ import {
   Indicator
 } from '@mantine/core'
 import { useDebouncedValue, useDisclosure, useLocalStorage } from '@mantine/hooks'
+import { modals } from '@mantine/modals'
 import {
   IconPlus,
   IconList,
@@ -33,7 +34,8 @@ import {
   IconArchiveOff,
   IconShare,
   IconEdit,
-  IconUsers
+  IconUsers,
+  IconTrash
 } from '@tabler/icons-react'
 import dayjs from 'dayjs'
 import { useContextMenu } from 'mantine-contextmenu'
@@ -54,6 +56,8 @@ export default function ListOverview({ shared, data, isLoading }: ListOverviewPr
 
   const archiveList = useArchiveList()
   const unarchiveList = useUnarchiveList()
+  const deleteList = useDeleteList()
+
   const [expanded, { toggle }] = useDisclosure(false)
 
   type StatusFilter = 'active' | 'all' | 'archived'
@@ -129,6 +133,30 @@ export default function ListOverview({ shared, data, isLoading }: ListOverviewPr
         title: 'Share',
         onClick: () => {
           shareListModal(list.id)
+        }
+      },
+      {
+        key: 'divider'
+      },
+      {
+        key: 'delete',
+        icon: <IconTrash size={20} />,
+        title: 'Delete',
+        color: 'red',
+        onClick: () => {
+          modals.openConfirmModal({
+            title: 'Delete List',
+            children: (
+              <Text size="sm">
+                Are you sure you want to delete this list? This action cannot be undone.
+              </Text>
+            ),
+            labels: { confirm: 'Delete', cancel: 'Cancel' },
+            confirmProps: { color: 'red' },
+            onConfirm: async () => {
+              await deleteList.mutateAsync(list.id)
+            }
+          })
         }
       }
     ]

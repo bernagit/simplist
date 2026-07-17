@@ -25,6 +25,10 @@ async function updateList(data: UpdateListInput): Promise<Resp<List>> {
   return await api.put(`lists/${data.id}`, { json: data }).json()
 }
 
+async function deleteList(listId: string): Promise<Resp<void>> {
+  return await api.delete(`lists/${listId}`).json()
+}
+
 async function shareList(listId: string, data: ShareListInput): Promise<Resp<void>> {
   return await api.post(`lists/${listId}/share`, { json: data }).json()
 }
@@ -58,5 +62,6 @@ export const listsService = {
   deleteListMember,
   archiveList,
   unarchiveList,
-  changeListMemberRole
+  changeListMemberRole,
+  deleteList
 }

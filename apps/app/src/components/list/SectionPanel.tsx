@@ -10,7 +10,7 @@ import {
   Text,
   useMantineTheme
 } from '@mantine/core'
-import { IconChevronDown, IconChevronRight, IconDots } from '@tabler/icons-react'
+import { IconChevronDown, IconChevronRight, IconDots, IconTrash } from '@tabler/icons-react'
 import { EditableTitle } from './EditableText'
 import { useState } from 'react'
 import { Section } from '@/models/section'
@@ -103,7 +103,7 @@ export default function SectionPanel({
               </ActionIcon>
             </Menu.Target>
             <Menu.Dropdown>
-              <Menu.Item color="red" onClick={() => handleDeleteSection(section.id)}>
+              <Menu.Item leftSection={<IconTrash size={16} />} color="red" onClick={() => handleDeleteSection(section.id)}>
                 Delete Section
               </Menu.Item>
             </Menu.Dropdown>
