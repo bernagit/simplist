@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express'
-import { createModuleLogger } from '../logging/logger'
-import { Errors } from '../../types/http'
-import { jwtService } from '../auth/jwt'
-import { UserRepository } from '../../modules/user/user.repository'
+import { createModuleLogger } from '../logging/logger.js'
+import { Errors } from '../../types/http.js'
+import { jwtService } from '../auth/jwt.js'
+import { UserRepository } from '../../modules/user/user.repository.js'
 
 const logger = createModuleLogger('AUTH-MIDDLEWARE')
 const userRepository = new UserRepository()

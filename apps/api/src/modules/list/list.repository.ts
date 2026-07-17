@@ -1,10 +1,10 @@
 import { eq, isNull, SQL, and, or, not, ilike, exists, getTableColumns } from 'drizzle-orm'
-import { lists } from '../../db/schema/lists'
-import db from '../../infrastructure/database/db'
-import { ListCreateInput, ListUpdateInput } from './list.schema'
-import { ListMemberRole, listMembers } from '../../db/schema/listMember'
-import { tasks } from '../../db/schema/tasks'
-import { users } from '../../db/schema/users'
+import { lists } from '../../db/schema/lists.js'
+import db from '../../infrastructure/database/db.js'
+import { ListCreateInput, ListUpdateInput } from './list.schema.js'
+import { ListMemberRole, listMembers } from '../../db/schema/listMember.js'
+import { tasks } from '../../db/schema/tasks.js'
+import { users } from '../../db/schema/users.js'
 
 export class ListRepository {
   constructor() {}

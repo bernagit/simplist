@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import type { StringValue } from 'ms'
-import appConfig from '../../config/env'
+import appConfig from '../../config/env.js'
 
 const options = {
   algorithm: 'ES384' as jwt.Algorithm,

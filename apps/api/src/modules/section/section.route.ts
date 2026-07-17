@@ -1,8 +1,8 @@
 import { Router } from 'express'
-import { validate } from '../../infrastructure/middleware/validate'
-import { requireAuth } from '../../infrastructure/middleware/auth'
-import { SectionController } from './section.controller'
-import { createSectionSchema, sectionIdSchema, updateSectionSchema } from './section.schema'
+import { validate } from '../../infrastructure/middleware/validate.js'
+import { requireAuth } from '../../infrastructure/middleware/auth.js'
+import { SectionController } from './section.controller.js'
+import { createSectionSchema, sectionIdSchema, updateSectionSchema } from './section.schema.js'
 
 const route = Router()
 const controller = new SectionController()

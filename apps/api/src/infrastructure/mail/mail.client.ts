@@ -1,4 +1,4 @@
-import mailConfig from '../../config/mail'
+import mailConfig from '../../config/mail.js'
 import nodemailer from 'nodemailer'
 
 export const transporter = nodemailer.createTransport({

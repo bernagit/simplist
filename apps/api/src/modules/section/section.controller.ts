@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
-import { HTTP_STATUS } from '../../types/http'
-import { SectionService } from './section.service'
-import { CreateSectionInput, SectionIdInput, UpdateSectionInput } from './section.schema'
+import { HTTP_STATUS } from '../../types/http.js'
+import { SectionService } from './section.service.js'
+import { CreateSectionInput, SectionIdInput, UpdateSectionInput } from './section.schema.js'
 
 export class SectionController {
   private readonly service: SectionService = new SectionService()

@@ -1,5 +1,5 @@
-import { emailLayout, emailColors } from './layout'
-import { emailButton } from './button'
+import { emailLayout, emailColors } from './layout.js'
+import { emailButton } from './button.js'
 
 interface InviteOptions {
   inviterName?: string

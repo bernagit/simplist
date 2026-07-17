@@ -1,4 +1,4 @@
-import { HTTP_STATUS } from './http'
+import { HTTP_STATUS } from './http.js'
 
 export class AppError extends Error {
   public readonly statusCode: number

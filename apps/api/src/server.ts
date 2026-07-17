@@ -1,9 +1,9 @@
-import app from './api'
-import { cfg } from './config/internal'
-import appConfig from './config/env'
-import { createModuleLogger } from './infrastructure/logging/logger'
-import { appInfo } from './config/appInfo'
-import { transporter } from './infrastructure/mail/mail.client'
+import app from './api.js'
+import { cfg } from './config/internal.js'
+import appConfig from './config/env.js'
+import { createModuleLogger } from './infrastructure/logging/logger.js'
+import { appInfo } from './config/appInfo.js'
+import { transporter } from './infrastructure/mail/mail.client.js'
 
 const logger = createModuleLogger('SERVER')
 

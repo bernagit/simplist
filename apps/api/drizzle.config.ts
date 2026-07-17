@@ -1,5 +1,5 @@
 import { defineConfig } from 'drizzle-kit'
-import appConfig from './src/config/env'
+import appConfig from './src/config/env.js'
 
 const getUrl = () => {
   if (!appConfig.databaseUrl) {

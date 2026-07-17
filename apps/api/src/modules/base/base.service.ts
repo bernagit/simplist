@@ -1,6 +1,6 @@
-import { ListRepository } from '../list/list.repository'
-import { SectionRepository } from '../section/section.repository'
-import { TaskRepository } from '../task/task.repository'
+import { ListRepository } from '../list/list.repository.js'
+import { SectionRepository } from '../section/section.repository.js'
+import { TaskRepository } from '../task/task.repository.js'
 
 export class BaseService {
   private readonly listRepository: ListRepository = new ListRepository()

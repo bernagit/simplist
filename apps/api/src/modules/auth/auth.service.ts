@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import bcrypt from 'bcrypt'
 
-import { createModuleLogger } from '../../infrastructure/logging/logger'
-import { Errors } from '../../types/http'
-import { SessionService } from '../session/session.service'
-import { UserRepository } from '../user/user.repository'
-import { InviteRepository } from './invite.repository'
+import { createModuleLogger } from '../../infrastructure/logging/logger.js'
+import { Errors } from '../../types/http.js'
+import { SessionService } from '../session/session.service.js'
+import { UserRepository } from '../user/user.repository.js'
+import { InviteRepository } from './invite.repository.js'
 import {
   ChangePasswordInput,
   ForgotPasswordInput,
@@ -13,18 +13,18 @@ import {
   PasswordResetInput,
   RegisterInput,
   UpdateCurrentUserInput
-} from './auth.schema'
+} from './auth.schema.js'
 import {
   generateInviteToken,
   generatePasswordResetToken,
   hashInviteToken,
   hashPassword,
   hashPasswordResetToken
-} from '../../infrastructure/auth/crypto'
-import appConfig from '../../config/env'
-import { mailService } from '../../infrastructure/mail/mail.service'
-import { PasswordResetRepository } from './passwordReset.repository'
-import { PreferencesRepository } from '../preferences/preference.repository'
+} from '../../infrastructure/auth/crypto.js'
+import appConfig from '../../config/env.js'
+import { mailService } from '../../infrastructure/mail/mail.service.js'
+import { PasswordResetRepository } from './passwordReset.repository.js'
+import { PreferencesRepository } from '../preferences/preference.repository.js'
 
 export class AuthService {
   private readonly logger = createModuleLogger('AuthService')

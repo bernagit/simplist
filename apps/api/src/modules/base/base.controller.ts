@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
-import { SearchQuery } from './base.schema'
-import { BaseService } from './base.service'
-import { HTTP_STATUS } from '../../types/http'
+import { SearchQuery } from './base.schema.js'
+import { BaseService } from './base.service.js'
+import { HTTP_STATUS } from '../../types/http.js'
 
 export class BaseController {
   private readonly service: BaseService = new BaseService()

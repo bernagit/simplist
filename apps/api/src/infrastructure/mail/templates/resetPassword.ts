@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-import { emailLayout, emailColors } from './layout'
-import { emailButton } from './button'
+import { emailLayout, emailColors } from './layout.js'
+import { emailButton } from './button.js'
 
 export function resetPasswordTemplate(url: string, expiresInMinutes = 60) {
   return emailLayout(

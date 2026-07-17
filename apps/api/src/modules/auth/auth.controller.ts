@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
-import { HTTP_STATUS } from '../../types/http'
-import { AuthService } from './auth.service'
+import { HTTP_STATUS } from '../../types/http.js'
+import { AuthService } from './auth.service.js'
 import {
   ChangePasswordInput,
   CheckInviteInput,
@@ -10,10 +10,10 @@ import {
   PasswordResetInput,
   RegisterInput,
   UpdateCurrentUserInput
-} from './auth.schema'
-import appConfig from '../../config/env'
-import { cfg } from '../../config/internal'
-import { createModuleLogger } from '../../infrastructure/logging/logger'
+} from './auth.schema.js'
+import appConfig from '../../config/env.js'
+import { cfg } from '../../config/internal.js'
+import { createModuleLogger } from '../../infrastructure/logging/logger.js'
 
 export class AuthController {
   private readonly logger = createModuleLogger('AuthController')

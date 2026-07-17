@@ -1,9 +1,9 @@
-import { ListMemberRole } from '../../db/schema/listMember'
-import { Errors } from '../../types/http'
-import { ListRepository } from '../list/list.repository'
-import { SectionRepository } from '../section/section.repository'
-import { UserRepository } from '../user/user.repository'
-import { CreateSectionInput, UpdateSectionInput } from './section.schema'
+import { ListMemberRole } from '../../db/schema/listMember.js'
+import { Errors } from '../../types/http.js'
+import { ListRepository } from '../list/list.repository.js'
+import { SectionRepository } from '../section/section.repository.js'
+import { UserRepository } from '../user/user.repository.js'
+import { CreateSectionInput, UpdateSectionInput } from './section.schema.js'
 
 export class SectionService {
   private readonly repository: SectionRepository = new SectionRepository()

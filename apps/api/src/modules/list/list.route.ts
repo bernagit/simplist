@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { validate } from '../../infrastructure/middleware/validate'
+import { validate } from '../../infrastructure/middleware/validate.js'
 import {
   createListSchema,
   listIdSchema,
@@ -7,9 +7,9 @@ import {
   updateListSchema,
   removeMemberSchema,
   changeMemberRoleSchema
-} from './list.schema'
-import { ListController } from './list.controller'
-import { requireAuth } from '../../infrastructure/middleware/auth'
+} from './list.schema.js'
+import { ListController } from './list.controller.js'
+import { requireAuth } from '../../infrastructure/middleware/auth.js'
 
 const route = Router()
 const controller = new ListController()

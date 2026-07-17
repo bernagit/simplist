@@ -1,9 +1,9 @@
-import { Errors } from '../../types/http'
-import { SectionRepository } from '../section/section.repository'
-import { TaskRepository } from '../task/task.repository'
-import { UserRepository } from '../user/user.repository'
-import { ListRepository } from './list.repository'
-import { ListAddMemberInput, ListCreateInput, ListUpdateInput } from './list.schema'
+import { Errors } from '../../types/http.js'
+import { SectionRepository } from '../section/section.repository.js'
+import { TaskRepository } from '../task/task.repository.js'
+import { UserRepository } from '../user/user.repository.js'
+import { ListRepository } from './list.repository.js'
+import { ListAddMemberInput, ListCreateInput, ListUpdateInput } from './list.schema.js'
 
 export class ListService {
   private readonly repository: ListRepository = new ListRepository()

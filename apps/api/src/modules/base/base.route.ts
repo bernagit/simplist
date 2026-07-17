@@ -1,8 +1,8 @@
 import { Router } from 'express'
-import { BaseController } from './base.controller'
-import { requireAuth } from '../../infrastructure/middleware/auth'
-import { validate } from '../../infrastructure/middleware/validate'
-import { searchQuerySchema } from './base.schema'
+import { BaseController } from './base.controller.js'
+import { requireAuth } from '../../infrastructure/middleware/auth.js'
+import { validate } from '../../infrastructure/middleware/validate.js'
+import { searchQuerySchema } from './base.schema.js'
 
 const router = Router()
 

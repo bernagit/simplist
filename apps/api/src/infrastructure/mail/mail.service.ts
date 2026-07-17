@@ -1,9 +1,9 @@
-import { MailOptions } from 'nodemailer/lib/json-transport'
-import mailConfig from '../../config/mail'
-import { transporter } from './mail.client'
-import { inviteTemplate } from './templates/invitation'
-import { welcomeTemplate } from './templates/welcome'
-import { resetPasswordTemplate } from './templates/resetPassword'
+import mailConfig from '../../config/mail.js'
+import { transporter } from './mail.client.js'
+import { inviteTemplate } from './templates/invitation.js'
+import { welcomeTemplate } from './templates/welcome.js'
+import { resetPasswordTemplate } from './templates/resetPassword.js'
+import { MailOptions } from 'nodemailer/lib/json-transport/index.js'
 
 class MailService {
   async send(options: MailOptions) {

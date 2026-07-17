@@ -1,6 +1,6 @@
 import morgan from 'morgan'
-import { logger } from '../logging/logger'
-import { requestContext } from '../logging/requestContext'
+import { logger } from '../logging/logger.js'
+import { requestContext } from '../logging/requestContext.js'
 
 morgan.token('correlation-id', () => {
   return requestContext.getStore()?.correlationId ?? '-'

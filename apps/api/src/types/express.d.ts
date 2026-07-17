@@ -1,5 +1,5 @@
 import type { z } from 'zod'
-import { User } from './shared'
+import { User } from './shared.js'
 
 declare global {
   namespace Express {

@@ -1,7 +1,7 @@
 import { and, eq, gt } from 'drizzle-orm'
-import { betaInvites } from '../../db/schema/betaInvites'
-import { createModuleLogger } from '../../infrastructure/logging/logger'
-import db from '../../infrastructure/database/db'
+import { betaInvites } from '../../db/schema/betaInvites.js'
+import { createModuleLogger } from '../../infrastructure/logging/logger.js'
+import db from '../../infrastructure/database/db.js'
 
 export class InviteRepository {
   private readonly logger = createModuleLogger('InviteRepository')

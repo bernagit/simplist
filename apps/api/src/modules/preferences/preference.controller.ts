@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express'
-import { createModuleLogger } from '../../infrastructure/logging/logger'
-import { HTTP_STATUS } from '../../types/http'
-import { UpdatePreferencesInput } from './preference.schema'
-import { PreferenceService } from './preference.service'
+import { createModuleLogger } from '../../infrastructure/logging/logger.js'
+import { HTTP_STATUS } from '../../types/http.js'
+import { UpdatePreferencesInput } from './preference.schema.js'
+import { PreferenceService } from './preference.service.js'
 
 export class PreferenceController {
   private readonly logger = createModuleLogger('PreferenceController')

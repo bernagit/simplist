@@ -1,6 +1,6 @@
 import { Router } from 'express'
-import { validate } from '../../infrastructure/middleware/validate'
-import { AuthController } from './auth.controller'
+import { validate } from '../../infrastructure/middleware/validate.js'
+import { AuthController } from './auth.controller.js'
 import {
   registerSchema,
   loginSchema,
@@ -11,8 +11,8 @@ import {
   passwordResetSchema,
   updateCurrentUserSchema,
   changePasswordSchema
-} from './auth.schema'
-import { requireAuth } from '../../infrastructure/middleware/auth'
+} from './auth.schema.js'
+import { requireAuth } from '../../infrastructure/middleware/auth.js'
 
 const router = Router()
 

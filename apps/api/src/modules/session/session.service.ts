@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 
-import { jwtService } from '../../infrastructure/auth/jwt'
-import { SessionRepository } from './session.repository'
-import { generateRefreshToken, hashRefreshToken } from '../../infrastructure/auth/crypto'
+import { jwtService } from '../../infrastructure/auth/jwt.js'
+import { SessionRepository } from './session.repository.js'
+import { generateRefreshToken, hashRefreshToken } from '../../infrastructure/auth/crypto.js'
 
 export class SessionService {
   private repository = new SessionRepository()

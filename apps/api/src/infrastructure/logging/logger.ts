@@ -1,7 +1,7 @@
 import { createLogger, transports, format, Logger } from 'winston'
 import { TransformableInfo } from 'logform'
-import { requestContext } from './requestContext'
-import appConfig from '../../config/env'
+import { requestContext } from './requestContext.js'
+import appConfig from '../../config/env.js'
 
 const { combine, timestamp, printf, colorize } = format
 

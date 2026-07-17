@@ -1,10 +1,11 @@
 import z from 'zod'
 import 'dotenv/config'
-import { cfg } from './internal'
+import { cfg } from './internal.js'
 import fs from 'fs'
+import path from 'path'
 
-const privkey = fs.readFileSync(new URL('../../../../keys/private.key', import.meta.url), 'utf8')
-const pubkey = fs.readFileSync(new URL('../../../../keys/public.pem', import.meta.url), 'utf8')
+const privkey = fs.readFileSync(path.resolve(process.cwd(), '../../keys/private.key'), 'utf8')
+const pubkey = fs.readFileSync(path.resolve(process.cwd(), '../../keys/public.pem'), 'utf8')
 
 const appConfigSchema = z.object({
   appUrl: z.string().default(cfg.DEFAULT_APP_URL),

@@ -1,7 +1,7 @@
 import { eq, and, isNull, gt } from 'drizzle-orm'
-import { passwordResetTokens } from '../../db/schema/passwordReset'
-import db from '../../infrastructure/database/db'
-import { createModuleLogger } from '../../infrastructure/logging/logger'
+import { passwordResetTokens } from '../../db/schema/passwordReset.js'
+import db from '../../infrastructure/database/db.js'
+import { createModuleLogger } from '../../infrastructure/logging/logger.js'
 
 export class PasswordResetRepository {
   private readonly logger = createModuleLogger('PasswordResetRepository')

@@ -1,9 +1,9 @@
-import { ListMemberRole } from '../../db/schema/listMember'
-import { Errors } from '../../types/http'
-import { ListRepository } from '../list/list.repository'
-import { SectionRepository } from '../section/section.repository'
-import { TaskRepository } from './task.repository'
-import { CreateTaskInput, UpdateTaskInput } from './task.schema'
+import { ListMemberRole } from '../../db/schema/listMember.js'
+import { Errors } from '../../types/http.js'
+import { ListRepository } from '../list/list.repository.js'
+import { SectionRepository } from '../section/section.repository.js'
+import { TaskRepository } from './task.repository.js'
+import { CreateTaskInput, UpdateTaskInput } from './task.schema.js'
 
 export class TaskService {
   private readonly repository: TaskRepository = new TaskRepository()

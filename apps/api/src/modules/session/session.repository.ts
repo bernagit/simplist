@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm'
-import { sessions } from '../../db/schema/sessions'
-import { createModuleLogger } from '../../infrastructure/logging/logger'
-import db from '../../infrastructure/database/db'
+import { sessions } from '../../db/schema/sessions.js'
+import { createModuleLogger } from '../../infrastructure/logging/logger.js'
+import db from '../../infrastructure/database/db.js'
 
 export class SessionRepository {
   private readonly logger = createModuleLogger('SessionRepository')

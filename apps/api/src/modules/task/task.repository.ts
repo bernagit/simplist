@@ -1,11 +1,11 @@
-import { tasks } from '../../db/schema/tasks'
-import db from '../../infrastructure/database/db'
-import { and, eq, gt, gte, isNotNull, lt, lte, max, ne, sql } from 'drizzle-orm'
-import { CreateTaskInput, UpdateTaskInput } from './task.schema'
-import { logger } from '../../infrastructure/logging/logger'
-import { lists } from '../../db/schema/lists'
-import { sections } from '../../db/schema/sections'
 import { format } from 'date-fns'
+import { and, eq, gt, gte, isNotNull, lt, lte, max, ne, sql } from 'drizzle-orm'
+import { tasks } from '../../db/schema/tasks.js'
+import db from '../../infrastructure/database/db.js'
+import { CreateTaskInput, UpdateTaskInput } from './task.schema.js'
+import { logger } from '../../infrastructure/logging/logger.js'
+import { lists } from '../../db/schema/lists.js'
+import { sections } from '../../db/schema/sections.js'
 
 export class TaskRepository {
   constructor() {}

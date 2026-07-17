@@ -1,14 +1,14 @@
 import { Router } from 'express'
-import { validate } from '../../infrastructure/middleware/validate'
-import { requireAuth } from '../../infrastructure/middleware/auth'
+import { validate } from '../../infrastructure/middleware/validate.js'
+import { requireAuth } from '../../infrastructure/middleware/auth.js'
 import {
   createTaskSchema,
   plannedTaskSchema,
   reorderTasksSchema,
   taskIdSchema,
   updateTaskSchema
-} from './task.schema'
-import { TaskController } from './task.controller'
+} from './task.schema.js'
+import { TaskController } from './task.controller.js'
 
 const route = Router()
 const controller = new TaskController()

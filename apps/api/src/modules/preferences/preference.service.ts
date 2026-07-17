@@ -1,6 +1,6 @@
-import { createModuleLogger } from '../../infrastructure/logging/logger'
-import { PreferencesRepository } from './preference.repository'
-import { UpdatePreferencesInput } from './preference.schema'
+import { createModuleLogger } from '../../infrastructure/logging/logger.js'
+import { PreferencesRepository } from './preference.repository.js'
+import { UpdatePreferencesInput } from './preference.schema.js'
 
 export class PreferenceService {
   private readonly logger = createModuleLogger('PreferenceService')

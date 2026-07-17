@@ -1,8 +1,8 @@
 import { eq } from 'drizzle-orm'
-import db from '../../infrastructure/database/db'
-import { users } from '../../db/schema/users'
-import { createModuleLogger } from '../../infrastructure/logging/logger'
-import { UpdateCurrentUserInput } from '../auth/auth.schema'
+import db from '../../infrastructure/database/db.js'
+import { users } from '../../db/schema/users.js'
+import { createModuleLogger } from '../../infrastructure/logging/logger.js'
+import { UpdateCurrentUserInput } from '../auth/auth.schema.js'
 
 export class UserRepository {
   private readonly logger = createModuleLogger('UserRepository')

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
-import { ListService } from './list.service'
+import { ListService } from './list.service.js'
 import {
   ListCreateInput,
   ListIdInput,
@@ -7,8 +7,8 @@ import {
   ListUpdateInput,
   ListRemoveMemberInput,
   ListChangeMemberRoleInput
-} from './list.schema'
-import { HTTP_STATUS } from '../../types/http'
+} from './list.schema.js'
+import { HTTP_STATUS } from '../../types/http.js'
 
 export class ListController {
   private readonly service: ListService = new ListService()

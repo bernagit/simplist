@@ -1,7 +1,7 @@
-import { lists } from '../../db/schema/lists'
-import { sections } from '../../db/schema/sections'
-import db from '../../infrastructure/database/db'
 import { eq, and, max, ilike } from 'drizzle-orm'
+import { lists } from '../../db/schema/lists.js'
+import { sections } from '../../db/schema/sections.js'
+import db from '../../infrastructure/database/db.js'
 
 export class SectionRepository {
   async create(listId: string, title: string, order: number | undefined = undefined) {

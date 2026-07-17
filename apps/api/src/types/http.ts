@@ -1,4 +1,4 @@
-import { AppError } from './error'
+import { AppError } from './error.js'
 
 export const HTTP_STATUS = {
   OK: 200,

@@ -1,8 +1,8 @@
 import { Router } from 'express'
-import { requireAuth } from '../../infrastructure/middleware/auth'
-import { validate } from '../../infrastructure/middleware/validate'
-import { updatePreferencesSchema } from './preference.schema'
-import { PreferenceController } from './preference.controller'
+import { requireAuth } from '../../infrastructure/middleware/auth.js'
+import { validate } from '../../infrastructure/middleware/validate.js'
+import { updatePreferencesSchema } from './preference.schema.js'
+import { PreferenceController } from './preference.controller.js'
 
 const router = Router()
 

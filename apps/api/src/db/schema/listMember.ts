@@ -1,7 +1,7 @@
 import { pgEnum, pgTable, timestamp, uuid } from 'drizzle-orm/pg-core'
 
-import { users } from './users'
-import { lists } from './lists'
+import { users } from './users.js'
+import { lists } from './lists.js'
 
 export const listRoleEnum = pgEnum('list_role', ['owner', 'editor', 'viewer'])
 export type ListMemberRole = 'owner' | 'editor' | 'viewer'

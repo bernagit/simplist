@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm'
-import { userPreferences } from '../../db/schema/userPreferences'
-import db from '../../infrastructure/database/db'
-import { UpdatePreferencesInput } from './preference.schema'
+import { userPreferences } from '../../db/schema/userPreferences.js'
+import db from '../../infrastructure/database/db.js'
+import { UpdatePreferencesInput } from './preference.schema.js'
 
 export class PreferencesRepository {
   async findByUserId(userId: string) {

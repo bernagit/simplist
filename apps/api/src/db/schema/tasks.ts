@@ -10,9 +10,9 @@ import {
   uuid
 } from 'drizzle-orm/pg-core'
 
-import { lists } from './lists'
-import { sections } from './sections'
-import { users } from './users'
+import { lists } from './lists.js'
+import { sections } from './sections.js'
+import { users } from './users.js'
 
 export const priorityEnum = pgEnum('task_priority', ['low', 'medium', 'high'])
 export type TaskPriority = 'low' | 'medium' | 'high'

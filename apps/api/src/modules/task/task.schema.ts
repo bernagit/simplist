@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-import { RRule } from 'rrule/dist/esm/rrule'
+import rrule from 'rrule'
 import z from 'zod'
+
+const { RRule } = rrule
 
 export const recurrenceRuleSchema = z
   .string()

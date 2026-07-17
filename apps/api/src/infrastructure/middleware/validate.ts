@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { z, ZodError } from 'zod'
-import { HTTP_STATUS } from '../../types/http'
+import { HTTP_STATUS } from '../../types/http.js'
 
 export function validate(schema: z.ZodType) {
   return (req: Request, res: Response, next: NextFunction) => {

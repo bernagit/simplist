@@ -1,5 +1,5 @@
 import { jsonb, pgTable, timestamp, uuid, varchar } from 'drizzle-orm/pg-core'
-import { users } from './users'
+import { users } from './users.js'
 
 export const userPreferences = pgTable('user_preferences', {
   userId: uuid('user_id')

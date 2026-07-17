@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
-import { HTTP_STATUS } from '../../types/http'
+import { HTTP_STATUS } from '../../types/http.js'
 import {
   CreateTaskInput,
   CreateTaskParams,
@@ -8,8 +8,8 @@ import {
   ReorderTasksParams,
   TaskIdInput,
   UpdateTaskInput
-} from './task.schema'
-import { TaskService } from './task.service'
+} from './task.schema.js'
+import { TaskService } from './task.service.js'
 
 export class TaskController {
   private readonly service: TaskService = new TaskService()

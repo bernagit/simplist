@@ -1,4 +1,4 @@
-import { emailColors } from './layout'
+import { emailColors } from './layout.js'
 
 interface EmailButtonOptions {
   href: string
