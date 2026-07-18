@@ -24,7 +24,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: Dockerfile.api
+      dockerfile: /apps/api/Dockerfile
 
     depends_on:
       postgres:
@@ -38,5 +38,21 @@ services:
     volumes:
       - ./keys:/app/keys:ro
 
+  app:
+    build:
+      context: .
+      dockerfile: ./apps/app/Dockerfile
+
+    depends_on:
+      - api
+
+    ports:
+      - "3000:3000"
+
+    env_file:
+      - ./apps/app/.env
+
+    environment:
+      NODE_ENV: production
 volumes:
   postgres_data:
