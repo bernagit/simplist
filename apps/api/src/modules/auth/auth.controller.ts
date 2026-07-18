@@ -11,8 +11,8 @@ import {
   RegisterInput,
   UpdateCurrentUserInput
 } from './auth.schema.js'
-import appConfig from '../../config/env.js'
-import { cfg } from '../../config/internal.js'
+// import appConfig from '../../config/env.js'
+// import { cfg } from '../../config/internal.js'
 import { createModuleLogger } from '../../infrastructure/logging/logger.js'
 
 export class AuthController {
@@ -96,13 +96,6 @@ export class AuthController {
 
       const result = await this.authService.register(data)
 
-      res.cookie(cfg.AUTH_COOKIE_NAME, result.accessToken, {
-        httpOnly: true,
-        secure: !appConfig.isDev,
-        sameSite: 'lax',
-        maxAge: cfg.COOKIE_MAX_AGE
-      })
-
       res.status(HTTP_STATUS.CREATED).json({
         message: 'User created successfully',
         data: result
@@ -118,14 +111,6 @@ export class AuthController {
 
       const result = await this.authService.loginWithPassword(data)
 
-      // set cookie
-      res.cookie(cfg.AUTH_COOKIE_NAME, result.accessToken, {
-        httpOnly: true,
-        secure: !appConfig.isDev,
-        sameSite: 'lax',
-        maxAge: cfg.COOKIE_MAX_AGE
-      })
-
       res.status(HTTP_STATUS.OK).json({
         message: 'Login successful',
         data: result
@@ -137,11 +122,7 @@ export class AuthController {
 
   logout = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      res.clearCookie(cfg.AUTH_COOKIE_NAME, {
-        httpOnly: true,
-        secure: !appConfig.isDev,
-        sameSite: 'lax'
-      })
+      // TODO: clear session from database
 
       res.status(HTTP_STATUS.OK).json({
         message: 'Logout successful'

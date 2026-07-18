@@ -7,23 +7,18 @@ import { UserRepository } from '../../modules/user/user.repository.js'
 const logger = createModuleLogger('AUTH-MIDDLEWARE')
 const userRepository = new UserRepository()
 
-export const requireAuth = async (req: Request, res: Response, next: NextFunction) => {
-  const cookieToken = req.cookies.accessToken
+export const requireAuth = async (req: Request, _res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization
-  let headersToken: string | undefined
 
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    headersToken = authHeader.split(' ')[1]
-  }
-
-  // Check if the user is authenticated (e.g., check for a valid session or JWT)
-  if (!cookieToken && !headersToken) {
-    logger.warn('Authentication failed: No valid authentication token found')
+  if (!authHeader?.startsWith('Bearer ')) {
+    logger.warn('Authentication failed: Missing Authorization header')
     throw Errors.unauthorized('Authentication required')
   }
 
-  // call the jwtService to verify the token and extract user information
-  const payload = jwtService.verifyToken(cookieToken || headersToken!) as { userId: string } | null
+  // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+  const token = authHeader.slice(7)
+
+  const payload = jwtService.verifyToken(token) as { userId: string } | null
 
   if (!payload) {
     logger.warn('Authentication failed: Invalid token')
@@ -33,7 +28,7 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
   const user = await userRepository.findById(payload.userId)
 
   if (!user) {
-    logger.warn(`Authentication failed: User not found for ID ${payload.userId}`)
+    logger.warn(`Authentication failed: User ${payload.userId} not found`)
     throw Errors.unauthorized('User not found')
   }
 

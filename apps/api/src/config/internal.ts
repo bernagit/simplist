@@ -2,8 +2,6 @@ const DEFAULT_SERVER_PORT = 3000
 const DEFAULT_LOG_LEVEL = 'info'
 const DEFAULT_IS_DEV = false
 const DEFAULT_JWT_EXPIRES_IN = '24h'
-// eslint-disable-next-line @typescript-eslint/no-magic-numbers
-const DEFAULT_COOKIE_MAX_AGE = 24 * 60 * 60 * 1000
 const DEFAULT_CORS_ORIGIN = 'http://localhost:3000'
 const DEFAULT_APP_URL = 'http://localhost:3000'
 
@@ -22,7 +20,5 @@ export const cfg = {
   DEFAULT_CORS_ORIGIN,
   SHUTDOWN_TIMEOUT_MS,
   MS_IN_SECOND,
-  AUTH_COOKIE_NAME: 'accessToken',
-  COOKIE_MAX_AGE: DEFAULT_COOKIE_MAX_AGE,
   MIGRATION_FOLDER
 }

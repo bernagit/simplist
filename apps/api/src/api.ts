@@ -10,7 +10,6 @@ import sectionRouter from './modules/section/section.route.js'
 import taskRouter from './modules/task/task.route.js'
 import baseRouter from './modules/base/base.route.js'
 import preferenceRouter from './modules/preferences/preference.route.js'
-import cookieParser from 'cookie-parser'
 import appConfig from './config/env.js'
 
 const app = express()
@@ -18,7 +17,6 @@ const app = express()
 app.use(express.json())
 app.use(correlationIdMiddleware)
 app.use(morganMiddleware)
-app.use(cookieParser())
 // CORS middleware
 app.use(
   cors({

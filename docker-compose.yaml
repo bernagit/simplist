@@ -2,7 +2,7 @@ services:
   postgres:
     image: postgres:17
 
-    restart: always
+    restart: unless-stopped
 
     environment:
       POSTGRES_USER: postgres
@@ -24,7 +24,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: /apps/api/Dockerfile
+      dockerfile: ./apps/api/Dockerfile
 
     depends_on:
       postgres:
@@ -34,7 +34,7 @@ services:
       - "2000:2000"
 
     env_file:
-      - ./apps/api/.env
+      - ./apps/api/.env.docker
     volumes:
       - ./keys:/app/keys:ro
 
