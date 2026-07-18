@@ -1,0 +1,42 @@
+services:
+  postgres:
+    image: postgres:17
+
+    restart: always
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: simplist
+    
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    ports:
+      - "2000:2000"
+
+    env_file:
+      - ./apps/api/.env
+    volumes:
+      - ./keys:/app/keys:ro
+
+volumes:
+  postgres_data:

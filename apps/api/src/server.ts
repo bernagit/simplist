@@ -5,6 +5,7 @@ import { createModuleLogger } from './infrastructure/logging/logger.js'
 import { appInfo } from './config/appInfo.js'
 import { transporter } from './infrastructure/mail/mail.client.js'
 
+const startedAt = performance.now()
 const logger = createModuleLogger('SERVER')
 
 async function startServer() {
@@ -15,10 +16,25 @@ async function startServer() {
   return server
 }
 
-await transporter.verify()
-const server = await startServer()
+const registerShutdownHandlers = (server: ReturnType<typeof app.listen>) => {
+  process.on('SIGINT', () => shutdown(server, 'SIGINT'))
+  process.on('SIGTERM', () => shutdown(server, 'SIGTERM'))
 
-async function shutdown(signal: string) {
+  process.on('uncaughtException', err => {
+    logger.crit(`${err instanceof Error ? err.message : String(err)}`, 'Uncaught exception')
+    process.exit(1)
+  })
+
+  process.on('unhandledRejection', reason => {
+    logger.crit(
+      `${reason instanceof Error ? reason.message : String(reason)}`,
+      'Unhandled promise rejection'
+    )
+    process.exit(1)
+  })
+}
+
+async function shutdown(server: ReturnType<typeof app.listen>, signal: string) {
   logger.info(`${signal} received. Starting graceful shutdown...`)
 
   server.close(async err => {
@@ -42,18 +58,22 @@ async function shutdown(signal: string) {
   }, cfg.SHUTDOWN_TIMEOUT_MS).unref()
 }
 
-process.on('SIGINT', () => shutdown('SIGINT'))
-process.on('SIGTERM', () => shutdown('SIGTERM'))
+try {
+  logger.info('Starting application...')
 
-process.on('uncaughtException', err => {
-  logger.crit(`${err instanceof Error ? err.message : String(err)}`, 'Uncaught exception')
-  process.exit(1)
-})
+  logger.info('Verifying SMTP connection...')
+  await transporter.verify()
+  logger.info('SMTP connection verified.')
 
-process.on('unhandledRejection', reason => {
-  logger.crit(
-    `${reason instanceof Error ? reason.message : String(reason)}`,
-    'Unhandled promise rejection'
-  )
+  logger.info('Starting HTTP server...')
+  const server = await startServer()
+
+  registerShutdownHandlers(server)
+
+  logger.info(`Application ready in ${Math.round(performance.now() - startedAt)} ms`)
+} catch (err: unknown) {
+  logger.crit('Uncaught exception', {
+    err
+  })
   process.exit(1)
-})
+}
