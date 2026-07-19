@@ -10,13 +10,9 @@ import globals from 'globals'
 const config = defineConfig([
   // GLOBAL IGNORES
   {
-    ignores: [
-      '**/node_modules/**',
-      '**/dist/**',
-      '**/build/**',
-      '**/*.d.ts'
-    ]
+    ignores: ['**/node_modules/**', '**/dist/**', '**/build/**', '**/*.d.ts']
   },
+
   // JS
   {
     ...js.configs.recommended,
@@ -27,6 +23,7 @@ const config = defineConfig([
       }
     }
   },
+
   // TS
   {
     files: ['**/*.{ts,tsx}'],
@@ -56,9 +53,9 @@ const config = defineConfig([
           ignore: [0, 1, -1], // common safe defaults
           ignoreArrayIndexes: true,
           enforceConst: true,
-          detectObjects: false,
-        },
-      ],
+          detectObjects: false
+        }
+      ]
     }
   }
 ])

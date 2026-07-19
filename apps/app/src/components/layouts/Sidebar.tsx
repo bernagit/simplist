@@ -432,7 +432,7 @@ export function Sidebar() {
                   <NavLink
                     label="Contact Support"
                     leftSection={<IconUsers size={18} />}
-                    onClick={() => window.open('mailto:simplist@benitec.it', '_blank')}
+                    onClick={() => window.open('mailto:simplist@bernitec.it', '_blank')}
                     style={{ borderRadius: 'var(--mantine-radius-md)' }}
                   />
                 </Stack>
