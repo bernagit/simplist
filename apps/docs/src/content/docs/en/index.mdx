@@ -1,0 +1,76 @@
+---
+title: Simplist Documentation
+description: Documentation for users, self-hosters, and contributors.
+template: splash
+
+hero:
+  tagline: A minimal, self-hostable list & task manager.
+  image:
+    light: ../../../assets/logo-light.webp
+    dark: ../../../assets/logo-dark.webp
+  actions:
+    - text: Get Started
+      link: /getting-started/installation/
+      icon: right-arrow
+    - text: GitHub
+      link: https://github.com/bernagit/simplist
+      icon: external
+      variant: minimal
+---
+
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+
+## Welcome
+
+Welcome to the official documentation for **Simplist**.
+
+Whether you're trying Simplist for the first time, deploying your own instance, or contributing to the project, you'll find everything you need here.
+
+<CardGrid>
+  <LinkCard
+    title="Getting Started"
+    description="Install Simplist, create your first account, and learn the basics in just a few minutes."
+    href="/getting-started/installation/"
+  >
+  </LinkCard>
+
+  <LinkCard
+    title="User Guide"
+    description="Learn how to organize lists, manage tasks, use the calendar, share lists, and work efficiently with keyboard shortcuts."
+    href="/user-guide/"
+  >
+    Learn how to organize lists, manage tasks, use the calendar, share lists, and work efficiently with keyboard shortcuts.
+  </LinkCard>
+
+  <LinkCard
+    title="Self Hosting"
+    description="Deploy Simplist with Docker, configure your environment, and keep your installation updated."
+    href="/self-hosting/"
+  >
+    Deploy Simplist with Docker, configure your environment, and keep your installation updated.
+  </LinkCard>
+
+  <LinkCard
+    title="Development"
+    description="Understand the monorepo architecture, run the project locally, and contribute to Simplist."
+    href="/development/"
+  >
+    Understand the monorepo architecture, run the project locally, and contribute to Simplist.
+  </LinkCard>
+</CardGrid>
+
+---
+
+## What is Simplist?
+
+Simplist is a lightweight task and list manager built around a simple philosophy:
+
+- 📋 Keep your lists organized
+- ✅ Focus on your tasks
+- 🤝 Share lists with others
+- ⚡ Navigate quickly with keyboard shortcuts
+- 🐳 Own your data by self-hosting
+
+No unnecessary complexity—just a fast, modern application that stays out of your way.
+
+---
