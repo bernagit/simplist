@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import db from '../../infrastructure/database/db.js'
 import { users } from '../../db/schema/users.js'
 import { createModuleLogger } from '../../infrastructure/logging/logger.js'
@@ -74,5 +74,10 @@ export class UserRepository {
       createdAt: user.createdAt,
       updatedAt: user.updatedAt
     }
+  }
+
+  async countUsers(): Promise<number> {
+    const result = await db.select({ count: sql<number>`count(*)` }).from(users)
+    return Number(result[0]?.count ?? 0)
   }
 }

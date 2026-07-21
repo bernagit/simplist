@@ -3,16 +3,12 @@ import { HTTP_STATUS } from '../../types/http.js'
 import { AuthService } from './auth.service.js'
 import {
   ChangePasswordInput,
-  CheckInviteInput,
   ForgotPasswordInput,
-  InviteInput,
   LoginInput,
   PasswordResetInput,
   RegisterInput,
   UpdateCurrentUserInput
 } from './auth.schema.js'
-// import appConfig from '../../config/env.js'
-// import { cfg } from '../../config/internal.js'
 import { createModuleLogger } from '../../infrastructure/logging/logger.js'
 
 export class AuthController {
@@ -54,36 +50,6 @@ export class AuthController {
       res.status(HTTP_STATUS.OK).json({
         message: 'Current user updated successfully',
         data: updatedUser
-      })
-    } catch (error) {
-      next(error)
-    }
-  }
-
-  createInvite = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const data = req.validated!.body as InviteInput
-
-      const result = await this.authService.createInvite(data)
-
-      res.status(HTTP_STATUS.CREATED).json({
-        message: 'Invite created successfully',
-        data: result
-      })
-    } catch (error) {
-      next(error)
-    }
-  }
-
-  checkInvite = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const data = req.validated!.body as CheckInviteInput
-
-      const result = await this.authService.checkInvite(data.token)
-
-      res.status(HTTP_STATUS.OK).json({
-        message: 'Invite is valid',
-        data: result
       })
     } catch (error) {
       next(error)

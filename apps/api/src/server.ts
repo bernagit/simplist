@@ -4,6 +4,7 @@ import appConfig from './config/env.js'
 import { createModuleLogger } from './infrastructure/logging/logger.js'
 import { appInfo } from './config/appInfo.js'
 import { transporter } from './infrastructure/mail/mail.client.js'
+import { bootstrapFirstInvite } from './bootstrap/first-invite.js'
 
 const startedAt = performance.now()
 const logger = createModuleLogger('SERVER')
@@ -64,6 +65,8 @@ try {
   logger.info('Verifying SMTP connection...')
   await transporter.verify()
   logger.info('SMTP connection verified.')
+
+  await bootstrapFirstInvite()
 
   logger.info('Starting HTTP server...')
   const server = await startServer()

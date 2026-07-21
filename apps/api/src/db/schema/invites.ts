@@ -1,13 +1,18 @@
 import { boolean, pgTable, timestamp, uuid, varchar } from 'drizzle-orm/pg-core'
+import { users } from './users.js'
 
-export const betaInvites = pgTable('beta_invites', {
+export const invites = pgTable('invites', {
   id: uuid().defaultRandom().primaryKey(),
 
-  email: varchar('email', { length: 255 }).notNull().unique(),
+  email: varchar('email', { length: 255 }),
 
-  token: varchar('token', { length: 255 }).notNull().unique(),
+  tokenHash: varchar('token', { length: 255 }).notNull().unique(),
+
+  createdBy: uuid('created_by').references(() => users.id, { onDelete: 'set null' }),
 
   used: boolean('used').notNull().default(false),
+
+  revoked: boolean('revoked').notNull().default(false),
 
   expiresAt: timestamp('expires_at', {
     withTimezone: true
