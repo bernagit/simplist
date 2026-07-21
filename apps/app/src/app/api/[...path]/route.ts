@@ -5,8 +5,10 @@ const API_URL = process.env.API_URL!
 
 async function proxy(req: NextRequest, path: string[]) {
   const token = (await cookies()).get('accessToken')?.value
-
+  console.log('Proxying request to API:', req.nextUrl)
+  console.log('API URL:', API_URL)
   const url = `${API_URL}/${path.join('/')}${req.nextUrl.search}`
+  console.log('Full URL:', url)
 
   const headers = new Headers(req.headers)
 
@@ -17,20 +19,17 @@ async function proxy(req: NextRequest, path: string[]) {
     headers.set('Authorization', `Bearer ${token}`)
   }
 
-  const body =
-    req.method === 'GET' || req.method === 'HEAD'
-      ? undefined
-      : await req.text()
+  const body = req.method === 'GET' || req.method === 'HEAD' ? undefined : await req.text()
 
   const response = await fetch(url, {
     method: req.method,
     headers,
-    ...(body !== undefined ? { body } : {}),
+    ...(body !== undefined ? { body } : {})
   })
 
   return new NextResponse(response.body, {
     status: response.status,
-    headers: response.headers,
+    headers: response.headers
   })
 }
 
@@ -42,6 +41,7 @@ type RouteContext = {
 
 async function handle(req: NextRequest, ctx: RouteContext) {
   const { path } = await ctx.params
+  console.log('Handling request for path:', path)
   return proxy(req, path)
 }
 

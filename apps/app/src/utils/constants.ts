@@ -9,5 +9,5 @@ export const RECURRENCE_PRESETS = [
   { value: 'NONE', label: 'Does not repeat' },
   { value: 'FREQ=DAILY', label: 'Daily' },
   { value: 'FREQ=WEEKLY', label: 'Weekly' },
-  { value: 'FREQ=MONTHLY', label: 'Monthly' },
+  { value: 'FREQ=MONTHLY', label: 'Monthly' }
 ]

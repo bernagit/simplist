@@ -75,7 +75,18 @@ export default function AddTask({ ml, listId, sectionId, onSave }: AddTaskProps)
     requestAnimationFrame(() => {
       titleInputRef.current?.focus()
     })
-  }, [title, listId, sectionId, description, dueDate, dueTime, durationMinutes, recurrenceRule, selectedPriority, onSave])
+  }, [
+    title,
+    listId,
+    sectionId,
+    description,
+    dueDate,
+    dueTime,
+    durationMinutes,
+    recurrenceRule,
+    selectedPriority,
+    onSave
+  ])
 
   useHotkeys(
     [

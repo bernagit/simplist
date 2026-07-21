@@ -2,7 +2,19 @@
 
 import dayjs from 'dayjs'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Badge, Box, Button, Center, Group, Loader, SegmentedControl, Stack, UnstyledButton, useMantineTheme, Text } from '@mantine/core'
+import {
+  Badge,
+  Box,
+  Button,
+  Center,
+  Group,
+  Loader,
+  SegmentedControl,
+  Stack,
+  UnstyledButton,
+  useMantineTheme,
+  Text
+} from '@mantine/core'
 import {
   AgendaView,
   DateStringValue,
@@ -10,7 +22,7 @@ import {
   Schedule,
   ScheduleEventData,
   ScheduleHeader,
-  ScheduleViewLevel,
+  ScheduleViewLevel
 } from '@mantine/schedule'
 import { usePlannedTasks } from '@/queries/task'
 import { useSidebar } from '@/providers/SidebarProvider'
@@ -116,11 +128,11 @@ export default function CustomSchedule() {
     }
   }, [date, view])
 
-
-  const { data: plannedTasks, isLoading, refetch } = usePlannedTasks(
-    visibleRange.start.toDate(),
-    visibleRange.end.toDate()
-  )
+  const {
+    data: plannedTasks,
+    isLoading,
+    refetch
+  } = usePlannedTasks(visibleRange.start.toDate(), visibleRange.end.toDate())
 
   const tasks = useMemo(() => {
     if (!plannedTasks?.data) return []
@@ -132,28 +144,23 @@ export default function CustomSchedule() {
     if (!tasks) return []
 
     return tasks
-      .filter((task) => task.dueDate)
-      .map((task) => {
+      .filter(task => task.dueDate)
+      .map(task => {
         let start: string
         let end: string
 
         if (task.dueTime) {
           const startDate = dayjs(`${task.dueDate} ${task.dueTime}`)
           // If duration is not specified, default to 30 minutes
-          const endDate = startDate.add(task.durationMinutes ?? 30, "minute")
+          const endDate = startDate.add(task.durationMinutes ?? 30, 'minute')
 
-          start = startDate.format("YYYY-MM-DD HH:mm:ss")
-          end = endDate.format("YYYY-MM-DD HH:mm:ss")
+          start = startDate.format('YYYY-MM-DD HH:mm:ss')
+          end = endDate.format('YYYY-MM-DD HH:mm:ss')
         } else {
           // All-day event
-          start = dayjs(task.dueDate)
-            .startOf("day")
-            .format("YYYY-MM-DD HH:mm:ss")
+          start = dayjs(task.dueDate).startOf('day').format('YYYY-MM-DD HH:mm:ss')
 
-          end = dayjs(task.dueDate)
-            .add(1, "day")
-            .startOf("day")
-            .format("YYYY-MM-DD HH:mm:ss")
+          end = dayjs(task.dueDate).add(1, 'day').startOf('day').format('YYYY-MM-DD HH:mm:ss')
         }
 
         return {
@@ -162,39 +169,36 @@ export default function CustomSchedule() {
           start,
           end,
           color: task.color,
-          data: task,
+          data: task
         }
       })
   }, [tasks])
 
-  const handleEventClick = useCallback((event: ScheduleEventData) => {
-    const task = events.find(e => e.id === event.id)?.data
-    if (!task) return
-    const navigation = {
-      onOpenList: () => {
-        router.push(`/lists/${task.listId}`)
-      },
-      onOpenSection: () => {
-        let sectionUrl = `/lists/${task.listId}`
-        if (task.sectionId) {
-          sectionUrl += `#${getHTMLSectionId(task.sectionId)}`
+  const handleEventClick = useCallback(
+    (event: ScheduleEventData) => {
+      const task = events.find(e => e.id === event.id)?.data
+      if (!task) return
+      const navigation = {
+        onOpenList: () => {
+          router.push(`/lists/${task.listId}`)
+        },
+        onOpenSection: () => {
+          let sectionUrl = `/lists/${task.listId}`
+          if (task.sectionId) {
+            sectionUrl += `#${getHTMLSectionId(task.sectionId)}`
+          }
+          router.push(sectionUrl)
         }
-        router.push(sectionUrl)
       }
-    }
-    editTaskModal(
-      task,
-      isMobile,
-      true,
-      navigation,
-      (updatedTask: PlannedTask) => {
+      editTaskModal(task, isMobile, true, navigation, (updatedTask: PlannedTask) => {
         setUpdatedTasks(prev => ({
           ...prev,
-          [updatedTask.id]: updatedTask,
+          [updatedTask.id]: updatedTask
         }))
-      }
-    )
-  }, [events, isMobile, router])
+      })
+    },
+    [events, isMobile, router]
+  )
 
   useEffect(() => {
     // setMounted(true)
@@ -253,7 +257,7 @@ export default function CustomSchedule() {
           onClick={() => setDate(dayjs().format('YYYY-MM-DD') as DateStringValue)}
         />
         <Button
-          size='compact-md'
+          size="compact-md"
           variant={withAgenda ? 'filled' : 'outline'}
           onClick={() => setWithAgenda(prev => !prev)}
         >
@@ -280,7 +284,6 @@ export default function CustomSchedule() {
           style={{ flex: 1, minHeight: 0 }}
           events={events}
           renderEvent={(event, props) => {
-            console.log(event)
             const task = event as unknown as { data: PlannedTask }
             const isAllDay = !task.data.dueTime
 
@@ -291,7 +294,7 @@ export default function CustomSchedule() {
                     display: 'flex',
                     gap: 'var(--mantine-spacing-sm)',
                     padding: 'var(--mantine-spacing-xs) var(--mantine-spacing-sm)',
-                    opacity: task.data.completed ? 0.55 : 1,
+                    opacity: task.data.completed ? 0.55 : 1
                   }}
                 >
                   <Box
@@ -299,7 +302,7 @@ export default function CustomSchedule() {
                       width: 4,
                       borderRadius: 2,
                       flexShrink: 0,
-                      backgroundColor: task.data.color,
+                      backgroundColor: task.data.color
                     }}
                   />
 
@@ -312,7 +315,7 @@ export default function CustomSchedule() {
                         style={{
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
+                          whiteSpace: 'nowrap'
                         }}
                       >
                         {task.data.title}
@@ -328,7 +331,10 @@ export default function CustomSchedule() {
                           <Badge
                             size="xs"
                             variant="light"
-                            color={PRIORITY_OPTIONS.find((p) => p.value === task.data.priority)?.color ?? 'gray'}
+                            color={
+                              PRIORITY_OPTIONS.find(p => p.value === task.data.priority)?.color ??
+                              'gray'
+                            }
                           >
                             {task.data.priority}
                           </Badge>
@@ -349,7 +355,7 @@ export default function CustomSchedule() {
                       style={{
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
+                        whiteSpace: 'nowrap'
                       }}
                     >
                       {task.data.listTitle}
@@ -377,12 +383,12 @@ export default function CustomSchedule() {
             // startTime: '08:00:00',
             // endTime: '24:00:00',
             intervalMinutes: 30,
-            scrollAreaProps: { mah: '100%' },
+            scrollAreaProps: { mah: '100%' }
             // withCurrentTimeIndicator: mounted
           }}
           weekViewProps={{
             withHeader: false,
-            scrollAreaProps: { mah: '100%' },
+            scrollAreaProps: { mah: '100%' }
             // withCurrentTimeIndicator: mounted
           }}
           monthViewProps={{
@@ -393,7 +399,8 @@ export default function CustomSchedule() {
             withHeader: false
             // scrollAreaProps: { mah: '100%' },
           }}
-        />)}
+        />
+      )}
     </Box>
   )
 }

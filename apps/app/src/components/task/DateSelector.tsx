@@ -15,7 +15,17 @@ type DateSelectorProps = {
   onRecurrenceChange: (rrule: string | null) => void
 }
 
-export default function DateSelector({ dueDate, dueTime, durationMinutes, recurrenceRule, canEdit, onDateChange, onTimeChange, onDurationChange, onRecurrenceChange }: DateSelectorProps) {
+export default function DateSelector({
+  dueDate,
+  dueTime,
+  durationMinutes,
+  recurrenceRule,
+  canEdit,
+  onDateChange,
+  onTimeChange,
+  onDurationChange,
+  onRecurrenceChange
+}: DateSelectorProps) {
   const shortDate = formatDate(dueDate)
 
   return (

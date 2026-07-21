@@ -47,7 +47,12 @@ export default function TaskPriorityField({ priority, canEdit, onChange }: TaskP
                 </Box>
               }
               styles={{
-                root: { justifyContent: 'flex-start', paddingLeft: 8, paddingRight: 8, borderRadius: 0 },
+                root: {
+                  justifyContent: 'flex-start',
+                  paddingLeft: 8,
+                  paddingRight: 8,
+                  borderRadius: 0
+                },
                 inner: { justifyContent: 'flex-start' }
               }}
             >

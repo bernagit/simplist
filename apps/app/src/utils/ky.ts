@@ -1,7 +1,7 @@
 import ky from 'ky'
 
 const api = ky.extend({
-  prefix: 'api/',
+  prefix: '/api',
   cache: 'no-store'
   // credentials: 'include'
 })

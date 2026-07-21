@@ -3,14 +3,15 @@
 import { ActionIcon, Box, Group, NavLink, ScrollArea, Stack, Text, Title } from '@mantine/core'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import { ContextModalProps } from '@mantine/modals'
-import { IconMoon, IconSettings, IconUser, IconLayoutSidebar, IconX } from '@tabler/icons-react'
+import { IconMoon, IconSettings, IconUser, IconLayoutSidebar, IconX, IconUsers } from '@tabler/icons-react'
 import { useState } from 'react'
 import { AppearanceSection } from '../settings/AppearanceSection'
 import { GeneralSection } from '../settings/GeneralSection'
 import { AccountSection } from '../settings/AccountSection'
 import { usePreferences } from '@/queries/preferences'
+import { InvitesSection } from '../settings/InviteSection'
 
-type Section = 'general' | 'account' | 'appearance' | 'notifications'
+type Section = 'general' | 'account' | 'appearance' | 'invites' | 'notifications'
 
 const NAV_WIDTH = 240
 
@@ -18,6 +19,7 @@ const SECTION_LABELS: Record<Section, string> = {
   general: 'General',
   account: 'Account',
   appearance: 'Appearance',
+  invites: 'Invites',
   notifications: 'Notifications'
 }
 
@@ -77,6 +79,13 @@ export default function UserSettings({ context, id }: ContextModalProps) {
               style={{ borderRadius: 'var(--mantine-radius-md)' }}
             />
 
+            <NavLink
+              active={section === 'invites'}
+              label={SECTION_LABELS.invites}
+              leftSection={<IconUsers size={18} />}
+              onClick={() => handleSectionChange('invites')}
+              style={{ borderRadius: 'var(--mantine-radius-md)' }}
+            />
             {/* <NavLink
               active={section === 'notifications'}
               label={SECTION_LABELS.notifications}
@@ -137,6 +146,14 @@ export default function UserSettings({ context, id }: ContextModalProps) {
               <Title order={4}>Appearance</Title>
               <Text c="dimmed">Customize the look and feel of Simplist.</Text>
               <AppearanceSection />
+            </Stack>
+          )}
+
+          {section === 'invites' && (
+            <Stack>
+              <Title order={4}>Invites</Title>
+              <Text c="dimmed">Manage your invites and invite new users.</Text>
+              <InvitesSection />
             </Stack>
           )}
 

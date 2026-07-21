@@ -129,7 +129,7 @@ export function useUpdateList() {
 
 export function useDeleteList() {
   const queryClient = useQueryClient()
-  
+
   return useMutation({
     mutationFn: (listId: string) => listsService.deleteList(listId),
     onError: async error => {
