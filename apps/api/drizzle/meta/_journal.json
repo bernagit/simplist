@@ -64,6 +64,13 @@
       "when": 1784221356927,
       "tag": "0008_gorgeous_scalphunter",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1784648477270,
+      "tag": "0009_melodic_the_stranger",
+      "breakpoints": true
     }
   ]
 }

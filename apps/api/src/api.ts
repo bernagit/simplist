@@ -9,6 +9,7 @@ import listRouter from './modules/list/list.route.js'
 import sectionRouter from './modules/section/section.route.js'
 import taskRouter from './modules/task/task.route.js'
 import baseRouter from './modules/base/base.route.js'
+import invitesRouter from './modules/invites/invite.route.js'
 import preferenceRouter from './modules/preferences/preference.route.js'
 import appConfig from './config/env.js'
 
@@ -31,6 +32,7 @@ app.get('/api/health', (_req, res) => {
 })
 
 app.use('/api/auth', authRouter)
+app.use('/api/invites', invitesRouter)
 app.use('/api/lists', listRouter)
 app.use('/api/sections', sectionRouter)
 app.use('/api/tasks', taskRouter)
