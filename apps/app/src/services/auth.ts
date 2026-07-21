@@ -2,10 +2,6 @@ import { User } from '@/models/user'
 import { Resp } from '@/models/base'
 import api from '@/utils/ky'
 
-async function checkInvite(token: string): Promise<Resp<{ email: string }>> {
-  return await api.post<Resp<{ email: string }>>('auth/check-invite', { json: { token } }).json()
-}
-
 async function login(email: string, password: string): Promise<{ token: string }> {
   return await api.post<{ token: string }>('auth/login', { json: { email, password } }).json()
 }
@@ -54,7 +50,6 @@ export const authService = {
   register,
   logout,
   getMe,
-  checkInvite,
   forgotPassword,
   resetPassword,
   updateCurrentUser,

@@ -22,7 +22,7 @@ export type NavigationCallbacks = {
 type EditTaskProps = {
   task: PlannedTask
   canEdit: boolean | undefined
-  navigation: NavigationCallbacks,
+  navigation: NavigationCallbacks
   onUpdate?: (updatedTask: PlannedTask) => void
 }
 
@@ -101,13 +101,14 @@ export default function EditTask({ context, id, innerProps }: ContextModalProps<
     <Stack h="100%">
       <FocusTrap.InitialFocus />
       <Group
-        justify='space-between'
-        align='center'
+        justify="space-between"
+        align="center"
         style={{
-          borderBottom: '2px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5))'
+          borderBottom:
+            '2px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5))'
         }}
         pb={'sm'}
-        >
+      >
         <TaskBreadcrumb
           listTitle={task.listTitle}
           sectionTitle={task.sectionTitle ?? ''}
@@ -162,7 +163,11 @@ export default function EditTask({ context, id, innerProps }: ContextModalProps<
         onRecurrenceChange={handleRecurrenceChange}
       />
 
-      <TaskPriorityField priority={selectedPriority} canEdit={canEdit ?? false} onChange={handlePriorityChange} />
+      <TaskPriorityField
+        priority={selectedPriority}
+        canEdit={canEdit ?? false}
+        onChange={handlePriorityChange}
+      />
 
       {/* Future: <TaskAssigneeField />, <TaskTimeRangeField />, <TaskRecurrenceField /> — same shape */}
     </Stack>

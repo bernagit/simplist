@@ -23,6 +23,7 @@ import { IconAlertCircle, IconKey, IconLock, IconMail, IconUser } from '@tabler/
 import { AuthCard } from '@/components/auth/AuthCard'
 import { authService } from '@/services/auth'
 import { showNotification } from '@mantine/notifications'
+import { inviteService } from '@/services/invite'
 
 export default function RegisterPage() {
   const searchParams = useSearchParams()
@@ -31,21 +32,19 @@ export default function RegisterPage() {
   const token = searchParams.get('token')
 
   const [loading, setLoading] = useState(true)
-  const [email, setEmail] = useState('')
   const [invalidInvite, setInvalidInvite] = useState(false)
 
   const form = useForm({
     initialValues: {
+      email: '',
       name: '',
       password: '',
       confirmPassword: ''
     },
-
     validate: {
+      email: value => (/^\S+@\S+\.\S+$/.test(value) ? null : 'Please enter a valid email'),
       name: value => (value.trim().length < 2 ? 'Please enter your name' : null),
-
       password: value => (value.length < 8 ? 'Password must contain at least 8 characters' : null),
-
       confirmPassword: (value, values) =>
         value !== values.password ? 'Passwords do not match' : null
     }
@@ -63,10 +62,15 @@ export default function RegisterPage() {
         return
       }
       try {
-        const response = await authService.checkInvite(token)
+        const response = await inviteService.checkInvite(token)
 
         if (!cancelled) {
-          setEmail(response.data.email)
+          if (response.data.email) {
+            form.setFieldValue('email', response.data.email)
+            form.setFieldValue('emailDisabled', true)
+          } else {
+            form.setFieldValue('emailDisabled', false)
+          }
         }
       } catch {
         if (!cancelled) {
@@ -84,11 +88,12 @@ export default function RegisterPage() {
     return () => {
       cancelled = true
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token])
 
   async function registerWithPassword() {
     try {
-      await authService.register(form.values.name, email, form.values.password, token!)
+      await authService.register(form.values.name, form.values.email, form.values.password, token!)
 
       router.push('/')
 
@@ -134,8 +139,7 @@ export default function RegisterPage() {
         <Stack>
           <TextInput
             label="Email"
-            value={email}
-            disabled
+            {...form.getInputProps('email')}
             required
             leftSection={<IconMail size={16} />}
           />

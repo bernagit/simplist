@@ -1,5 +1,16 @@
 import { useEffect, useRef } from 'react'
 
+function isTypingTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false
+
+  const tag = target.tagName
+
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return true
+  if (target.isContentEditable) return true
+
+  return false
+}
+
 export function useKeySequence(sequence: readonly string[], callback: () => void, timeout = 1000) {
   const indexRef = useRef(0)
   const timeoutRef = useRef<number | null>(null)
@@ -17,6 +28,11 @@ export function useKeySequence(sequence: readonly string[], callback: () => void
     function handleKeyDown(event: KeyboardEvent) {
       // Ignore combinations like Ctrl+C, Cmd+K, etc.
       if (event.ctrlKey || event.metaKey || event.altKey) {
+        return
+      }
+
+      // Ignore keystrokes while typing in a form field or contenteditable
+      if (isTypingTarget(event.target)) {
         return
       }
 

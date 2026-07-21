@@ -1,18 +1,7 @@
 'use client'
 
-import { 
-  ActionIcon, 
-  Group, 
-  Popover, 
-  Stack, 
-  Text, 
-  ThemeIcon,
-  rem
-} from '@mantine/core'
-import { 
-  IconCalendar, 
-  IconX 
-} from '@tabler/icons-react'
+import { ActionIcon, Group, Popover, Stack, Text, ThemeIcon, rem } from '@mantine/core'
+import { IconCalendar, IconX } from '@tabler/icons-react'
 import dayjs from 'dayjs'
 import HoverableBox from './HoverableBox'
 import { RECURRENCE_PRESETS } from '@/utils/constants'
@@ -39,16 +28,15 @@ export default function TaskDueDateField({
   onDateChange,
   onTimeChange,
   onDurationChange,
-  onRecurrenceChange,
+  onRecurrenceChange
 }: TaskDueDateFieldProps) {
-
   const displaySummary = (() => {
     if (!dueDate) return 'Set due date'
 
     const dateStr = dayjs(dueDate).format('MMM D, YYYY')
     const timeStr = dueTime ? ` at ${dueTime}` : ''
     const durationStr = durationMinutes ? ` (${durationMinutes}m)` : ''
-    
+
     let recurStr = ''
     if (recurrenceRule) {
       const preset = RECURRENCE_PRESETS.find(p => p.value === recurrenceRule)
@@ -67,10 +55,10 @@ export default function TaskDueDateField({
   }
 
   return (
-    <Popover 
-      disabled={!canEdit} 
-      position="bottom-start" 
-      shadow="lg" 
+    <Popover
+      disabled={!canEdit}
+      position="bottom-start"
+      shadow="lg"
       radius="md"
       withArrow
       offset={8}
@@ -80,12 +68,7 @@ export default function TaskDueDateField({
         <HoverableBox disabled={!canEdit}>
           <Group justify="space-between" wrap="nowrap" style={{ width: '100%' }}>
             <Group gap="sm" wrap="nowrap">
-              <ThemeIcon 
-                variant="light" 
-                color={'gray'} 
-                radius="md" 
-                size="md"
-              >
+              <ThemeIcon variant="light" color={'gray'} radius="md" size="md">
                 <IconCalendar style={{ width: rem(18), height: rem(18) }} />
               </ThemeIcon>
               <Stack gap={2}>
@@ -99,12 +82,7 @@ export default function TaskDueDateField({
             </Group>
 
             {dueDate && canEdit && (
-              <ActionIcon
-                variant="subtle"
-                color="gray"
-                radius="xl"
-                onClick={handleClearAll}
-              >
+              <ActionIcon variant="subtle" color="gray" radius="xl" onClick={handleClearAll}>
                 <IconX style={{ width: rem(16), height: rem(16) }} />
               </ActionIcon>
             )}

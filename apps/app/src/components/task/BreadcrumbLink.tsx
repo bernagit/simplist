@@ -8,19 +8,16 @@ type Props = {
   onClick: () => void
 }
 
-export default function BreadcrumbLink({
-  children,
-  onClick,
-}: Props) {
+export default function BreadcrumbLink({ children, onClick }: Props) {
   return (
     <Box
       component="div"
       onClick={onClick}
-      onMouseEnter={(e) => {
+      onMouseEnter={e => {
         e.currentTarget.style.backgroundColor =
           'light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5))'
       }}
-      onMouseLeave={(e) => {
+      onMouseLeave={e => {
         e.currentTarget.style.backgroundColor = 'transparent'
       }}
       style={{
@@ -30,8 +27,7 @@ export default function BreadcrumbLink({
         userSelect: 'none',
         borderRadius: 8,
         padding: '4px 10px',
-        transition:
-          'background-color 150ms ease, transform 150ms ease',
+        transition: 'background-color 150ms ease, transform 150ms ease'
       }}
     >
       <Text size="sm" fw={600}>

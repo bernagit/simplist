@@ -1,9 +1,9 @@
-import { RECURRENCE_PRESETS } from "@/utils/constants"
-import { Stack, Divider, Group, rem, ActionIcon, NumberInput, Select } from "@mantine/core"
-import { DatePicker, TimeInput } from "@mantine/dates"
-import { IconClock, IconHourglass, IconRepeat } from "@tabler/icons-react"
-import dayjs from "dayjs"
-import { useRef } from "react"
+import { RECURRENCE_PRESETS } from '@/utils/constants'
+import { Stack, Divider, Group, rem, ActionIcon, NumberInput, Select } from '@mantine/core'
+import { DatePicker, TimeInput } from '@mantine/dates'
+import { IconClock, IconHourglass, IconRepeat } from '@tabler/icons-react'
+import dayjs from 'dayjs'
+import { useRef } from 'react'
 
 type DueDateDropdownProps = {
   dueDate: string | null
@@ -40,7 +40,7 @@ export default function DueDateDropdown({
         allowDeselect
         size="sm"
         value={dueDate ? dayjs(dueDate).toDate() : null}
-        onChange={(value) => {
+        onChange={value => {
           if (!value) {
             onDateChange(null)
             onTimeChange(null)
@@ -61,7 +61,7 @@ export default function DueDateDropdown({
           disabled={!dueDate}
           leftSection={<IconClock style={{ width: rem(16), height: rem(16) }} />}
           value={dueTime ?? ''}
-          onChange={(e) => onTimeChange(e.currentTarget.value || null)}
+          onChange={e => onTimeChange(e.currentTarget.value || null)}
           rightSection={
             <ActionIcon
               variant="subtle"
@@ -94,7 +94,7 @@ export default function DueDateDropdown({
         leftSection={<IconRepeat style={{ width: rem(16), height: rem(16) }} />}
         data={RECURRENCE_PRESETS}
         value={recurrenceRule || 'NONE'}
-        onChange={(val) => {
+        onChange={val => {
           onRecurrenceChange(val === 'NONE' ? null : val)
         }}
         comboboxProps={{

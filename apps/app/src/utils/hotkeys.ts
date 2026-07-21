@@ -30,7 +30,7 @@ export const HOTKEYS = {
   },
 
   TOGGLE_HELP: {
-    keys: ['h'],
+    keys: ['shift+h'],
     description: 'Open help',
     category: 'General'
   },

@@ -103,7 +103,11 @@ export default function SectionPanel({
               </ActionIcon>
             </Menu.Target>
             <Menu.Dropdown>
-              <Menu.Item leftSection={<IconTrash size={16} />} color="red" onClick={() => handleDeleteSection(section.id)}>
+              <Menu.Item
+                leftSection={<IconTrash size={16} />}
+                color="red"
+                onClick={() => handleDeleteSection(section.id)}
+              >
                 Delete Section
               </Menu.Item>
             </Menu.Dropdown>

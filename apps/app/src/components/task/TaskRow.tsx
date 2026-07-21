@@ -42,7 +42,7 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
   const [selected, setSelected] = useState(false)
   const queryClient = useQueryClient()
   const { data: me } = useMe()
-  
+
   const linkMemo = useMemo(() => {
     const list = queryClient.getQueryData<Resp<CompleteList>>(listKeys.detail(task.listId))?.data
     // check if it is a shared list and if the user is the owner
@@ -74,12 +74,17 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
           router.push(linkMemo.sectionUrl)
         }
       }
-      editTaskModal({
-        ...task,
-        color: list?.color ?? '',
-        listTitle: list?.title ?? '',
-        sectionTitle: list?.sections.find(section => section.id === task.sectionId)?.title ?? null
-      }, isMobile, canEdit, navigation)
+      editTaskModal(
+        {
+          ...task,
+          color: list?.color ?? '',
+          listTitle: list?.title ?? '',
+          sectionTitle: list?.sections.find(section => section.id === task.sectionId)?.title ?? null
+        },
+        isMobile,
+        canEdit,
+        navigation
+      )
     },
     [queryClient, isMobile, canEdit, router, linkMemo]
   )

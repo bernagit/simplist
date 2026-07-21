@@ -289,19 +289,9 @@ export function useReorderTasks() {
   })
 }
 
-export function usePlannedTasks(
-  startDate: Date,
-  endDate: Date,
-  listId?: string
-) {
+export function usePlannedTasks(startDate: Date, endDate: Date, listId?: string) {
   return useQuery({
-    queryKey: [
-      'plannedTasks',
-      startDate.toISOString(),
-      endDate.toISOString(),
-      listId,
-    ],
-    queryFn: () =>
-      tasksService.getPlannedTasks(startDate, endDate, listId),
+    queryKey: ['plannedTasks', startDate.toISOString(), endDate.toISOString(), listId],
+    queryFn: () => tasksService.getPlannedTasks(startDate, endDate, listId)
   })
 }
