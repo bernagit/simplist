@@ -22,13 +22,17 @@ const appConfigSchema = z.object({
   invitePerUser: z.coerce.number().int().positive().optional()
 })
 
+const { POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, POSTGRES_HOST, POSTGRES_PORT } = process.env
+
 const appConfig = appConfigSchema.parse({
   appUrl: process.env.APP_URL,
   port: process.env.PORT ? parseInt(process.env.PORT, 10) : undefined,
   logLevel: process.env.LOG_LEVEL,
   isDev: process.env.NODE_ENV === 'development',
   corsOrigin: process.env.CORS_ORIGIN,
-  databaseUrl: process.env.DATABASE_URL,
+  databaseUrl:
+    process.env.DATABASE_URL ??
+    `postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public`,
   jwtPrivateKey: process.env.JWT_PRIVATE_KEY,
   jwtPublicKey: process.env.JWT_PUBLIC_KEY,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN,

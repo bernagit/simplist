@@ -1,0 +1,13 @@
+services:
+  api:
+    image: ${REGISTRY}/simplist-api:${VERSION}
+    env_file:
+      - .env
+    volumes:
+      - ../keys:/app/keys:ro
+
+  app:
+    image: ${REGISTRY}/simplist-app:${VERSION}
+    environment:
+      NODE_ENV: production
+      API_URL: http://simplist-api:2000/api

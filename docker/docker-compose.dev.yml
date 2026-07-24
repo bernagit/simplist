@@ -1,0 +1,21 @@
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: apps/api/Dockerfile
+    env_file:
+      - ../apps/api/.env
+    environment:
+      POSTGRES_HOST: simplist-db
+    volumes:
+      - ../keys:/app/keys:ro
+
+  app:
+    build:
+      context: ..
+      dockerfile: apps/app/Dockerfile
+    env_file:
+      - ../apps/app/.env
+    environment:
+      NODE_ENV: production
+      API_URL: http://simplist-api:2000/api
