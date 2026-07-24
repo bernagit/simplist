@@ -50,6 +50,11 @@ COPY apps/api/package.json ./package.json
 # COPY migrations folder to the container
 COPY apps/api/drizzle ./drizzle
 
+COPY apps/api/scripts/healthcheck.mjs ./healthcheck.mjs
+
 EXPOSE 2000
+
+HEALTHCHECK --interval=10s --timeout=5s --retries=5 --start-period=10s \
+  CMD ["node", "healthcheck.mjs"]
 
 CMD ["node", "dist/src/server.js"]

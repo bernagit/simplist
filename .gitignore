@@ -16,6 +16,7 @@ node_modules
 #!.yarn/cache
 .pnp.*
 .env
+.env.docker
 
 
 **/dist
@@ -25,4 +26,4 @@ node_modules
 **/generated
 **/keys
 
-todo.txt
+**/todo.txt

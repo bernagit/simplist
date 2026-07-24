@@ -18,7 +18,14 @@
     "format": "prettier --write ./apps",
     "changeset": "changeset",
     "version": "changeset version",
-    "release": "changeset version && yarn install"
+    "release": "changeset version && yarn install",
+    "docker:dev": "docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up --build",
+    "docker:dev:down": "docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml down",
+    "docker:prod": "docker compose --env-file docker/.env -f docker/docker-compose.yml -f docker/docker-compose.prod.yml up",
+    "docker:prod:down": "docker compose --env-file docker/.env -f docker/docker-compose.yml -f docker/docker-compose.prod.yml down",
+    "docker:build": "node scripts/docker-release.mjs build",
+    "docker:push": "node scripts/docker-release.mjs push",
+    "docker:release": "node scripts/docker-release.mjs release"
   },
   "devDependencies": {
     "@changesets/cli": "^2.31.1",
