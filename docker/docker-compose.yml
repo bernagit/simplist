@@ -17,21 +17,5 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  api:
-    container_name: simplist-api
-    depends_on:
-      db:
-        condition: service_healthy
-    ports:
-      - "2000:2000"
-
-  app:
-    container_name: simplist-app
-    depends_on:
-      api:
-        condition: service_healthy
-    ports:
-      - "3000:3000"
-
 volumes:
   postgres_data:

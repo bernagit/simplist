@@ -1,8 +1,14 @@
 services:
   api:
+    container_name: simplist-api
     build:
       context: ..
       dockerfile: apps/api/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "2000:2000"
     env_file:
       - ../apps/api/.env
     environment:
@@ -11,9 +17,15 @@ services:
       - ../keys:/app/keys:ro
 
   app:
+    container_name: simplist-app
     build:
       context: ..
       dockerfile: apps/app/Dockerfile
+    depends_on:
+      api:
+        condition: service_started
+    ports:
+      - "3000:3000"
     env_file:
       - ../apps/app/.env
     environment:
