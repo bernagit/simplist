@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken'
+import ms from 'ms'
 import type { StringValue } from 'ms'
 import appConfig from '../../config/env.js'
 
@@ -8,7 +9,10 @@ const options = {
 }
 
 function signToken(payload: object) {
-  return jwt.sign(payload, appConfig.jwtPrivateKey, options)
+  const token = jwt.sign(payload, appConfig.jwtPrivateKey, options)
+  const expiresAt = new Date(Date.now() + ms(appConfig.jwtExpiresIn as StringValue))
+
+  return { token, expiresAt }
 }
 
 function verifyToken(token: string) {

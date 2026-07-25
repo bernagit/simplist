@@ -57,14 +57,16 @@ export const passwordResetSchema = z.object({
   })
 })
 
-export const refreshSchema = z.object({
-  refreshToken: z.string().min(1)
+export const refreshTokenSchema = z.object({
+  body: z.object({
+    refreshToken: z.string().min(1)
+  })
 })
 
 export type RegisterInput = z.infer<typeof registerSchema>['body']
 export type LoginInput = z.infer<typeof loginSchema>['body']
-export type RefreshInput = z.infer<typeof refreshSchema>
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>['body']
 export type PasswordResetInput = z.infer<typeof passwordResetSchema>['body']
 export type UpdateCurrentUserInput = z.infer<typeof updateCurrentUserSchema>['body']
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>['body']
+export type RefreshTokenInput = z.infer<typeof refreshTokenSchema>['body']

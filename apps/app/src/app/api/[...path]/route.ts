@@ -1,24 +1,19 @@
-import { cookies } from 'next/headers'
+// src/app/api/[...path]/route.ts
+import { authFetch } from '@/utils/authFetch'
 import { NextRequest, NextResponse } from 'next/server'
 
 const API_URL = process.env.API_URL!
 
 async function proxy(req: NextRequest, path: string[]) {
-  const token = (await cookies()).get('accessToken')?.value
   const url = `${API_URL}/${path.join('/')}${req.nextUrl.search}`
-
   const headers = new Headers(req.headers)
-
   headers.delete('host')
   headers.delete('cookie')
-
-  if (token) {
-    headers.set('Authorization', `Bearer ${token}`)
-  }
+  headers.delete('authorization') // authFetch sets its own
 
   const body = req.method === 'GET' || req.method === 'HEAD' ? undefined : await req.text()
 
-  const response = await fetch(url, {
+  const response = await authFetch(url, {
     method: req.method,
     headers,
     ...(body !== undefined ? { body } : {})
@@ -30,11 +25,7 @@ async function proxy(req: NextRequest, path: string[]) {
   })
 }
 
-type RouteContext = {
-  params: Promise<{
-    path: string[]
-  }>
-}
+type RouteContext = { params: Promise<{ path: string[] }> }
 
 async function handle(req: NextRequest, ctx: RouteContext) {
   const { path } = await ctx.params

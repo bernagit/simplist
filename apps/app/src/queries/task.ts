@@ -5,10 +5,11 @@ import { listKeys } from './lists'
 import { CompleteList } from '@/models/lists'
 import { Resp } from '@/models/base'
 import { arrayMove } from '@dnd-kit/sortable'
+import { useState } from 'react'
 
 export function useCreateTask() {
   const queryClient = useQueryClient()
-
+  const [tempId] = useState(() => crypto.randomUUID());
   return useMutation({
     mutationFn: (input: CreateTaskInput) => tasksService.createTask(input),
 
@@ -31,7 +32,7 @@ export function useCreateTask() {
             tasks: [
               ...old.data.tasks,
               {
-                id: 'temp-id',
+                id: tempId,
                 creatorId: '',
                 completed: false,
                 createdAt: new Date(),
@@ -55,7 +56,7 @@ export function useCreateTask() {
           ...old,
           data: {
             ...old.data,
-            tasks: old.data.tasks.map(task => (task.id === 'temp-id' ? response.data : task))
+            tasks: old.data.tasks.map(task => (task.id === tempId ? response.data : task))
           }
         }
       })

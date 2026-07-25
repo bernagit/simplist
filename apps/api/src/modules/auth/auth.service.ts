@@ -218,9 +218,18 @@ export class AuthService {
     const newPasswordHash = await hashPassword(data.newPassword)
 
     await this.userRepository.updatePassword(userId, newPasswordHash)
-
+    await this.sessionService.revokeAllForUser(userId) // Revoke all sessions for the user
     return {
       message: 'Password changed successfully'
     }
+  }
+
+  public async refresh(refreshToken: string) {
+    return this.sessionService.refresh(refreshToken)
+  }
+
+  public async logout(refreshToken: string) {
+    await this.sessionService.revoke(refreshToken)
+    return { message: 'Logout successful' }
   }
 }

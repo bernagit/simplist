@@ -4,11 +4,11 @@ import { AuthController } from './auth.controller.js'
 import {
   registerSchema,
   loginSchema,
-  refreshSchema,
   forgotPasswordSchema,
   passwordResetSchema,
   updateCurrentUserSchema,
-  changePasswordSchema
+  changePasswordSchema,
+  refreshTokenSchema
 } from './auth.schema.js'
 import { requireAuth } from '../../infrastructure/middleware/auth.js'
 
@@ -28,7 +28,7 @@ router.post('/register', validate(registerSchema), controller.register)
 router.post('/login', validate(loginSchema), controller.login)
 router.post('/forgot-password', validate(forgotPasswordSchema), controller.forgotPassword)
 router.post('/reset-password', validate(passwordResetSchema), controller.resetPassword)
-router.post('/logout', controller.logout)
-router.post('/refresh', validate(refreshSchema), controller.refresh)
+router.post('/logout', validate(refreshTokenSchema), controller.logout)
+router.post('/refresh', validate(refreshTokenSchema), controller.refresh)
 
 export default router

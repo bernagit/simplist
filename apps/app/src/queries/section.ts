@@ -4,10 +4,12 @@ import { CreateSectionInput } from '@/models/section'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { listKeys } from './lists'
 import { sectionService } from '@/services/section'
+import { useState } from 'react'
 
 export function useCreateSection() {
   const queryClient = useQueryClient()
-
+  const [tempId] = useState(() => crypto.randomUUID());
+  
   return useMutation({
     mutationFn: (input: CreateSectionInput) => sectionService.createSection(input),
 
@@ -30,7 +32,7 @@ export function useCreateSection() {
             sections: [
               ...old.data.sections,
               {
-                id: 'temp-id',
+                id: tempId,
                 createdAt: new Date(),
                 updatedAt: new Date(),
                 order: input.order,
@@ -53,7 +55,7 @@ export function useCreateSection() {
           data: {
             ...old.data,
             sections: [
-              ...old.data.sections.filter(section => section.id !== 'temp-id'),
+              ...old.data.sections.filter(section => section.id !== tempId),
               response.data
             ]
           }

@@ -3,6 +3,7 @@ import { createModuleLogger } from '../logging/logger.js'
 import { Errors } from '../../types/http.js'
 import { jwtService } from '../auth/jwt.js'
 import { UserRepository } from '../../modules/user/user.repository.js'
+import jwt from 'jsonwebtoken'
 
 const logger = createModuleLogger('AUTH-MIDDLEWARE')
 const userRepository = new UserRepository()
@@ -18,11 +19,20 @@ export const requireAuth = async (req: Request, _res: Response, next: NextFuncti
   // eslint-disable-next-line @typescript-eslint/no-magic-numbers
   const token = authHeader.slice(7)
 
-  const payload = jwtService.verifyToken(token) as { userId: string } | null
+  let payload: { userId: string }
 
-  if (!payload) {
-    logger.warn('Authentication failed: Invalid token')
-    throw Errors.unauthorized('Invalid authentication token')
+  try {
+    payload = jwtService.verifyToken(token) as { userId: string }
+  } catch (error) {
+    if (error instanceof jwt.TokenExpiredError) {
+      logger.warn('Authentication failed: Token expired')
+      throw Errors.unauthorized('Token expired')
+    }
+    if (error instanceof jwt.JsonWebTokenError) {
+      logger.warn('Authentication failed: Invalid token')
+      throw Errors.unauthorized('Invalid authentication token')
+    }
+    throw error // genuinely unexpected — let it 500
   }
 
   const user = await userRepository.findById(payload.userId)
