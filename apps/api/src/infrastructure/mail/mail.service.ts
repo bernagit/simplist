@@ -4,16 +4,24 @@ import { inviteTemplate } from './templates/invitation.js'
 import { welcomeTemplate } from './templates/welcome.js'
 import { resetPasswordTemplate } from './templates/resetPassword.js'
 import { MailOptions } from 'nodemailer/lib/json-transport/index.js'
+import { createModuleLogger } from '../logging/logger.js'
 
 class MailService {
+  constructor(private readonly logger = createModuleLogger('MAIL_SERVICE')) {}
+
   async send(options: MailOptions) {
+    if (!transporter || !mailConfig) {
+      this.logger.warn('Skipping email because SMTP is disabled', {
+        to: options.to,
+        subject: options.subject
+      })
+
+      return
+    }
+
     return transporter.sendMail({
       from: `"${mailConfig.from.name}" <${mailConfig.from.email}>`,
-      to: options.to,
-      subject: options.subject,
-      html: options.html,
-      text: options.text,
-      replyTo: options.replyTo
+      ...options
     })
   }
 
