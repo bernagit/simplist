@@ -174,7 +174,7 @@ export default function ListOverview({ shared, data, isLoading }: ListOverviewPr
     <Container size="lg" py="xl">
       <Group justify="space-between" mb="xl">
         <div>
-          <Title order={1}>{shared === true ? 'Shared Lists' : 'My Lists'}</Title>
+          <Title order={1}>{shared === true ? 'Shared With Me' : 'My Lists'}</Title>
           <Text c="dimmed">
             {filteredData.length} {filteredData.length === 1 ? 'list' : 'lists'}
           </Text>

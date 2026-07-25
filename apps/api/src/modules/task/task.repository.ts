@@ -91,7 +91,7 @@ export class TaskRepository {
     sectionId: string
   ) {
     const isMovingDown = movedOrder < targetOrder
-    logger.info(
+    logger.debug(
       `Reordering task ${movedTaskId} to position of task ${targetTaskId} in section ${sectionId}. Moving down: ${isMovingDown}`
     )
 

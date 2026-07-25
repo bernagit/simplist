@@ -169,7 +169,8 @@ export default function CustomSchedule() {
           start,
           end,
           color: task.color,
-          data: task
+          data: task,
+          ...(task.recurrenceRule ? { recurrence: { rrule: task.recurrenceRule } } : {})
         }
       })
   }, [tasks])
