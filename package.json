@@ -20,13 +20,13 @@
     "changeset": "changeset",
     "version": "changeset version",
     "release": "changeset version && yarn install",
-    "docker:dev": "docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up --build",
-    "docker:dev:down": "docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml down",
+    "docker:build": "docker compose -f docker/docker-compose.yml -f docker/docker-compose.build.yml up --build",
+    "docker:build:down": "docker compose -f docker/docker-compose.yml -f docker/docker-compose.build.yml down",
     "docker:prod": "docker compose --env-file docker/.env -f docker/docker-compose.yml -f docker/docker-compose.prod.yml up",
     "docker:prod:down": "docker compose --env-file docker/.env -f docker/docker-compose.yml -f docker/docker-compose.prod.yml down",
-    "docker:build": "node scripts/docker-release.mjs build",
-    "docker:push": "node scripts/docker-release.mjs push",
-    "docker:release": "node scripts/docker-release.mjs release"
+    "docker:image:build": "node scripts/docker-images.mjs build",
+    "docker:image:push": "node scripts/docker-images.mjs push",
+    "docker:image:release": "node scripts/docker-images.mjs release"
   },
   "devDependencies": {
     "@changesets/cli": "^2.31.1",
