@@ -5,10 +5,7 @@ const API_URL = process.env.API_URL!
 
 async function proxy(req: NextRequest, path: string[]) {
   const token = (await cookies()).get('accessToken')?.value
-  console.log('Proxying request to API:', req.nextUrl)
-  console.log('API URL:', API_URL)
   const url = `${API_URL}/${path.join('/')}${req.nextUrl.search}`
-  console.log('Full URL:', url)
 
   const headers = new Headers(req.headers)
 
@@ -41,7 +38,6 @@ type RouteContext = {
 
 async function handle(req: NextRequest, ctx: RouteContext) {
   const { path } = await ctx.params
-  console.log('Handling request for path:', path)
   return proxy(req, path)
 }
 

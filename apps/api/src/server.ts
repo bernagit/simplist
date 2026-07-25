@@ -62,9 +62,13 @@ async function shutdown(server: ReturnType<typeof app.listen>, signal: string) {
 try {
   logger.info('Starting application...')
 
-  logger.info('Verifying SMTP connection...')
-  await transporter.verify()
-  logger.info('SMTP connection verified.')
+  if (transporter) {
+    logger.info('Verifying SMTP connection...')
+    await transporter.verify()
+    logger.info('SMTP connection verified.')
+  } else {
+    logger.warn('SMTP is disabled.')
+  }
 
   await bootstrapFirstInvite()
 
