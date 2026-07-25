@@ -11,3 +11,5 @@ export const RECURRENCE_PRESETS = [
   { value: 'FREQ=WEEKLY', label: 'Weekly' },
   { value: 'FREQ=MONTHLY', label: 'Monthly' }
 ]
+
+export const REFRESH_MAX_AGE = 60 * 60 * 24 * 30 // 30 days in seconds

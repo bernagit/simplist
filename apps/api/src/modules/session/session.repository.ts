@@ -23,7 +23,25 @@ export class SessionRepository {
     return session ?? null
   }
 
-  async delete(id: string) {
+  async findByRefreshTokenHash(refreshTokenHash: string) {
+    const [session] = await db
+      .select()
+      .from(sessions)
+      .where(eq(sessions.refreshTokenHash, refreshTokenHash))
+      .limit(1)
+
+    return session ?? null
+  }
+
+  async touch(id: string) {
+    await db.update(sessions).set({ lastUsedAt: new Date() }).where(eq(sessions.id, id))
+  }
+
+  async updateRefreshTokenHash(id: string, refreshTokenHash: string, expiresAt: Date) {
+    await db.update(sessions).set({ refreshTokenHash, expiresAt }).where(eq(sessions.id, id))
+  }
+
+  async deleteById(id: string) {
     await db.delete(sessions).where(eq(sessions.id, id))
   }
 

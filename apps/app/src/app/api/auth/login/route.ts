@@ -1,3 +1,5 @@
+import { IS_PROD } from '@/utils/common'
+import { REFRESH_MAX_AGE } from '@/utils/constants'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
@@ -6,30 +8,42 @@ export async function POST(req: Request) {
 
   const response = await fetch(`${process.env.API_URL}/auth/login`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
+    headers: { 'Content-Type': 'application/json' },
     body
   })
   const payload = await response.json()
 
   if (!response.ok) {
-    return NextResponse.json(payload, {
-      status: response.status
-    })
+    return NextResponse.json(payload, { status: response.status })
   }
 
-  const token = payload.data.accessToken
+  const { accessToken, accessTokenExpiresAt, refreshToken, user } = payload.data
 
   const cookieStore = await cookies()
 
-  cookieStore.set('accessToken', token, {
+  cookieStore.set('accessToken', accessToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: IS_PROD,
     sameSite: 'lax',
     path: '/',
-    maxAge: 60 * 60 * 24 * 7
+    maxAge: REFRESH_MAX_AGE
   })
 
-  return NextResponse.json(payload)
+  cookieStore.set('accessTokenExpiresAt', new Date(accessTokenExpiresAt).getTime().toString(), {
+    httpOnly: true,
+    secure: IS_PROD,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: REFRESH_MAX_AGE
+  })
+
+  cookieStore.set('refreshToken', refreshToken, {
+    httpOnly: true,
+    secure: IS_PROD,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: REFRESH_MAX_AGE
+  })
+
+  return NextResponse.json({ message: payload.message, data: user })
 }

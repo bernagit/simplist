@@ -6,6 +6,7 @@ import {
   ForgotPasswordInput,
   LoginInput,
   PasswordResetInput,
+  RefreshTokenInput,
   RegisterInput,
   UpdateCurrentUserInput
 } from './auth.schema.js'
@@ -88,11 +89,9 @@ export class AuthController {
 
   logout = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      // TODO: clear session from database
-
-      res.status(HTTP_STATUS.OK).json({
-        message: 'Logout successful'
-      })
+      const { refreshToken } = req.validated!.body as RefreshTokenInput
+      const result = await this.authService.logout(refreshToken)
+      res.status(HTTP_STATUS.OK).json(result)
     } catch (error) {
       next(error)
     }
@@ -100,9 +99,9 @@ export class AuthController {
 
   refresh = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      res.json({
-        message: 'Not implemented'
-      })
+      const { refreshToken } = req.validated!.body as RefreshTokenInput
+      const result = await this.authService.refresh(refreshToken)
+      res.status(HTTP_STATUS.OK).json({ message: 'Token refreshed successfully', data: result })
     } catch (error) {
       next(error)
     }

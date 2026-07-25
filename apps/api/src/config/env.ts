@@ -9,7 +9,7 @@ const pubkey = fs.readFileSync(path.resolve(process.cwd(), '../../keys/public.pe
 
 const appConfigSchema = z.object({
   appUrl: z.string().default(cfg.DEFAULT_APP_URL),
-  port: z.number().default(cfg.DEFAULT_SERVER_PORT),
+  port: z.coerce.number().default(cfg.DEFAULT_SERVER_PORT),
   logLevel: z
     .enum(['error', 'warn', 'info', 'debug'])
     .default(cfg.DEFAULT_LOG_LEVEL as 'error' | 'warn' | 'info' | 'debug'),
@@ -19,6 +19,7 @@ const appConfigSchema = z.object({
   jwtPrivateKey: z.string().default(privkey),
   jwtPublicKey: z.string().default(pubkey),
   jwtExpiresIn: z.string().default(cfg.DEFAULT_JWT_EXPIRES_IN),
+  refreshTokenExpiresIn: z.number().int().positive().default(cfg.REFRESH_TOKEN_EXPIRES_IN_DAYS),
   invitePerUser: z.coerce.number().int().positive().optional()
 })
 
@@ -26,7 +27,7 @@ const { POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, POSTGRES_HOST, POSTGRES_P
 
 const appConfig = appConfigSchema.parse({
   appUrl: process.env.APP_URL,
-  port: process.env.PORT ? parseInt(process.env.PORT, 10) : undefined,
+  port: process.env.PORT,
   logLevel: process.env.LOG_LEVEL,
   isDev: process.env.NODE_ENV === 'development',
   corsOrigin: process.env.CORS_ORIGIN,
@@ -36,6 +37,7 @@ const appConfig = appConfigSchema.parse({
   jwtPrivateKey: process.env.JWT_PRIVATE_KEY,
   jwtPublicKey: process.env.JWT_PUBLIC_KEY,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN,
+  refreshTokenExpiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN_DAYS,
   invitePerUser: process.env.INVITE_PER_USER
 })
 
