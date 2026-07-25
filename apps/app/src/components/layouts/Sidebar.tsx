@@ -47,7 +47,7 @@ const MIN_WIDTH = 240
 const MAX_WIDTH = 480
 const DEFAULT_WIDTH = 280
 const MY_LISTS_TEXT = 'My Lists'
-const SHARED_LISTS_TEXT = 'Shared Lists'
+const SHARED_LISTS_TEXT = 'Shared With Me'
 
 export function Sidebar() {
   const { toggle, opened, isMobile } = useSidebar()

@@ -195,9 +195,9 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
             transition: 'opacity 120ms',
             marginTop: 2
           }}
-          mt={task.description ? 10 : 0}
+          mt={0}
         >
-          <IconGripVertical size={14} />
+          <IconGripVertical size={18} />
         </ActionIcon>
         <Group
           style={{ flex: 1, minWidth: 0 }}

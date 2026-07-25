@@ -202,6 +202,9 @@ export function useShareList() {
       queryClient.invalidateQueries({
         queryKey: listKeys.detail(variables.listId)
       })
+      queryClient.invalidateQueries({
+        queryKey: listKeys.all
+      })
       showNotification({
         title: 'Success',
         message: `List shared with ${variables.shareWithEmail} as ${variables.role}.`,

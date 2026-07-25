@@ -55,7 +55,7 @@ export const HOTKEYS = {
 
   GO_SHARED_LISTS: {
     keys: ['g', 's'],
-    description: 'Go to shared lists',
+    description: 'Go to "shared with me"',
     category: 'Navigation'
   }
 } as const
