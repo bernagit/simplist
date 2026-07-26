@@ -1,8 +1,24 @@
 # api
 
-## [v0.1.0]
+## 0.2.1
+
+### Patch Changes
+
+- feat(auth): implemented refresh token and sessions
+- feat(mail): enhance SMTP configuration
+- fix: docker configuration
+
+
+## v0.2.0
+
+### Minor Changes
+
+- changed invite handling
+
+## v0.1.0
 
 ### Added
+
 - Initial project scaffolding: Yarn monorepo with `apps/api` (Express + Drizzle)
   and `apps/app` (Next.js + Mantine)
 - Lists, sections, and tasks with priorities and due dates
@@ -13,9 +29,3 @@
 - Keyboard shortcuts and command spotlight
 - PWA support
 - Docker Compose setup for self-hosting
-
-## [v0.2.0]
-
-### Minor Changes
-
-- changed invite handling
