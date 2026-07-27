@@ -1,7 +1,11 @@
+'use client'
+
 import { formatDate } from '@/utils/date'
-import { Button, Group, Popover, Text } from '@mantine/core'
+import { Button, Drawer, Group, Popover, Text } from '@mantine/core'
+import { useDisclosure } from '@mantine/hooks'
 import { IconCalendar, IconX } from '@tabler/icons-react'
 import DueDateDropdown from './DueDateDropdown'
+import { useSidebar } from '@/providers/SidebarProvider'
 
 type DateSelectorProps = {
   dueDate: string | null
@@ -20,18 +24,40 @@ export default function DateSelector({
   dueTime,
   durationMinutes,
   recurrenceRule,
-  canEdit,
+  canEdit = true,
   onDateChange,
   onTimeChange,
   onDurationChange,
   onRecurrenceChange
 }: DateSelectorProps) {
   const shortDate = formatDate(dueDate)
+  const { isMobile } = useSidebar()
+  const [drawerOpened, { open: openDrawer, close: closeDrawer }] = useDisclosure(false)
+
+  const dropdownContent = (
+    <DueDateDropdown
+      dueDate={dueDate}
+      dueTime={dueTime}
+      durationMinutes={durationMinutes}
+      recurrenceRule={recurrenceRule}
+      onDateChange={onDateChange}
+      onTimeChange={onTimeChange}
+      onDurationChange={onDurationChange}
+      onRecurrenceChange={onRecurrenceChange}
+    />
+  )
+
+  const dateButtonStyle = {
+    fontSize: 13,
+    fontWeight: 500,
+    width: 'fit-content',
+    borderRadius: dueDate ? '4px 0px 0px 4px' : 4
+  } as const
 
   return (
     <Group gap={0}>
-      <Popover position="bottom-start" shadow="md">
-        <Popover.Target>
+      {isMobile ? (
+        <>
           <Button
             variant="outline"
             color="gray"
@@ -39,32 +65,54 @@ export default function DateSelector({
             h={30}
             px={4}
             radius={4}
-            style={{
-              fontSize: 13,
-              fontWeight: 500,
-              width: 'fit-content',
-              borderRadius: dueDate ? '4px 0px 0px 4px' : 4
+            disabled={!canEdit}
+            onClick={() => {
+              openDrawer()
             }}
+            style={dateButtonStyle}
           >
             <IconCalendar size={16} style={{ marginRight: 4 }} />
             <Text mt={4} size={'13px'} fw={500}>
               {shortDate ? shortDate : 'Date'}
             </Text>
           </Button>
-        </Popover.Target>
-        <Popover.Dropdown>
-          <DueDateDropdown
-            dueDate={dueDate}
-            dueTime={dueTime}
-            durationMinutes={durationMinutes}
-            recurrenceRule={recurrenceRule}
-            onDateChange={onDateChange}
-            onTimeChange={onTimeChange}
-            onDurationChange={onDurationChange}
-            onRecurrenceChange={onRecurrenceChange}
-          />
-        </Popover.Dropdown>
-      </Popover>
+
+          <Drawer
+            opened={drawerOpened}
+            onClose={closeDrawer}
+            position="bottom"
+            radius="md"
+            size="auto"
+            title="Due date"
+            padding="md"
+          >
+            {dropdownContent}
+          </Drawer>
+        </>
+      ) : (
+        <Popover position="bottom-start" shadow="md" withinPortal disabled={!canEdit}>
+          <Popover.Target>
+            <Button
+              variant="outline"
+              color="gray"
+              mt="xs"
+              h={30}
+              px={4}
+              radius={4}
+              style={dateButtonStyle}
+            >
+              <IconCalendar size={16} style={{ marginRight: 4 }} />
+              <Text mt={4} size={'13px'} fw={500}>
+                {shortDate ? shortDate : 'Date'}
+              </Text>
+            </Button>
+          </Popover.Target>
+          <Popover.Dropdown p="md" style={{ width: 280 }}>
+            {dropdownContent}
+          </Popover.Dropdown>
+        </Popover>
+      )}
+
       {dueDate && (
         <Button
           variant="outline"
@@ -73,6 +121,7 @@ export default function DateSelector({
           h={30}
           px={4}
           radius={4}
+          disabled={!canEdit}
           style={{
             borderRadius: '0px 4px 4px 0px',
             borderLeft: 0,

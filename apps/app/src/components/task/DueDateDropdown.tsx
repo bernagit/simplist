@@ -34,7 +34,7 @@ export default function DueDateDropdown({
   }
 
   return (
-    <Stack gap="md" style={{ width: 280 }}>
+    <Stack gap="md" style={{ width: '100%' }}>
       <DatePicker
         highlightToday
         allowDeselect

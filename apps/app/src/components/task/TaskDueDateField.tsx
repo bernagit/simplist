@@ -1,7 +1,8 @@
 'use client'
 
-import { ActionIcon, Group, Popover, Stack, Text, ThemeIcon, rem } from '@mantine/core'
-import { IconCalendar, IconX } from '@tabler/icons-react'
+import { useDisclosure } from '@mantine/hooks'
+import { ActionIcon, Box, Collapse, Group, Stack, Text, ThemeIcon, rem } from '@mantine/core'
+import { IconCalendar, IconChevronDown, IconX } from '@tabler/icons-react'
 import dayjs from 'dayjs'
 import HoverableBox from './HoverableBox'
 import { RECURRENCE_PRESETS } from '@/utils/constants'
@@ -30,6 +31,8 @@ export default function TaskDueDateField({
   onDurationChange,
   onRecurrenceChange
 }: TaskDueDateFieldProps) {
+  const [opened, { toggle, close }] = useDisclosure(false)
+
   const displaySummary = (() => {
     if (!dueDate) return 'Set due date'
 
@@ -52,56 +55,76 @@ export default function TaskDueDateField({
     onTimeChange(null)
     onDurationChange(null)
     onRecurrenceChange(null)
+    close()
   }
 
-  return (
-    <Popover
-      disabled={!canEdit}
-      position="bottom-start"
-      shadow="lg"
-      radius="md"
-      withArrow
-      offset={8}
-      zIndex={500}
-    >
-      <Popover.Target>
-        <HoverableBox disabled={!canEdit}>
-          <Group justify="space-between" wrap="nowrap" style={{ width: '100%' }}>
-            <Group gap="sm" wrap="nowrap">
-              <ThemeIcon variant="light" color={'gray'} radius="md" size="md">
-                <IconCalendar style={{ width: rem(18), height: rem(18) }} />
-              </ThemeIcon>
-              <Stack gap={2}>
-                <Text size="xs" c="dimmed" fw={500} style={{ lineHeight: 1 }}>
-                  Due Date
-                </Text>
-                <Text size="sm" fw={dueDate ? 600 : 400} c={dueDate ? 'dark.4' : 'dimmed'}>
-                  {displaySummary}
-                </Text>
-              </Stack>
-            </Group>
+  const isOpen = opened && canEdit
 
+  return (
+    <Box
+      style={{
+        border: '1px solid var(--mantine-color-default-border)',
+        borderRadius: 'var(--mantine-radius-md)',
+        overflow: 'hidden'
+      }}
+    >
+      <HoverableBox
+        disabled={!canEdit}
+        onClick={() => canEdit && toggle()}
+        style={{ borderRadius: 0 }}
+        active={false}
+      >
+        <Group justify="space-between" wrap="nowrap" style={{ width: '100%' }}>
+          <Group gap="sm" wrap="nowrap">
+            <ThemeIcon variant="light" color="gray" radius="md" size="md">
+              <IconCalendar style={{ width: rem(18), height: rem(18) }} />
+            </ThemeIcon>
+            <Stack gap={2}>
+              <Text size="xs" c="dimmed" fw={500} style={{ lineHeight: 1 }}>
+                Due Date
+              </Text>
+              <Text size="sm" fw={dueDate ? 600 : 400} c={dueDate ? 'dark.4' : 'dimmed'}>
+                {displaySummary}
+              </Text>
+            </Stack>
+          </Group>
+
+          <Group gap={4} wrap="nowrap">
             {dueDate && canEdit && (
               <ActionIcon variant="subtle" color="gray" radius="xl" onClick={handleClearAll}>
                 <IconX style={{ width: rem(16), height: rem(16) }} />
               </ActionIcon>
             )}
+            {canEdit && (
+              <ActionIcon variant="subtle" color="gray" radius="xl">
+                <IconChevronDown
+                  style={{
+                    width: rem(16),
+                    height: rem(16),
+                    transform: isOpen ? 'rotate(180deg)' : undefined,
+                    transition: 'transform 150ms ease'
+                  }}
+                />
+              </ActionIcon>
+            )}
           </Group>
-        </HoverableBox>
-      </Popover.Target>
+        </Group>
+      </HoverableBox>
 
-      <Popover.Dropdown p="md">
-        <DueDateDropdown
-          dueDate={dueDate}
-          dueTime={dueTime}
-          durationMinutes={durationMinutes}
-          recurrenceRule={recurrenceRule}
-          onDateChange={onDateChange}
-          onTimeChange={onTimeChange}
-          onDurationChange={onDurationChange}
-          onRecurrenceChange={onRecurrenceChange}
-        />
-      </Popover.Dropdown>
-    </Popover>
+      <Collapse expanded={isOpen} transitionDuration={180} transitionTimingFunction="ease">
+        <Box p="md" style={{ borderTop: '1px solid var(--mantine-color-default-border)' }}>
+          <DueDateDropdown
+            dueDate={dueDate}
+            dueTime={dueTime}
+            durationMinutes={durationMinutes}
+            recurrenceRule={recurrenceRule}
+            onDateChange={onDateChange}
+            onTimeChange={onTimeChange}
+            onDurationChange={onDurationChange}
+            onRecurrenceChange={onRecurrenceChange}
+          />
+        </Box>
+      </Collapse>
+    </Box>
   )
 }
