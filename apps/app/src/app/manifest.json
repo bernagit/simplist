@@ -28,5 +28,46 @@
       "type": "image/png",
       "purpose": "maskable"
     }
+  ],
+  "shortcuts": [
+    {
+      "name": "Calendar",
+      "short_name": "Calendar",
+      "description": "View your calendar",
+      "url": "/calendar",
+      "icons": [
+        {
+          "src": "/icons/calendar.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "My Lists",
+      "short_name": "My Lists",
+      "description": "View your lists",
+      "url": "/lists",
+      "icons": [
+        {
+          "src": "/icons/lists.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Shared With Me",
+      "short_name": "Shared Lists",
+      "description": "View lists shared with you",
+      "url": "/lists/shared",
+      "icons": [
+        {
+          "src": "/icons/shared.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
   ]
 }
