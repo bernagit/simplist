@@ -5,10 +5,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { listKeys } from './lists'
 import { sectionService } from '@/services/section'
 import { useState } from 'react'
+import { createTempId } from '@/utils/common'
 
 export function useCreateSection() {
   const queryClient = useQueryClient()
-  const [tempId] = useState(() => crypto.randomUUID());
+  const [tempId] = useState(() => createTempId());
   
   return useMutation({
     mutationFn: (input: CreateSectionInput) => sectionService.createSection(input),
