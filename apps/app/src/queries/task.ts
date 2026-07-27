@@ -6,10 +6,11 @@ import { CompleteList } from '@/models/lists'
 import { Resp } from '@/models/base'
 import { arrayMove } from '@dnd-kit/sortable'
 import { useState } from 'react'
+import { createTempId } from '@/utils/common'
 
 export function useCreateTask() {
   const queryClient = useQueryClient()
-  const [tempId] = useState(() => crypto.randomUUID());
+  const [tempId] = useState(() => createTempId());
   return useMutation({
     mutationFn: (input: CreateTaskInput) => tasksService.createTask(input),
 
