@@ -11,7 +11,6 @@ import {
   Title,
   Text,
   Divider,
-  ScrollArea,
   Box,
   ThemeIcon,
   Tooltip
@@ -86,32 +85,44 @@ export default function ListPage() {
     await reorderTasks.mutateAsync({ listId: list.id, sectionId, movedTaskId, targetTaskId })
   }
 
-  const handleScroll = ({ y }: { y: number }) => {
-    const HIDE_THRESHOLD = 25
-    const SHOW_THRESHOLD = 15
+  useEffect(() => {
+    const container = document.getElementById('app-scroll-container')
 
-    let isPastThreshold = lastCrossedRef.current
+    if (!container) return
 
-    if (y > HIDE_THRESHOLD) {
-      isPastThreshold = true
-    } else if (y < SHOW_THRESHOLD) {
-      isPastThreshold = false
-    }
+    const onScroll = () => {
+      const y = container.scrollTop
 
-    if (isPastThreshold !== lastCrossedRef.current) {
-      lastCrossedRef.current = isPastThreshold
+      const HIDE_THRESHOLD = 25
+      const SHOW_THRESHOLD = 15
 
-      if (isPastThreshold && list?.title) {
-        setTitle(list.title)
-        setDescription(list.description ?? undefined)
-        setShowTitle(true)
-      } else {
-        setShowTitle(false)
-        setTitle(undefined)
-        setDescription(undefined)
+      let isPastThreshold = lastCrossedRef.current
+
+      if (y > HIDE_THRESHOLD) {
+        isPastThreshold = true
+      } else if (y < SHOW_THRESHOLD) {
+        isPastThreshold = false
+      }
+
+      if (isPastThreshold !== lastCrossedRef.current) {
+        lastCrossedRef.current = isPastThreshold
+
+        if (isPastThreshold && list?.title) {
+          setTitle(list.title)
+          setDescription(list.description ?? undefined)
+          setShowTitle(true)
+        } else {
+          setShowTitle(false)
+          setTitle(undefined)
+          setDescription(undefined)
+        }
       }
     }
-  }
+
+    container.addEventListener('scroll', onScroll)
+
+    return () => container.removeEventListener('scroll', onScroll)
+  }, [list, setTitle, setDescription, setShowTitle])
 
   useEffect(() => {
     if (lastCrossedRef.current && list?.title) {
@@ -146,116 +157,114 @@ export default function ListPage() {
   }
 
   return (
-    <ScrollArea h="100%" type="auto" scrollbars="y" onScrollPositionChange={handleScroll}>
-      <Container>
-        <Stack>
-          <Group justify="space-between" wrap="nowrap">
-            <Box
-              style={{
-                transition: 'opacity 400ms ease, transform 400ms ease',
-                opacity: showTopbarTitle ? 0 : 1,
-                transform: showTopbarTitle ? 'translateY(-20px)' : 'translateY(0)',
-                visibility: showTopbarTitle ? 'hidden' : 'visible'
-              }}
-            >
-              <EditableTitle
-                canEdit={isOwner}
-                onSave={handleSaveTitle}
-                value={list.title}
-                order={2}
-              />
-              {list.description && (
-                <Text ml={8} size="sm" c="dimmed">
-                  {list.description}
-                </Text>
-              )}
-            </Box>
-            {!canEdit && (
-              <Tooltip
-                label="You don't have permission to edit this list"
-                position="bottom"
-                withArrow
-                transitionProps={{ transition: 'pop', duration: 200 }}
-              >
-                <ThemeIcon variant="light" size={30}>
-                  <IconLock size={18} />
-                </ThemeIcon>
-              </Tooltip>
+    <Container>
+      <Stack>
+        <Group justify="space-between" wrap="nowrap">
+          <Box
+            style={{
+              transition: 'opacity 400ms ease, transform 400ms ease',
+              opacity: showTopbarTitle ? 0 : 1,
+              transform: showTopbarTitle ? 'translateY(-20px)' : 'translateY(0)',
+              visibility: showTopbarTitle ? 'hidden' : 'visible'
+            }}
+          >
+            <EditableTitle
+              canEdit={isOwner}
+              onSave={handleSaveTitle}
+              value={list.title}
+              order={2}
+            />
+            {list.description && (
+              <Text ml={8} size="sm" c="dimmed">
+                {list.description}
+              </Text>
             )}
-          </Group>
-          {orderedSections.length > 0 && (
-            <Stack gap={'xs'}>
-              {orderedSections.map((section, index) => {
-                const sectionTasks = list.tasks.filter(task => task.sectionId === section.id)
-                const isDefaultSection = section.id === list.defaultSectionId
-                const completedTasksCount = sectionTasks.filter(task => task.completed).length
-                const totalTasksCount = sectionTasks.length
-                if (isDefaultSection) {
-                  return (
-                    <div key={section.id}>
+          </Box>
+          {!canEdit && (
+            <Tooltip
+              label="You don't have permission to edit this list"
+              position="bottom"
+              withArrow
+              transitionProps={{ transition: 'pop', duration: 200 }}
+            >
+              <ThemeIcon variant="light" size={30}>
+                <IconLock size={18} />
+              </ThemeIcon>
+            </Tooltip>
+          )}
+        </Group>
+        {orderedSections.length > 0 && (
+          <Stack gap={'xs'}>
+            {orderedSections.map((section, index) => {
+              const sectionTasks = list.tasks.filter(task => task.sectionId === section.id)
+              const isDefaultSection = section.id === list.defaultSectionId
+              const completedTasksCount = sectionTasks.filter(task => task.completed).length
+              const totalTasksCount = sectionTasks.length
+              if (isDefaultSection) {
+                return (
+                  <div key={section.id}>
+                    <TaskList
+                      data={sectionTasks}
+                      canEdit={canEdit}
+                      onReorder={handleReorderTasks}
+                    />
+                    {canEdit && (
+                      <AddTask
+                        ml={38}
+                        listId={list.id}
+                        sectionId={list.defaultSectionId}
+                        onSave={handleAddTask}
+                      />
+                    )}
+                    {canEdit && index === orderedSections.length - 1 && (
+                      <AddSection
+                        order={2}
+                        listId={list.id}
+                        key={section.id}
+                        onSave={handleAddSection}
+                      />
+                    )}
+                  </div>
+                )
+              } else {
+                return (
+                  <div key={section.id}>
+                    <SectionPanel
+                      section={section}
+                      totalTasksCount={totalTasksCount}
+                      completedTasksCount={completedTasksCount}
+                      canEdit={canEdit}
+                    >
+                      <Divider ml={28} mr={8} />
                       <TaskList
-                        data={sectionTasks}
                         canEdit={canEdit}
+                        data={list.tasks.filter(task => task.sectionId === section.id)}
                         onReorder={handleReorderTasks}
                       />
                       {canEdit && (
                         <AddTask
                           ml={38}
                           listId={list.id}
-                          sectionId={list.defaultSectionId}
+                          sectionId={section.id}
                           onSave={handleAddTask}
                         />
                       )}
-                      {canEdit && index === orderedSections.length - 1 && (
-                        <AddSection
-                          order={2}
-                          listId={list.id}
-                          key={section.id}
-                          onSave={handleAddSection}
-                        />
-                      )}
-                    </div>
-                  )
-                } else {
-                  return (
-                    <div key={section.id}>
-                      <SectionPanel
-                        section={section}
-                        totalTasksCount={totalTasksCount}
-                        completedTasksCount={completedTasksCount}
-                        canEdit={canEdit}
-                      >
-                        <Divider ml={28} mr={8} />
-                        <TaskList
-                          canEdit={canEdit}
-                          data={list.tasks.filter(task => task.sectionId === section.id)}
-                          onReorder={handleReorderTasks}
-                        />
-                        {canEdit && (
-                          <AddTask
-                            ml={38}
-                            listId={list.id}
-                            sectionId={section.id}
-                            onSave={handleAddTask}
-                          />
-                        )}
-                      </SectionPanel>
-                      {canEdit && index === orderedSections.length - 1 && (
-                        <AddSection
-                          order={section.order}
-                          listId={list.id}
-                          key={section.id}
-                          onSave={handleAddSection}
-                        />
-                      )}
-                    </div>
-                  )
-                }
-              })}
-            </Stack>
-          )}
-        </Stack>
-      </Container>
-    </ScrollArea>
+                    </SectionPanel>
+                    {canEdit && index === orderedSections.length - 1 && (
+                      <AddSection
+                        order={section.order}
+                        listId={list.id}
+                        key={section.id}
+                        onSave={handleAddSection}
+                      />
+                    )}
+                  </div>
+                )
+              }
+            })}
+          </Stack>
+        )}
+      </Stack>
+    </Container>
   )
 }

@@ -59,13 +59,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 >
                   <Topbar />
                   <Box
+                    id="app-scroll-container"
                     component="main"
                     flex={1}
                     style={{
                       display: 'flex',
                       justifyContent: 'center',
-                      overflow: 'hidden',
-                      minHeight: 0
+                      overflowY: 'auto',
+                      overflowX: 'hidden',
+                      minHeight: 0,
+                      WebkitOverflowScrolling: 'touch'
                     }}
                   >
                     <Box
@@ -73,8 +76,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       p="md"
                       style={{
                         flex: 1,
-                        minHeight: 0,
-                        overflow: 'hidden'
+                        minHeight: '100%'
                       }}
                     >
                       {children}
