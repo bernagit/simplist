@@ -1,4 +1,3 @@
-// src/utils/authFetch.ts
 import { cookies } from 'next/headers'
 import { REFRESH_MAX_AGE } from './constants'
 import { IS_PROD } from './common'

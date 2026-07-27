@@ -17,10 +17,17 @@ export async function proxy(req: NextRequest) {
   const expired = isExpired(accessTokenExpiresAt)
 
   if (expired && refreshToken) {
-    const refreshRes = await fetch(new URL('/api/auth/refresh', req.url), {
-      method: 'POST',
-      headers: { cookie: req.headers.get('cookie') ?? '' }
-    })
+    const proto = req.headers.get("x-forwarded-proto") ?? "http";
+    const host = req.headers.get("host")!;
+    
+    const refreshUrl = `${proto}://${host}/api/auth/refresh`;
+
+    const refreshRes = await fetch(refreshUrl, {
+      method: "POST",
+      headers: {
+        cookie: req.headers.get("cookie") ?? "",
+      },
+    });
 
     if (refreshRes.ok) {
       const res = isPublicRoute
