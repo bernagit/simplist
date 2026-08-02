@@ -1,4 +1,4 @@
-import { CreateListInput } from '@/models/lists'
+import { CreateListInput, OwnedList, SharedList } from '@/models/lists'
 import { modals } from '@mantine/modals'
 
 export function createListModal() {
@@ -29,6 +29,28 @@ export function shareListModal(listId: string) {
     size: 'lg',
     innerProps: {
       listId
+    }
+  })
+}
+
+export function openOwnedListInfoModal(list: OwnedList) {
+  modals.openContextModal({
+    modal: 'ownedListInfo',
+    title: 'List info',
+    size: 'lg',
+    innerProps: {
+      list
+    }
+  })
+}
+
+export function openSharedListInfoModal(list: SharedList) {
+  modals.openContextModal({
+    modal: 'sharedListInfo',
+    title: 'List info',
+    size: 'lg',
+    innerProps: {
+      list
     }
   })
 }

@@ -31,6 +31,9 @@ import { useCallback, useEffect, useMemo } from 'react'
 import { MENU_WIDTH } from './Sidebar'
 import { shareListModal, updateListModal } from '@/lib/modals/list'
 import { useAppRoute } from '@/hooks/useAppRoute'
+import ConfirmArchive from '../modals/ConfirmArchive'
+import { modals } from '@mantine/modals'
+import { usePreferences } from '@/queries/preferences'
 
 export const TOPBAR_HEIGHT = 50
 
@@ -42,6 +45,8 @@ export function Topbar() {
   const queryClient = useQueryClient()
   const archiveList = useArchiveList()
   const unarchiveList = useUnarchiveList()
+  const { data: pref } = usePreferences(true)
+  const preferences = pref?.data
 
   const route = useAppRoute()
 
@@ -71,15 +76,30 @@ export function Topbar() {
     return list.archivedAt === null ? false : true
   }, [route.listId, queryClient])
 
-  const handleToggleArchive = useCallback(() => {
+  const handleToggleArchive = useCallback(async () => {
     if (!route.listId) return
 
     if (isArchived) {
-      unarchiveList.mutate(route.listId)
+      await unarchiveList.mutateAsync(route.listId)
     } else {
-      archiveList.mutate(route.listId)
+      if (preferences?.confirmDelete) {
+        modals.openConfirmModal({
+          title: 'Archive List',
+          children: (
+            <ConfirmArchive />
+          ),
+          labels: { confirm: 'Archive', cancel: 'Cancel' },
+          confirmProps: { color: 'orange' },
+          onConfirm: async () => {
+            if (!route.listId) return
+            await archiveList.mutateAsync(route.listId)
+          }
+        })
+      } else {
+        await archiveList.mutateAsync(route.listId)
+      }
     }
-  }, [archiveList, unarchiveList, route.listId, isArchived])
+  }, [route.listId, isArchived, unarchiveList, preferences?.confirmDelete, archiveList])
 
   const handleShare = useCallback(() => {
     if (!route.listId) return

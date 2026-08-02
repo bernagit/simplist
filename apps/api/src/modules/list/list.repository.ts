@@ -14,6 +14,10 @@ export class ListRepository {
     return isNull(lists.deletedAt)
   }
 
+  private notArchived(): SQL {
+    return isNull(lists.archivedAt)
+  }
+
   private ownedBy(userId: string): SQL {
     return eq(lists.ownerId, userId)
   }
@@ -61,14 +65,27 @@ export class ListRepository {
 
   async getShared(userId: string) {
     const query = db
-      .select()
+      .select({
+        ...getTableColumns(lists),
+        owner: {
+          id: users.id,
+          name: users.name,
+          email: users.email
+        }
+      })
       .from(lists)
       .innerJoin(listMembers, eq(lists.id, listMembers.listId))
+      .innerJoin(users, eq(lists.ownerId, users.id))
       .where(
-        and(eq(listMembers.userId, userId), this.notDeleted(), not(eq(listMembers.role, 'owner')))
+        and(
+          eq(listMembers.userId, userId),
+          this.notDeleted(),
+          this.notArchived(),
+          not(eq(listMembers.role, 'owner'))
+        )
       )
     const result = await query.execute()
-    return result.map(r => r.lists)
+    return result
   }
 
   async getById(listId: string, userId: string) {

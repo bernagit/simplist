@@ -1,4 +1,4 @@
-import { jsonb, pgTable, timestamp, uuid, varchar } from 'drizzle-orm/pg-core'
+import { boolean, jsonb, pgTable, timestamp, uuid, varchar } from 'drizzle-orm/pg-core'
 import { users } from './users.js'
 
 export const userPreferences = pgTable('user_preferences', {
@@ -13,6 +13,8 @@ export const userPreferences = pgTable('user_preferences', {
     .default('auto'),
 
   defaultView: varchar('default_view', { length: 255 }).notNull().default('home'),
+
+  confirmDelete: boolean('confirm_delete').notNull().default(true),
 
   startOfWeek: varchar('start_of_week', { length: 16 })
     .$type<'monday' | 'sunday'>()

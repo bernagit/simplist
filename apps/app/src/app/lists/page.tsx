@@ -1,12 +1,11 @@
-'use client'
+import OwnedListOverview from '@/components/list/OwnedListOverview'
+import { Metadata } from 'next'
 
-import ListOverview from '@/components/list/ListOverview'
-import { useLists } from '@/queries/lists'
+export const metadata: Metadata = {
+  title: 'My Lists - Simplist',
+  description: 'View and manage your owned lists.',
+}
 
 export default function Page() {
-  const { data: lists, isLoading } = useLists()
-
-  const ownedLists = lists?.data.owned ?? []
-
-  return <ListOverview data={ownedLists} isLoading={isLoading} shared={false} />
+  return <OwnedListOverview />
 }
