@@ -1,62 +1,35 @@
 'use client'
 
-import { createListModal, shareListModal, updateListModal } from '@/lib/modals/list'
-import { List, OwnedList } from '@/models/lists'
-import { useArchiveList, useDeleteList, useUnarchiveList } from '@/queries/lists'
-import { contextMenuStyles } from '@/utils/misc'
-import {
-  Center,
-  Loader,
-  Container,
-  Group,
-  Title,
-  ActionIcon,
-  Grid,
-  Card,
-  Stack,
-  ThemeIcon,
-  Badge,
-  Text,
-  TextInput,
-  Button,
-  Divider,
-  SegmentedControl,
-  Collapse,
-  Indicator
-} from '@mantine/core'
-import { useDebouncedValue, useDisclosure, useLocalStorage } from '@mantine/hooks'
-import { modals } from '@mantine/modals'
-import {
-  IconPlus,
-  IconList,
-  IconAdjustmentsHorizontal,
-  IconArchive,
-  IconArchiveOff,
-  IconShare,
-  IconEdit,
-  IconUsers,
-  IconTrash
-} from '@tabler/icons-react'
-import dayjs from 'dayjs'
-import { useContextMenu } from 'mantine-contextmenu'
-import { useRouter } from 'next/navigation'
-import { useMemo, useState } from 'react'
+import { createListModal, shareListModal, updateListModal } from "@/lib/modals/list"
+import { OwnedList } from "@/models/lists"
+import { useArchiveList, useDeleteList, useLists, useUnarchiveList } from "@/queries/lists"
+import { usePreferences } from "@/queries/preferences"
+import { contextMenuStyles } from "@/utils/misc"
+import { ActionIcon, Badge, Button, Card, Center, Collapse, Container, Divider, Grid, Group, Indicator, Loader, SegmentedControl, Stack, Text, TextInput, ThemeIcon, Title } from "@mantine/core"
+import { useDebouncedValue, useDisclosure, useLocalStorage } from "@mantine/hooks"
+import { modals } from "@mantine/modals"
+import { IconPlus, IconAdjustmentsHorizontal, IconUsers, IconList, IconTrash, IconShare, IconArchiveOff, IconArchive, IconEdit, IconInfoCircle } from "@tabler/icons-react"
+import dayjs from "dayjs"
+import { useContextMenu } from "mantine-contextmenu"
+import { useRouter } from "next/navigation"
+import { useMemo, useState } from "react"
 
-type ListOverviewProps = {
-  shared: boolean | undefined
-  data: (List | OwnedList)[]
-  isLoading: boolean
-}
-
-export default function ListOverview({ shared, data, isLoading }: ListOverviewProps) {
+export default function OwnedListOverview() {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState('')
   const [debouncedQuery] = useDebouncedValue(searchQuery, 300)
   const { showContextMenu } = useContextMenu()
 
+  const { data: lists, isLoading } = useLists()
+
+  const data = useMemo(() => lists?.data.owned ?? [], [lists])
+
   const archiveList = useArchiveList()
   const unarchiveList = useUnarchiveList()
   const deleteList = useDeleteList()
+
+  const { data: pref } = usePreferences(true)
+  const preferences = pref?.data
 
   const [expanded, { toggle }] = useDisclosure(false)
 
@@ -101,12 +74,62 @@ export default function ListOverview({ shared, data, isLoading }: ListOverviewPr
   }, [data, debouncedQuery, status])
 
   const handleListClick = (listId: string) => {
-    const path = shared ? `/lists/shared/${listId}` : `/lists/${listId}`
-    router.push(path)
+    router.push(`/lists/${listId}`)
   }
 
-  const getMenuOptions = (list: List) => {
+  const handleDeleteList = (listId: string) => {
+    if (preferences?.confirmDelete) {
+      modals.openConfirmModal({
+        title: 'Delete List',
+        children: (
+          <Text size="sm">
+            Are you sure you want to delete this list? This action cannot be undone.
+          </Text>
+        ),
+        labels: { confirm: 'Delete', cancel: 'Cancel' },
+        confirmProps: { color: 'red' },
+        onConfirm: async () => {
+          await deleteList.mutateAsync(listId)
+        }
+      })
+    } else {
+      deleteList.mutate(listId)
+    }
+  }
+
+  const getMenuOptions = (list: OwnedList) => {
     return [
+      {
+        key: 'info',
+        icon: <IconInfoCircle size={20} />,
+        title: 'More Info',
+        onClick: () => {
+          modals.open({
+            title: 'List Info',
+            children: (
+              <Stack gap="xs">
+                <Text size="sm">
+                  <strong>Title:</strong> {list.title}
+                </Text>
+                <Text size="sm">
+                  <strong>Description:</strong> {list.description || 'No description'}
+                </Text>
+                <Text size="sm">
+                  <strong>Created At:</strong> {dayjs(list.createdAt).format('DD MMM YYYY, HH:mm')}
+                </Text>
+                <Text size="sm">
+                  <strong>Updated At:</strong> {dayjs(list.updatedAt).format('DD MMM YYYY, HH:mm')}
+                </Text>
+                {list.archivedAt && (
+                  <Text size="sm">
+                    <strong>Archived At:</strong> {dayjs(list.archivedAt).format('DD MMM YYYY, HH:mm')}
+                  </Text>
+                )}
+              </Stack>
+            )
+          })
+        }
+      },
       {
         key: 'edit',
         icon: <IconEdit size={20} />,
@@ -119,11 +142,32 @@ export default function ListOverview({ shared, data, isLoading }: ListOverviewPr
         key: 'archive',
         icon: list.archivedAt ? <IconArchiveOff size={20} /> : <IconArchive size={20} />,
         title: list.archivedAt ? 'Unarchive' : 'Archive',
-        onClick: () => {
+        onClick: async () => {
           if (list.archivedAt) {
-            unarchiveList.mutate(list.id)
+            await unarchiveList.mutateAsync(list.id)
           } else {
-            archiveList.mutate(list.id)
+            if (preferences?.confirmDelete) {
+              modals.openConfirmModal({
+                title: 'Archive List',
+                children: (
+                  <Stack gap="xs">
+                    <Text size="sm">
+                      Are you sure you want to archive this list?
+                    </Text>
+                    <Text size="sm" c="dimmed">
+                      If this list is shared, it will be hidden from other users until you unarchive it.
+                    </Text>
+                  </Stack>
+                ),
+                labels: { confirm: 'Archive', cancel: 'Cancel' },
+                confirmProps: { color: 'orange' },
+                onConfirm: async () => {
+                  await archiveList.mutateAsync(list.id)
+                }
+              })
+            } else {
+              await archiveList.mutateAsync(list.id)
+            }
           }
         }
       },
@@ -144,19 +188,7 @@ export default function ListOverview({ shared, data, isLoading }: ListOverviewPr
         title: 'Delete',
         color: 'red',
         onClick: () => {
-          modals.openConfirmModal({
-            title: 'Delete List',
-            children: (
-              <Text size="sm">
-                Are you sure you want to delete this list? This action cannot be undone.
-              </Text>
-            ),
-            labels: { confirm: 'Delete', cancel: 'Cancel' },
-            confirmProps: { color: 'red' },
-            onConfirm: async () => {
-              await deleteList.mutateAsync(list.id)
-            }
-          })
+          handleDeleteList(list.id)
         }
       }
     ]
@@ -174,16 +206,14 @@ export default function ListOverview({ shared, data, isLoading }: ListOverviewPr
     <Container size="lg" py="xl">
       <Group justify="space-between" mb="xl">
         <div>
-          <Title order={1}>{shared === true ? 'Shared With Me' : 'My Lists'}</Title>
+          <Title order={1}>{'My Lists'}</Title>
           <Text c="dimmed">
             {filteredData.length} {filteredData.length === 1 ? 'list' : 'lists'}
           </Text>
         </div>
-        {shared === false && (
-          <ActionIcon size="lg" radius="md" variant="filled" onClick={createListModal}>
-            <IconPlus size={20} />
-          </ActionIcon>
-        )}
+        <ActionIcon size="lg" radius="md" variant="filled" onClick={createListModal}>
+          <IconPlus size={20} />
+        </ActionIcon>
       </Group>
       <Stack mb="md" gap="sm">
         <Group gap="sm" align="center">
@@ -260,24 +290,21 @@ export default function ListOverview({ shared, data, isLoading }: ListOverviewPr
                 transition: '0.15s'
               }}
               onClick={() => handleListClick(list.id)}
-              onContextMenu={showContextMenu(getMenuOptions(list), {
-                styles: contextMenuStyles
-              })}
+              onContextMenu={
+                showContextMenu(getMenuOptions(list), {
+                  styles: contextMenuStyles
+                })
+              }
             >
               <Stack gap="md">
                 <Group justify="space-between">
                   <ThemeIcon radius="xl" size="lg" color={list.color ?? 'gray'} variant="light">
-                    {shared === false ? (
-                      (list as OwnedList).shared ? (
-                        <IconUsers size={18} />
-                      ) : (
-                        <IconList size={18} />
-                      )
-                    ) : shared === true ? (
+                    {list.shared ? (
                       <IconUsers size={18} />
                     ) : (
                       <IconList size={18} />
-                    )}
+                    )
+                    }
                   </ThemeIcon>
 
                   <Group gap="xs">

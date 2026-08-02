@@ -1,0 +1,1 @@
+ALTER TABLE "user_preferences" ADD COLUMN "confirm_delete" boolean DEFAULT true NOT NULL;

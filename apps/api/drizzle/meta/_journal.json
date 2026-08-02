@@ -71,6 +71,13 @@
       "when": 1784648477270,
       "tag": "0009_melodic_the_stranger",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1785338815254,
+      "tag": "0010_tiny_frog_thor",
+      "breakpoints": true
     }
   ]
 }

@@ -12,6 +12,7 @@ export type UserPreferences = {
   colorScheme: MantineColorScheme
   defaultView: string
   startOfWeek: string
+  confirmDelete: boolean
   settings: Record<string, unknown>
   createdAt: Date
   updatedAt: Date

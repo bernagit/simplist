@@ -18,9 +18,17 @@ export type OwnedList = List & {
   shared: boolean
 }
 
+export type SharedList = List & {
+  owner: {
+    id: string
+    name: string | null
+    email: string
+  }
+}
+
 export type AllList = {
   owned: OwnedList[]
-  shared: List[]
+  shared: SharedList[]
 }
 
 export type ListMember = {

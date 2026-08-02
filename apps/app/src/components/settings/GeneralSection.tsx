@@ -94,17 +94,15 @@ export function GeneralSection({ preferences, loading }: Props) {
       </Stack>
 
       <Switch
-        checked={(preferences?.settings.confirmDelete as boolean | undefined) ?? true}
+        checked={preferences?.confirmDelete ?? true}
         disabled={loading}
         onChange={event =>
           updatePreferences.mutate({
-            settings: {
-              confirmDelete: event.currentTarget.checked
-            }
+            confirmDelete: event.currentTarget.checked
           })
         }
-        label="Ask for confirmation before deleting"
-        description="Show a confirmation dialog when deleting a list or task."
+        label="Ask for confirmation before deleting/archiving a list"
+        description="Show a confirmation dialog when deleting or archiving a list."
       />
     </Stack>
   )
