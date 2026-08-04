@@ -207,16 +207,11 @@ export function useReorderTasks() {
   return useMutation({
     mutationFn: (input: {
       listId: string
-      sectionId: string
+      sourceSectionId: string
+      targetSectionId: string
       movedTaskId: string
-      targetTaskId: string
-    }) =>
-      tasksService.reorderTasks(
-        input.movedTaskId,
-        input.targetTaskId,
-        input.listId,
-        input.sectionId
-      ),
+      targetTaskId: string | undefined
+    }) => tasksService.reorderTasks(input),
 
     onMutate: async input => {
       await queryClient.cancelQueries({
@@ -230,36 +225,81 @@ export function useReorderTasks() {
       queryClient.setQueryData<Resp<CompleteList>>(listKeys.detail(input.listId), old => {
         if (!old) return old
 
-        const tasks = [...old.data.tasks]
+        const allTasks = [...old.data.tasks]
+        const isSameSection = input.sourceSectionId === input.targetSectionId
 
-        const oldIndex = tasks.findIndex(t => t.id === input.movedTaskId)
-        const newIndex = tasks.findIndex(t => t.id === input.targetTaskId)
+        if (isSameSection) {
+          const sectionTasks = allTasks
+            .filter(t => t.sectionId === input.sourceSectionId)
+            .sort((a, b) => a.order - b.order)
 
-        if (oldIndex === -1 || newIndex === -1) return old
+          const oldIndex = sectionTasks.findIndex(t => t.id === input.movedTaskId)
+          const newIndex = input.targetTaskId
+            ? sectionTasks.findIndex(t => t.id === input.targetTaskId)
+            : sectionTasks.length - 1
 
-        // only reorder within the current section
-        const sectionTasks = tasks
-          .filter(t => t.sectionId === input.sectionId)
-          .sort((a, b) => a.order - b.order)
+          if (oldIndex === -1 || newIndex === -1) return old
 
-        const sectionOldIndex = sectionTasks.findIndex(t => t.id === input.movedTaskId)
-        const sectionNewIndex = sectionTasks.findIndex(t => t.id === input.targetTaskId)
-
-        const reordered = arrayMove(sectionTasks, sectionOldIndex, sectionNewIndex).map(
-          (task, index) => ({
+          const reordered = arrayMove(sectionTasks, oldIndex, newIndex).map((task, index) => ({
             ...task,
-            order: index + 1
-          })
-        )
+            order: index
+          }))
 
-        return {
-          ...old,
-          data: {
-            ...old.data,
-            tasks: tasks.map(task => {
-              const updated = reordered.find(t => t.id === task.id)
-              return updated ?? task
-            })
+          return {
+            ...old,
+            data: {
+              ...old.data,
+              tasks: allTasks.map(task => {
+                const updated = reordered.find(t => t.id === task.id)
+                return updated ?? task
+              })
+            }
+          }
+        } else {
+          const movedTask = allTasks.find(t => t.id === input.movedTaskId)
+          if (!movedTask) return old
+
+          // 1. Remove moved task from source section tasks & adjust order
+          const sourceTasks = allTasks
+            .filter(t => t.sectionId === input.sourceSectionId && t.id !== input.movedTaskId)
+            .sort((a, b) => a.order - b.order)
+            .map((t, idx) => ({ ...t, order: idx }))
+
+          // 2. Prepare target section tasks & insert moved task
+          const targetTasks = allTasks
+            .filter(t => t.sectionId === input.targetSectionId)
+            .sort((a, b) => a.order - b.order)
+
+          const insertIndex = input.targetTaskId
+            ? targetTasks.findIndex(t => t.id === input.targetTaskId)
+            : targetTasks.length
+
+          const updatedMovedTask = {
+            ...movedTask,
+            sectionId: input.targetSectionId
+          }
+
+          targetTasks.splice(insertIndex === -1 ? targetTasks.length : insertIndex, 0, updatedMovedTask)
+
+          const reorderedTargetTasks = targetTasks.map((t, idx) => ({
+            ...t,
+            order: idx
+          }))
+
+          // Combine source, target, and unaffected tasks
+          const affectedIds = new Set([
+            ...sourceTasks.map(t => t.id),
+            ...reorderedTargetTasks.map(t => t.id)
+          ])
+
+          const unaffectedTasks = allTasks.filter(t => !affectedIds.has(t.id))
+
+          return {
+            ...old,
+            data: {
+              ...old.data,
+              tasks: [...unaffectedTasks, ...sourceTasks, ...reorderedTargetTasks]
+            }
           }
         }
       })
@@ -267,17 +307,17 @@ export function useReorderTasks() {
       return { previousList }
     },
 
-    onSuccess: ({ data: tasks }, variables) => {
+    onSuccess: ({ data: updatedTasks }, variables) => {
       queryClient.setQueryData<Resp<CompleteList>>(listKeys.detail(variables.listId), old => {
         if (!old) return old
 
-        const updated = new Map(tasks.map(t => [t.id, t]))
+        const updatedMap = new Map(updatedTasks.map(t => [t.id, t]))
 
         return {
           ...old,
           data: {
             ...old.data,
-            tasks: old.data.tasks.map(task => updated.get(task.id) ?? task)
+            tasks: old.data.tasks.map(task => updatedMap.get(task.id) ?? task)
           }
         }
       })

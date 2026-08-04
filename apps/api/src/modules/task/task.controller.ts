@@ -81,15 +81,15 @@ export class TaskController {
 
   reorder = async (req: Request, res: Response, next: NextFunction) => {
     const { id: userId } = req.user!
-    const { listId, sectionId } = req.validated!.params as ReorderTasksParams
-    const { movedTaskId, targetTaskId } = req.validated!.body as ReorderTasksInput
+    const { listId } = req.validated!.params as ReorderTasksParams
+    const { movedTaskId, targetTaskId, targetSectionId } = req.validated!.body as ReorderTasksInput
 
     try {
       const result = await this.service.reorder(
         movedTaskId,
         targetTaskId,
         listId,
-        sectionId,
+        targetSectionId,
         userId
       )
 

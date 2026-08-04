@@ -8,7 +8,8 @@ import {
   Menu,
   RingProgress,
   Text,
-  useMantineTheme
+  useMantineTheme,
+  Box
 } from '@mantine/core'
 import { IconChevronDown, IconChevronRight, IconDots, IconTrash } from '@tabler/icons-react'
 import { EditableTitle } from './EditableText'
@@ -16,6 +17,8 @@ import { useState } from 'react'
 import { Section } from '@/models/section'
 import { useDeleteSection, useUpdateSection } from '@/queries/section'
 import { getHTMLSectionId } from '@/utils/misc'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 
 type SectionPanelProps = {
   section: Section
@@ -38,6 +41,17 @@ export default function SectionPanel({
   const updateSection = useUpdateSection()
   const deleteSection = useDeleteSection()
 
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: section.id,
+    disabled: !canEdit
+  })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.4 : 1
+  }
+
   const handleDeleteSection = async (sectionId: string) => {
     await deleteSection.mutateAsync({
       listId: section.listId,
@@ -55,21 +69,28 @@ export default function SectionPanel({
   }
 
   return (
-    <>
-      <Group gap={4} align="center" id={getHTMLSectionId(section.id)} mb={4}>
+    <Box ref={setNodeRef} style={style}>
+      {/* Attach drag handle listeners directly to the section header Group */}
+      <Group
+        gap={4}
+        align="center"
+        id={getHTMLSectionId(section.id)}
+        mb={4}
+        style={{ cursor: canEdit ? 'grab' : 'default', userSelect: 'none' }}
+        {...(canEdit ? { ...attributes, ...listeners } : {})}
+      >
         <ActionIcon
           variant="subtle"
           color="gray"
           size="sm"
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation() // Prevents drag activation when toggling collapse
             setIsExpanded(!isExpanded)
           }}
+          onPointerDown={(e) => e.stopPropagation()}
         >
           {isExpanded ? <IconChevronDown /> : <IconChevronRight />}
         </ActionIcon>
-        {/* <Text size="sm" c="gray" ml={2} mt={4}>
-                            ({list.tasks.filter(task => task.sectionId === section.id).length})
-                          </Text> */}
         <RingProgress
           size={30}
           thickness={2}
@@ -88,17 +109,26 @@ export default function SectionPanel({
           }
         />
         <Group justify="space-between" flex={1} wrap="nowrap">
-          <EditableTitle
-            canEdit={canEdit}
-            order={4}
-            value={section.title}
-            onSave={newTitle => {
-              handleUpdateSection(section.id, newTitle)
-            }}
-          />
+          <Box
+            onClick={(e) => e.stopPropagation()}
+            onPointerDown={(e) => e.stopPropagation()}
+          >
+            <EditableTitle
+              canEdit={canEdit}
+              order={4}
+              value={section.title}
+              onSave={(newTitle) => handleUpdateSection(section.id, newTitle)}
+            />
+          </Box>
           <Menu>
             <Menu.Target>
-              <ActionIcon variant="subtle" color="gray" size="sm">
+              <ActionIcon
+                variant="subtle"
+                color="gray"
+                size="sm"
+                onClick={(e) => e.stopPropagation()}
+                onPointerDown={(e) => e.stopPropagation()}
+              >
                 <IconDots />
               </ActionIcon>
             </Menu.Target>
@@ -115,6 +145,6 @@ export default function SectionPanel({
         </Group>
       </Group>
       <Collapse expanded={isExpanded}>{children}</Collapse>
-    </>
+    </Box>
   )
 }
