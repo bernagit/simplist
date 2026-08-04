@@ -47,7 +47,8 @@ export const reorderTasksSchema = z.object({
   }),
   body: z.object({
     movedTaskId: z.uuid(),
-    targetTaskId: z.uuid()
+    targetTaskId: z.uuid().optional(),
+    targetSectionId: z.uuid()
   })
 })
 

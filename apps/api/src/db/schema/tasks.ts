@@ -24,7 +24,9 @@ export const tasks = pgTable('tasks', {
     .notNull()
     .references(() => lists.id, { onDelete: 'cascade' }),
 
-  sectionId: uuid('section_id').references(() => sections.id, { onDelete: 'cascade' }),
+  sectionId: uuid('section_id')
+    .notNull()
+    .references(() => sections.id, { onDelete: 'cascade' }),
 
   creatorId: uuid('creator_id')
     .notNull()

@@ -100,9 +100,9 @@ export class TaskService {
 
   async reorder(
     movedTaskId: string,
-    targetTaskId: string,
+    targetTaskId: string | undefined,
     listId: string,
-    sectionId: string,
+    targetSectionId: string,
     userId: string
   ) {
     const members = await this.listRepository.getMembers(listId)
@@ -111,25 +111,34 @@ export class TaskService {
     }
 
     const movedTask = await this.repository.getById(movedTaskId)
-    const targetTask = await this.repository.getById(targetTaskId)
-
-    if (!movedTask || !targetTask) {
-      throw Errors.notFound('One or both tasks not found')
+    if (!movedTask) {
+      throw Errors.notFound('Moved task not found')
     }
 
-    if (movedTask.sectionId !== sectionId || targetTask.sectionId !== sectionId) {
-      throw Errors.badRequest('Tasks must be in the same section to reorder')
+    let targetOrder = 0
+
+    if (targetTaskId) {
+      const targetTask = await this.repository.getById(targetTaskId)
+      if (!targetTask) {
+        throw Errors.notFound('Target task not found')
+      }
+      targetOrder = targetTask.order
+    } else {
+      // If targetTaskId is missing (empty section), place at end of section
+      const targetTasks = await this.repository.getBySectionId(targetSectionId)
+      targetOrder = targetTasks.length > 0 ? Math.max(...targetTasks.map(t => t.order)) + 1 : 0
     }
 
     await this.repository.reorder(
       movedTaskId,
-      targetTaskId,
+      movedTask.sectionId,
+      targetSectionId,
       movedTask.order,
-      targetTask.order,
-      sectionId
+      targetOrder
     )
 
-    return await this.repository.getBySectionId(sectionId)
+    // Return all tasks for the list or affected sections to sync frontend state
+    return await this.repository.getByListId(listId)
   }
 
   async getPlannedTasks(

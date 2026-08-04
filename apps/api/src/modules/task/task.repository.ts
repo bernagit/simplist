@@ -3,7 +3,6 @@ import { and, eq, gt, gte, isNotNull, lt, lte, max, ne, sql } from 'drizzle-orm'
 import { tasks } from '../../db/schema/tasks.js'
 import db from '../../infrastructure/database/db.js'
 import { CreateTaskInput, UpdateTaskInput } from './task.schema.js'
-import { logger } from '../../infrastructure/logging/logger.js'
 import { lists } from '../../db/schema/lists.js'
 import { sections } from '../../db/schema/sections.js'
 
@@ -85,33 +84,56 @@ export class TaskRepository {
 
   async reorder(
     movedTaskId: string,
-    targetTaskId: string,
+    sourceSectionId: string,
+    targetSectionId: string,
     movedOrder: number,
-    targetOrder: number,
-    sectionId: string
+    targetOrder: number
   ) {
-    const isMovingDown = movedOrder < targetOrder
-    logger.debug(
-      `Reordering task ${movedTaskId} to position of task ${targetTaskId} in section ${sectionId}. Moving down: ${isMovingDown}`
-    )
+    const isSameSection = sourceSectionId === targetSectionId
 
     await db.transaction(async tx => {
-      await tx
-        .update(tasks)
-        .set({
-          order: sql`${tasks.order} ${isMovingDown ? sql`- 1` : sql`+ 1`}`
-        })
-        .where(
-          and(
-            eq(tasks.sectionId, sectionId),
-            ne(tasks.id, movedTaskId),
-            isMovingDown
-              ? and(gt(tasks.order, movedOrder), lte(tasks.order, targetOrder))
-              : and(lt(tasks.order, movedOrder), gte(tasks.order, targetOrder))
+      if (isSameSection) {
+        // --- SAME SECTION MOVE ---
+        const isMovingDown = movedOrder < targetOrder
+        await tx
+          .update(tasks)
+          .set({
+            order: sql`${tasks.order} ${isMovingDown ? sql`- 1` : sql`+ 1`}`
+          })
+          .where(
+            and(
+              eq(tasks.sectionId, sourceSectionId),
+              ne(tasks.id, movedTaskId),
+              isMovingDown
+                ? and(gt(tasks.order, movedOrder), lte(tasks.order, targetOrder))
+                : and(lt(tasks.order, movedOrder), gte(tasks.order, targetOrder))
+            )
           )
-        )
 
-      await tx.update(tasks).set({ order: targetOrder }).where(eq(tasks.id, movedTaskId))
+        await tx.update(tasks).set({ order: targetOrder }).where(eq(tasks.id, movedTaskId))
+      } else {
+        // --- CROSS SECTION MOVE ---
+        // 1. Close gap in source section (shift remaining tasks up)
+        await tx
+          .update(tasks)
+          .set({ order: sql`${tasks.order} - 1` })
+          .where(and(eq(tasks.sectionId, sourceSectionId), gt(tasks.order, movedOrder)))
+
+        // 2. Make room in target section (shift target tasks down)
+        await tx
+          .update(tasks)
+          .set({ order: sql`${tasks.order} + 1` })
+          .where(and(eq(tasks.sectionId, targetSectionId), gte(tasks.order, targetOrder)))
+
+        // 3. Move task to target section with new order
+        await tx
+          .update(tasks)
+          .set({
+            sectionId: targetSectionId,
+            order: targetOrder
+          })
+          .where(eq(tasks.id, movedTaskId))
+      }
     })
   }
 

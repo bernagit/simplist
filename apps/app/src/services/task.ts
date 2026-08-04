@@ -23,14 +23,21 @@ async function deleteTask(taskId: string): Promise<null> {
   return await api.delete(`tasks/${taskId}`).json()
 }
 
-async function reorderTasks(
-  movedTaskId: string,
-  targetTaskId: string,
-  listId: string,
-  sectionId: string
-): Promise<Resp<Task[]>> {
+async function reorderTasks(input: {
+  listId: string
+  sourceSectionId: string
+  targetSectionId: string
+  movedTaskId: string
+  targetTaskId: string | undefined
+}): Promise<Resp<Task[]>> {
   return await api
-    .put(`tasks/${listId}/${sectionId}/reorder`, { json: { movedTaskId, targetTaskId } })
+    .put(`tasks/${input.listId}/${input.sourceSectionId}/reorder`, {
+      json: {
+        movedTaskId: input.movedTaskId,
+        targetTaskId: input.targetTaskId,
+        targetSectionId: input.targetSectionId
+      }
+    })
     .json()
 }
 

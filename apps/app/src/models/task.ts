@@ -1,7 +1,7 @@
 export type Task = {
   id: string
   listId: string
-  sectionId: string | null
+  sectionId: string
   title: string
   description: string | null
   completed: boolean
@@ -23,7 +23,7 @@ export type PlannedTask = Task & {
 
 export type CreateTaskInput = {
   listId: string
-  sectionId: string | null
+  sectionId: string
   title: string
   description: string | null
   dueDate: string | null
@@ -43,7 +43,7 @@ export type UpdateTaskInput = {
   recurrenceRule?: string | null
   priority?: string | null
   listId?: string
-  sectionId?: string | null
+  sectionId?: string
   completed?: boolean
   order?: number
 }

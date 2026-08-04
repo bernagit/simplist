@@ -8,19 +8,17 @@ import {
   Group,
   Loader,
   Stack,
-  Title,
   Text,
-  Divider,
   Box,
   ThemeIcon,
   Tooltip
 } from '@mantine/core'
 import { EditableTitle } from '@/components/list/EditableText'
 import AddTask from '@/components/list/AddTask'
-import { CreateTaskInput } from '@/models/task'
+import { CreateTaskInput, Task } from '@/models/task'
 import { useCreateTask, useReorderTasks } from '@/queries/task'
 import TaskList from '@/components/task/TaskList'
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { IconLock } from '@tabler/icons-react'
 import AddSection from '@/components/list/AddSection'
 import { useCreateSection } from '@/queries/section'
@@ -28,23 +26,64 @@ import { useTopbar } from '@/providers/TopbarProvider'
 import { useMe } from '@/queries/auth'
 import SectionPanel from './SectionPanel'
 
+// dnd-kit imports
+import {
+  DndContext,
+  DragOverEvent,
+  DragEndEvent,
+  DragStartEvent,
+  PointerSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+  pointerWithin,
+  rectIntersection,
+  CollisionDetection,
+  DragOverlay
+} from '@dnd-kit/core'
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  sortableKeyboardCoordinates,
+  arrayMove
+} from '@dnd-kit/sortable'
+import TaskRow from '@/components/task/TaskRow'
+import { Section } from '@/models/section'
+
 export default function ListPage() {
   const params = useParams()
   const lastCrossedRef = useRef<boolean>(false)
   const { setTitle, setDescription, setShowTitle, showTitle: showTopbarTitle } = useTopbar()
+  const reorderTasksMutation = useReorderTasks()
 
   const { data, isLoading } = useListById(params.id as string)
   const updateList = useUpdateList()
   const createTask = useCreateTask()
   const createSection = useCreateSection()
-  const reorderTasks = useReorderTasks()
   const { data: me } = useMe()
 
   const list = data?.data
 
+  const [prevList, setPrevList] = useState(list)
+  const [sections, setSections] = useState<Section[]>(() =>
+    list ? [...list.sections].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)) : []
+  )
+  const [tasks, setTasks] = useState<Task[]>(() => list?.tasks || [])
+
+  const [activeId, setActiveId] = useState<string | null>(null)
+  const [activeType, setActiveType] = useState<'section' | 'task' | null>(null)
+
+  // Track initial section ID when drag starts to handle backend sync cleanly
+  const dragSourceSectionRef = useRef<string | null>(null)
+
+  if (list && list !== prevList) {
+    setPrevList(list)
+    setSections([...list.sections].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)))
+    setTasks(list.tasks || [])
+  }
+
   const canEdit = useMemo(() => {
     if (!list) return false
-    // check if the user is the owner or has edit permissions
     const member = list.members.find(m => m.userId === me?.id)
     return member ? member.role === 'owner' || member.role === 'editor' : false
   }, [list, me])
@@ -55,17 +94,197 @@ export default function ListPage() {
     return member ? member.role === 'owner' : false
   }, [list, me])
 
-  const orderedSections = useMemo(() => {
-    if (!list) return []
-    return [...list.sections].sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-  }, [list])
+  const reorderableSections = useMemo(
+    () => sections.filter(s => s.id !== list?.defaultSectionId),
+    [sections, list?.defaultSectionId]
+  )
+
+  const reorderableSectionIds = useMemo(
+    () => reorderableSections.map(s => s.id),
+    [reorderableSections]
+  )
+
+  const defaultSection = useMemo(
+    () => sections.find(s => s.id === list?.defaultSectionId),
+    [sections, list?.defaultSectionId]
+  )
+
+  const defaultSectionTasks = useMemo(
+    () => (defaultSection ? tasks.filter(t => t.sectionId === defaultSection.id) : []),
+    [tasks, defaultSection]
+  )
+
+  const defaultSectionTaskIds = useMemo(
+    () => defaultSectionTasks.map(t => t.id),
+    [defaultSectionTasks]
+  )
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 5 }
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates
+    })
+  )
+
+  const sectionIds = useMemo(() => sections.map(s => s.id), [sections])
+
+  const customCollisionDetection: CollisionDetection = (args) => {
+    const pointerCollisions = pointerWithin(args)
+    if (pointerCollisions.length > 0) return pointerCollisions
+    return rectIntersection(args)
+  }
+
+  const handleReorderSections = async (newSections: Section[]) => {
+    console.log('[MOCK BACKEND API] Reorder Sections:', newSections.map(s => s.id))
+  }
+
+  const handleReorderTasks = async (
+    newTasks: Task[],
+    movedTaskId: string,
+    sourceSectionId: string,
+    targetSectionId: string,
+    targetTaskId?: string
+  ) => {
+    try {
+      if (!list) return
+      await reorderTasksMutation.mutateAsync({
+        listId: list.id,
+        sourceSectionId,
+        targetSectionId,
+        movedTaskId,
+        targetTaskId
+      })
+    } catch (error) {
+      console.error('Failed to reorder tasks:', error)
+    }
+  }
+
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event
+    const id = active.id as string
+
+    if (sectionIds.includes(id)) {
+      setActiveType('section')
+    } else {
+      setActiveType('task')
+      const task = tasks.find(t => t.id === id)
+      if (task) {
+        dragSourceSectionRef.current = task.sectionId
+      }
+    }
+    setActiveId(id)
+  }
+
+  const handleDragOver = (event: DragOverEvent) => {
+    const { active, over } = event
+    if (!over || activeType !== 'task') return
+
+    const activeTaskId = active.id as string
+    const overId = over.id as string
+
+    const activeTask = tasks.find(t => t.id === activeTaskId)
+    if (!activeTask) return
+
+    let targetSectionId: string | null = null
+
+    if (sectionIds.includes(overId)) {
+      targetSectionId = overId
+    } else {
+      const overTask = tasks.find(t => t.id === overId)
+      if (overTask) targetSectionId = overTask.sectionId
+    }
+
+    if (!targetSectionId || activeTask.sectionId === targetSectionId) return
+
+    setTasks(prev =>
+      prev.map(t => (t.id === activeTaskId ? { ...t, sectionId: targetSectionId! } : t))
+    )
+  }
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event
+    const activeIdStr = active.id as string
+    const overIdStr = over ? (over.id as string) : null
+
+    setActiveId(null)
+    setActiveType(null)
+
+    if (!overIdStr || activeIdStr === overIdStr) {
+      dragSourceSectionRef.current = null
+      return
+    }
+
+    // --- REORDER SECTIONS ---
+    if (activeType === 'section') {
+      if (activeIdStr === list?.defaultSectionId || overIdStr === list?.defaultSectionId) {
+        return
+      }
+
+      const oldIndex = sections.findIndex(s => s.id === activeIdStr)
+      const newIndex = sections.findIndex(s => s.id === overIdStr)
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const reordered = arrayMove(sections, oldIndex, newIndex).map((sec, idx) => ({
+          ...sec,
+          order: idx
+        }))
+        setSections(reordered)
+        await handleReorderSections(reordered)
+      }
+      return
+    }
+
+    // --- REORDER TASKS ---
+    if (activeType === 'task') {
+      const activeTask = tasks.find(t => t.id === activeIdStr)
+      if (!activeTask) return
+
+      const sourceSectionId = dragSourceSectionRef.current || activeTask.sectionId
+      const targetSectionId = activeTask.sectionId
+
+      // Perform reordering within the target section tasks only
+      const targetSectionTasks = tasks.filter(t => t.sectionId === targetSectionId)
+      const oldIndex = targetSectionTasks.findIndex(t => t.id === activeIdStr)
+
+      let targetTaskId: string | undefined = undefined
+      let newIndex = targetSectionTasks.findIndex(t => t.id === overIdStr)
+
+      if (newIndex !== -1) {
+        targetTaskId = overIdStr
+      } else {
+        // Dropped on a section panel / empty area -> put at end of section
+        newIndex = targetSectionTasks.length - 1
+      }
+
+      const reorderedSectionTasks = arrayMove(targetSectionTasks, oldIndex, newIndex).map(
+        (t, idx) => ({ ...t, order: idx })
+      )
+
+      // Merge back into full task state
+      const reorderedSectionTaskIds = new Set(reorderedSectionTasks.map(t => t.id))
+      const updatedTasks = [
+        ...tasks.filter(t => !reorderedSectionTaskIds.has(t.id)),
+        ...reorderedSectionTasks
+      ]
+
+      setTasks(updatedTasks)
+      dragSourceSectionRef.current = null
+
+      await handleReorderTasks(
+        updatedTasks,
+        activeIdStr,
+        sourceSectionId,
+        targetSectionId,
+        targetTaskId
+      )
+    }
+  }
 
   const handleSaveTitle = async (newTitle: string) => {
     if (!list || !isOwner) return
-    await updateList.mutateAsync({
-      id: list.id,
-      title: newTitle
-    })
+    await updateList.mutateAsync({ id: list.id, title: newTitle })
   }
 
   const handleAddTask = async (task: CreateTaskInput) => {
@@ -76,37 +295,21 @@ export default function ListPage() {
     await createSection.mutateAsync({ listId, title, order })
   }
 
-  const handleReorderTasks = async (
-    movedTaskId: string,
-    targetTaskId: string,
-    sectionId: string
-  ) => {
-    if (!list) return
-    await reorderTasks.mutateAsync({ listId: list.id, sectionId, movedTaskId, targetTaskId })
-  }
-
   useEffect(() => {
     const container = document.getElementById('app-scroll-container')
-
     if (!container) return
 
     const onScroll = () => {
       const y = container.scrollTop
-
       const HIDE_THRESHOLD = 25
       const SHOW_THRESHOLD = 15
 
       let isPastThreshold = lastCrossedRef.current
-
-      if (y > HIDE_THRESHOLD) {
-        isPastThreshold = true
-      } else if (y < SHOW_THRESHOLD) {
-        isPastThreshold = false
-      }
+      if (y > HIDE_THRESHOLD) isPastThreshold = true
+      else if (y < SHOW_THRESHOLD) isPastThreshold = false
 
       if (isPastThreshold !== lastCrossedRef.current) {
         lastCrossedRef.current = isPastThreshold
-
         if (isPastThreshold && list?.title) {
           setTitle(list.title)
           setDescription(list.description ?? undefined)
@@ -120,41 +323,20 @@ export default function ListPage() {
     }
 
     container.addEventListener('scroll', onScroll)
-
     return () => container.removeEventListener('scroll', onScroll)
   }, [list, setTitle, setDescription, setShowTitle])
 
-  useEffect(() => {
-    if (lastCrossedRef.current && list?.title) {
-      setTitle(list.title)
-    } else {
-      setTitle(undefined)
-    }
-  }, [list?.title, setTitle])
-
-  useEffect(() => {
-    return () => {
-      setTitle(undefined)
-      setDescription(undefined)
-      setShowTitle(false)
-    }
-  }, [setDescription, setShowTitle, setTitle])
-
   if (!list && !isLoading) return null
-
-  if (isLoading && !list) {
+  if (isLoading || !list) {
     return (
       <Center>
         <Loader size="xl" />
       </Center>
     )
-  } else if (!list) {
-    return (
-      <Center>
-        <Title order={2}>List not found</Title>
-      </Center>
-    )
   }
+
+  const activeTask = tasks.find(t => t.id === activeId)
+  const activeSection = sections.find(s => s.id === activeId)
 
   return (
     <Container>
@@ -193,54 +375,65 @@ export default function ListPage() {
             </Tooltip>
           )}
         </Group>
-        {orderedSections.length > 0 && (
+
+        <DndContext
+          sensors={sensors}
+          collisionDetection={customCollisionDetection}
+          onDragStart={handleDragStart}
+          onDragOver={handleDragOver}
+          onDragEnd={handleDragEnd}
+        >
           <Stack gap={'xs'}>
-            {orderedSections.map((section, index) => {
-              const sectionTasks = list.tasks.filter(task => task.sectionId === section.id)
-              const isDefaultSection = section.id === list.defaultSectionId
-              const completedTasksCount = sectionTasks.filter(task => task.completed).length
-              const totalTasksCount = sectionTasks.length
-              if (isDefaultSection) {
-                return (
-                  <div key={section.id}>
-                    <TaskList
-                      data={sectionTasks}
-                      canEdit={canEdit}
-                      onReorder={handleReorderTasks}
-                    />
-                    {canEdit && (
-                      <AddTask
-                        ml={38}
-                        listId={list.id}
-                        sectionId={list.defaultSectionId}
-                        onSave={handleAddTask}
-                      />
-                    )}
-                    {canEdit && index === orderedSections.length - 1 && (
-                      <AddSection
-                        newOrder={section.order ? section.order + 1 : undefined}
-                        listId={list.id}
-                        key={section.id}
-                        onSave={handleAddSection}
-                      />
-                    )}
-                  </div>
-                )
-              } else {
-                return (
-                  <div key={section.id}>
+            {/* Wrap Default Section tasks inside its own SortableContext */}
+            {defaultSection && (
+              <Box key={defaultSection.id} id={defaultSection.id}>
+                <SortableContext
+                  items={defaultSectionTaskIds}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <TaskList
+                    data={defaultSectionTasks}
+                    canEdit={canEdit}
+                    sectionId={defaultSection.id}
+                  />
+                </SortableContext>
+                {canEdit && (
+                  <AddTask
+                    ml={38}
+                    listId={list.id}
+                    sectionId={defaultSection.id}
+                    onSave={handleAddTask}
+                  />
+                )}
+              </Box>
+            )}
+
+            <SortableContext items={reorderableSectionIds} strategy={verticalListSortingStrategy}>
+              <Stack gap={'xs'}>
+                {reorderableSections.map(section => {
+                  const sectionTasks = tasks.filter(t => t.sectionId === section.id)
+                  const sectionTaskIds = sectionTasks.map(t => t.id)
+                  const completedTasksCount = sectionTasks.filter(t => t.completed).length
+                  const totalTasksCount = sectionTasks.length
+
+                  return (
                     <SectionPanel
+                      key={section.id}
                       section={section}
                       totalTasksCount={totalTasksCount}
                       completedTasksCount={completedTasksCount}
                       canEdit={canEdit}
                     >
-                      <Divider ml={28} mr={8} />
-                      <TaskList
-                        canEdit={canEdit}
-                        data={list.tasks.filter(task => task.sectionId === section.id)}
-                        onReorder={handleReorderTasks}
-                      />
+                      <SortableContext
+                        items={sectionTaskIds}
+                        strategy={verticalListSortingStrategy}
+                      >
+                        <TaskList
+                          data={sectionTasks}
+                          canEdit={canEdit}
+                          sectionId={section.id}
+                        />
+                      </SortableContext>
                       {canEdit && (
                         <AddTask
                           ml={38}
@@ -250,19 +443,30 @@ export default function ListPage() {
                         />
                       )}
                     </SectionPanel>
-                    {canEdit && index === orderedSections.length - 1 && (
-                      <AddSection
-                        newOrder={section.order ? section.order + 1 : undefined}
-                        listId={list.id}
-                        key={section.id}
-                        onSave={handleAddSection}
-                      />
-                    )}
-                  </div>
-                )
-              }
-            })}
+                  )
+                })}
+              </Stack>
+            </SortableContext>
           </Stack>
+
+          {/* Drag Overlay */}
+          <DragOverlay>
+            {activeType === 'task' && activeTask ? (
+              <TaskRow task={activeTask} canEdit={false} />
+            ) : activeType === 'section' && activeSection ? (
+              <Box p="xs" bg="var(--mantine-color-body)" style={{ border: '1px solid gray', borderRadius: 8 }}>
+                <Text fw={600}>{activeSection.title}</Text>
+              </Box>
+            ) : null}
+          </DragOverlay>
+        </DndContext>
+
+        {canEdit && list && (
+          <AddSection
+            newOrder={sections.length}
+            listId={list.id}
+            onSave={handleAddSection}
+          />
         )}
       </Stack>
     </Container>

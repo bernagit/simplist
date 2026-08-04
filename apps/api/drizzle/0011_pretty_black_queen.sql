@@ -1,0 +1,1 @@
+ALTER TABLE "tasks" ALTER COLUMN "section_id" SET NOT NULL;
