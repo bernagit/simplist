@@ -218,7 +218,7 @@ export default function ListPage() {
                     )}
                     {canEdit && index === orderedSections.length - 1 && (
                       <AddSection
-                        order={2}
+                        newOrder={section.order ? section.order + 1 : undefined}
                         listId={list.id}
                         key={section.id}
                         onSave={handleAddSection}
@@ -252,7 +252,7 @@ export default function ListPage() {
                     </SectionPanel>
                     {canEdit && index === orderedSections.length - 1 && (
                       <AddSection
-                        order={section.order}
+                        newOrder={section.order ? section.order + 1 : undefined}
                         listId={list.id}
                         key={section.id}
                         onSave={handleAddSection}
