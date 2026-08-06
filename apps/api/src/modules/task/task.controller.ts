@@ -9,7 +9,7 @@ import {
   TaskIdInput,
   UpdateTaskInput
 } from './task.schema.js'
-import { TaskService } from './task.service.js'
+import { ReorderTaskType, TaskService } from './task.service.js'
 
 export class TaskController {
   private readonly service: TaskService = new TaskService()
@@ -82,16 +82,19 @@ export class TaskController {
   reorder = async (req: Request, res: Response, next: NextFunction) => {
     const { id: userId } = req.user!
     const { listId } = req.validated!.params as ReorderTasksParams
-    const { movedTaskId, targetTaskId, targetSectionId } = req.validated!.body as ReorderTasksInput
+    const { movedTaskId, prevTaskId, nextTaskId, targetSectionId } = req.validated!
+      .body as ReorderTasksInput
 
     try {
-      const result = await this.service.reorder(
-        movedTaskId,
-        targetTaskId,
+      const params: ReorderTaskType = {
         listId,
+        userId,
+        movedTaskId,
         targetSectionId,
-        userId
-      )
+        prevTaskId,
+        nextTaskId
+      }
+      const result = await this.service.reorder(params)
 
       res.status(HTTP_STATUS.OK).json({
         message: 'Tasks reordered successfully',

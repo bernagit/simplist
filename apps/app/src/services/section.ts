@@ -8,7 +8,6 @@ async function createSection(input: CreateSectionInput): Promise<Resp<Section>> 
       json: {
         listId: input.listId,
         title: input.title,
-        order: input.order
       }
     })
     .json()
@@ -22,7 +21,6 @@ async function updateSection(
     .put<Resp<Section>>(`sections/${sectionId}`, {
       json: {
         title: input.title,
-        order: input.order
       }
     })
     .json()
@@ -32,8 +30,21 @@ async function deleteSection(sectionId: string): Promise<Resp<null>> {
   return await api.delete<Resp<null>>(`sections/${sectionId}`).json()
 }
 
+async function reorderSections(listId: string, movedSectionId: string, prevSectionId: string | undefined, nextSectionId: string | undefined): Promise<Resp<Section[]>> {
+  return await api
+    .put<Resp<Section[]>>(`sections/${movedSectionId}/reorder`, {
+      json: {
+        listId,
+        prevSectionId,
+        nextSectionId
+      }
+    })
+    .json()
+}
+
 export const sectionService = {
   createSection,
   updateSection,
-  deleteSection
+  deleteSection,
+  reorderSections
 }

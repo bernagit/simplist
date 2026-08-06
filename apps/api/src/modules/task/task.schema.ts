@@ -25,8 +25,7 @@ export const createTaskSchema = z.object({
     dueTime: z.iso.time({ precision: -1 }).optional().nullable(),
     durationMinutes: z.number().int().positive().optional().nullable(),
     recurrenceRule: recurrenceRuleSchema,
-    priority: z.enum(['high', 'medium', 'low']).optional().nullable(),
-    order: z.number().int().optional()
+    priority: z.enum(['high', 'medium', 'low']).optional().nullable()
   }),
   params: z.object({
     listId: z.uuid(),
@@ -47,8 +46,9 @@ export const reorderTasksSchema = z.object({
   }),
   body: z.object({
     movedTaskId: z.uuid(),
-    targetTaskId: z.uuid().optional(),
-    targetSectionId: z.uuid()
+    targetSectionId: z.uuid(),
+    prevTaskId: z.string().optional(),
+    nextTaskId: z.string().optional()
   })
 })
 

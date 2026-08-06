@@ -1,7 +1,12 @@
 import { NextFunction, Request, Response } from 'express'
 import { HTTP_STATUS } from '../../types/http.js'
 import { SectionService } from './section.service.js'
-import { CreateSectionInput, SectionIdInput, UpdateSectionInput } from './section.schema.js'
+import {
+  CreateSectionInput,
+  ReorderSectionInput,
+  SectionIdInput,
+  UpdateSectionInput
+} from './section.schema.js'
 
 export class SectionController {
   private readonly service: SectionService = new SectionService()
@@ -49,6 +54,29 @@ export class SectionController {
 
       res.status(HTTP_STATUS.OK).json({
         message: 'Section deleted successfully'
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  reorder = async (req: Request, res: Response, next: NextFunction) => {
+    const { id: userId } = req.user!
+    const { id: sectionId } = req.validated!.params as SectionIdInput
+    const { listId, prevSectionId, nextSectionId } = req.validated!.body as ReorderSectionInput
+
+    try {
+      const result = await this.service.reorder(
+        listId,
+        sectionId,
+        prevSectionId,
+        nextSectionId,
+        userId
+      )
+
+      res.status(HTTP_STATUS.OK).json({
+        message: 'Section reordered successfully',
+        data: result
       })
     } catch (error) {
       next(error)

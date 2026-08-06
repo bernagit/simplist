@@ -1,20 +1,21 @@
+import { Resp } from '@/models/base'
+import { CompleteList } from '@/models/lists'
 import { CreateTaskInput, UpdateTaskInput } from '@/models/task'
 import { tasksService } from '@/services/task'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { listKeys } from './lists'
-import { CompleteList } from '@/models/lists'
-import { Resp } from '@/models/base'
-import { arrayMove } from '@dnd-kit/sortable'
-import { useState } from 'react'
 import { createTempId } from '@/utils/common'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { LexoRank } from 'lexorank'
+import { listKeys } from './lists'
 
 export function useCreateTask() {
   const queryClient = useQueryClient()
-  const [tempId] = useState(() => createTempId());
+
   return useMutation({
     mutationFn: (input: CreateTaskInput) => tasksService.createTask(input),
 
     onMutate: async input => {
+      const tempId = createTempId()
+
       await queryClient.cancelQueries({
         queryKey: listKeys.detail(input.listId)
       })
@@ -38,7 +39,7 @@ export function useCreateTask() {
                 completed: false,
                 createdAt: new Date(),
                 updatedAt: new Date(),
-                order: old.data.tasks.length,
+                order: '',
                 ...input
               }
             ]
@@ -46,10 +47,10 @@ export function useCreateTask() {
         }
       })
 
-      return { previousList }
+      return { previousList, tempId }
     },
 
-    onSuccess: (response, variables) => {
+    onSuccess: (response, variables, context) => {
       queryClient.setQueryData<Resp<CompleteList>>(listKeys.detail(variables.listId), old => {
         if (!old) return old
 
@@ -57,7 +58,7 @@ export function useCreateTask() {
           ...old,
           data: {
             ...old.data,
-            tasks: old.data.tasks.map(task => (task.id === tempId ? response.data : task))
+            tasks: old.data.tasks.map(task => (task.id === context?.tempId ? response.data : task))
           }
         }
       })
@@ -210,7 +211,8 @@ export function useReorderTasks() {
       sourceSectionId: string
       targetSectionId: string
       movedTaskId: string
-      targetTaskId: string | undefined
+      prevTaskId: string | undefined
+      nextTaskId: string | undefined
     }) => tasksService.reorderTasks(input),
 
     onMutate: async input => {
@@ -225,81 +227,34 @@ export function useReorderTasks() {
       queryClient.setQueryData<Resp<CompleteList>>(listKeys.detail(input.listId), old => {
         if (!old) return old
 
-        const allTasks = [...old.data.tasks]
-        const isSameSection = input.sourceSectionId === input.targetSectionId
+        const prevTask = old.data.tasks.find(t => t.id === input.prevTaskId)
+        const nextTask = old.data.tasks.find(t => t.id === input.nextTaskId)
 
-        if (isSameSection) {
-          const sectionTasks = allTasks
-            .filter(t => t.sectionId === input.sourceSectionId)
-            .sort((a, b) => a.order - b.order)
+        const prevRank = prevTask?.order ? LexoRank.parse(prevTask.order) : null
+        const nextRank = nextTask?.order ? LexoRank.parse(nextTask.order) : null
 
-          const oldIndex = sectionTasks.findIndex(t => t.id === input.movedTaskId)
-          const newIndex = input.targetTaskId
-            ? sectionTasks.findIndex(t => t.id === input.targetTaskId)
-            : sectionTasks.length - 1
-
-          if (oldIndex === -1 || newIndex === -1) return old
-
-          const reordered = arrayMove(sectionTasks, oldIndex, newIndex).map((task, index) => ({
-            ...task,
-            order: index
-          }))
-
-          return {
-            ...old,
-            data: {
-              ...old.data,
-              tasks: allTasks.map(task => {
-                const updated = reordered.find(t => t.id === task.id)
-                return updated ?? task
-              })
-            }
-          }
+        let newOrderStr: string
+        if (prevRank && nextRank) {
+          newOrderStr = prevRank.between(nextRank).toString()
+        } else if (prevRank) {
+          newOrderStr = prevRank.genNext().toString()
+        } else if (nextRank) {
+          newOrderStr = nextRank.genPrev().toString()
         } else {
-          const movedTask = allTasks.find(t => t.id === input.movedTaskId)
-          if (!movedTask) return old
+          newOrderStr = LexoRank.middle().toString()
+        }
 
-          // 1. Remove moved task from source section tasks & adjust order
-          const sourceTasks = allTasks
-            .filter(t => t.sectionId === input.sourceSectionId && t.id !== input.movedTaskId)
-            .sort((a, b) => a.order - b.order)
-            .map((t, idx) => ({ ...t, order: idx }))
+        const updatedTasks = old.data.tasks.map(task =>
+          task.id === input.movedTaskId
+            ? { ...task, sectionId: input.targetSectionId, order: newOrderStr }
+            : task
+        )
 
-          // 2. Prepare target section tasks & insert moved task
-          const targetTasks = allTasks
-            .filter(t => t.sectionId === input.targetSectionId)
-            .sort((a, b) => a.order - b.order)
-
-          const insertIndex = input.targetTaskId
-            ? targetTasks.findIndex(t => t.id === input.targetTaskId)
-            : targetTasks.length
-
-          const updatedMovedTask = {
-            ...movedTask,
-            sectionId: input.targetSectionId
-          }
-
-          targetTasks.splice(insertIndex === -1 ? targetTasks.length : insertIndex, 0, updatedMovedTask)
-
-          const reorderedTargetTasks = targetTasks.map((t, idx) => ({
-            ...t,
-            order: idx
-          }))
-
-          // Combine source, target, and unaffected tasks
-          const affectedIds = new Set([
-            ...sourceTasks.map(t => t.id),
-            ...reorderedTargetTasks.map(t => t.id)
-          ])
-
-          const unaffectedTasks = allTasks.filter(t => !affectedIds.has(t.id))
-
-          return {
-            ...old,
-            data: {
-              ...old.data,
-              tasks: [...unaffectedTasks, ...sourceTasks, ...reorderedTargetTasks]
-            }
+        return {
+          ...old,
+          data: {
+            ...old.data,
+            tasks: updatedTasks
           }
         }
       })
@@ -307,26 +262,16 @@ export function useReorderTasks() {
       return { previousList }
     },
 
-    onSuccess: ({ data: updatedTasks }, variables) => {
-      queryClient.setQueryData<Resp<CompleteList>>(listKeys.detail(variables.listId), old => {
-        if (!old) return old
-
-        const updatedMap = new Map(updatedTasks.map(t => [t.id, t]))
-
-        return {
-          ...old,
-          data: {
-            ...old.data,
-            tasks: old.data.tasks.map(task => updatedMap.get(task.id) ?? task)
-          }
-        }
-      })
-    },
-
     onError: (_err, variables, context) => {
       if (context?.previousList) {
         queryClient.setQueryData(listKeys.detail(variables.listId), context.previousList)
       }
+    },
+
+    onSettled: (_data, _error, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: listKeys.detail(variables.listId)
+      })
     }
   })
 }

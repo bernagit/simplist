@@ -1,4 +1,4 @@
-import { integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core'
 import { lists } from './lists.js'
 
 export const sections = pgTable('sections', {
@@ -8,7 +8,7 @@ export const sections = pgTable('sections', {
     .references(() => lists.id, { onDelete: 'cascade' }),
 
   title: text('title').notNull(),
-  order: integer('order').notNull().default(0),
+  order: varchar('order', { length: 255 }).notNull().default('0'),
 
   createdAt: timestamp('created_at', {
     withTimezone: true

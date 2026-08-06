@@ -2,7 +2,7 @@ export type Section = {
   id: string
   listId: string
   title: string
-  order?: number | undefined
+  order: string
   createdAt: Date
   updatedAt: Date
 }
@@ -10,5 +10,4 @@ export type Section = {
 export type CreateSectionInput = {
   listId: string
   title: string
-  order?: number | undefined
 }

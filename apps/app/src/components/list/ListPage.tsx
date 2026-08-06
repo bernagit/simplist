@@ -21,12 +21,10 @@ import TaskList from '@/components/task/TaskList'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { IconLock } from '@tabler/icons-react'
 import AddSection from '@/components/list/AddSection'
-import { useCreateSection } from '@/queries/section'
+import { useCreateSection, useReorderSections } from '@/queries/section'
 import { useTopbar } from '@/providers/TopbarProvider'
 import { useMe } from '@/queries/auth'
 import SectionPanel from './SectionPanel'
-
-// dnd-kit imports
 import {
   DndContext,
   DragOverEvent,
@@ -39,7 +37,8 @@ import {
   pointerWithin,
   rectIntersection,
   CollisionDetection,
-  DragOverlay
+  DragOverlay,
+  useDroppable
 } from '@dnd-kit/core'
 import {
   SortableContext,
@@ -50,11 +49,27 @@ import {
 import TaskRow from '@/components/task/TaskRow'
 import { Section } from '@/models/section'
 
+function DefaultSectionDroppable({
+  id,
+  children
+}: {
+  id: string
+  children: React.ReactNode
+}) {
+  const { setNodeRef } = useDroppable({ id })
+  return (
+    <Box ref={setNodeRef} id={id}>
+      {children}
+    </Box>
+  )
+}
+
 export default function ListPage() {
   const params = useParams()
   const lastCrossedRef = useRef<boolean>(false)
   const { setTitle, setDescription, setShowTitle, showTitle: showTopbarTitle } = useTopbar()
   const reorderTasksMutation = useReorderTasks()
+  const reorderSectionsMutation = useReorderSections()
 
   const { data, isLoading } = useListById(params.id as string)
   const updateList = useUpdateList()
@@ -66,8 +81,9 @@ export default function ListPage() {
 
   const [prevList, setPrevList] = useState(list)
   const [sections, setSections] = useState<Section[]>(() =>
-    list ? [...list.sections].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)) : []
+    list ? [...list.sections].sort((a, b) => (a.order ?? '').localeCompare(b.order ?? '')) : []
   )
+
   const [tasks, setTasks] = useState<Task[]>(() => list?.tasks || [])
 
   const [activeId, setActiveId] = useState<string | null>(null)
@@ -78,7 +94,7 @@ export default function ListPage() {
 
   if (list && list !== prevList) {
     setPrevList(list)
-    setSections([...list.sections].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)))
+    setSections([...list.sections].sort((a, b) => (a.order ?? '').localeCompare(b.order ?? '')))
     setTasks(list.tasks || [])
   }
 
@@ -136,16 +152,30 @@ export default function ListPage() {
     return rectIntersection(args)
   }
 
-  const handleReorderSections = async (newSections: Section[]) => {
-    console.log('[MOCK BACKEND API] Reorder Sections:', newSections.map(s => s.id))
+  const handleReorderSections = async (
+    movedSectionId: string,
+    prevSectionId?: string,
+    nextSectionId?: string
+  ) => {
+    try {
+      if (!list) return
+      await reorderSectionsMutation.mutateAsync({
+        listId: list.id,
+        sectionId: movedSectionId,
+        prevSectionId,
+        nextSectionId
+      })
+    } catch (error) {
+      console.error('Failed to reorder sections:', error)
+    }
   }
 
   const handleReorderTasks = async (
-    newTasks: Task[],
     movedTaskId: string,
     sourceSectionId: string,
     targetSectionId: string,
-    targetTaskId?: string
+    prevTaskId?: string,
+    nextTaskId?: string
   ) => {
     try {
       if (!list) return
@@ -154,7 +184,8 @@ export default function ListPage() {
         sourceSectionId,
         targetSectionId,
         movedTaskId,
-        targetTaskId
+        prevTaskId,
+        nextTaskId
       })
     } catch (error) {
       console.error('Failed to reorder tasks:', error)
@@ -211,12 +242,12 @@ export default function ListPage() {
     setActiveId(null)
     setActiveType(null)
 
-    if (!overIdStr || activeIdStr === overIdStr) {
+    if (!overIdStr) {
       dragSourceSectionRef.current = null
       return
     }
 
-    // --- REORDER SECTIONS ---
+    // --- REORDER SECTIONS (LexoRank) ---
     if (activeType === 'section') {
       if (activeIdStr === list?.defaultSectionId || overIdStr === list?.defaultSectionId) {
         return
@@ -226,12 +257,17 @@ export default function ListPage() {
       const newIndex = sections.findIndex(s => s.id === overIdStr)
 
       if (oldIndex !== -1 && newIndex !== -1) {
-        const reordered = arrayMove(sections, oldIndex, newIndex).map((sec, idx) => ({
-          ...sec,
-          order: idx
-        }))
-        setSections(reordered)
-        await handleReorderSections(reordered)
+        // 1. Move array visually for immediate UI feedback
+        const reorderedSections = arrayMove(sections, oldIndex, newIndex)
+        setSections(reorderedSections)
+
+        // 2. Derive adjacent section IDs
+        const movedIndex = reorderedSections.findIndex(s => s.id === activeIdStr)
+        const prevSectionId = reorderedSections[movedIndex - 1]?.id
+        const nextSectionId = reorderedSections[movedIndex + 1]?.id
+
+        // 3. Send neighboring section IDs to backend
+        await handleReorderSections(activeIdStr, prevSectionId, nextSectionId)
       }
       return
     }
@@ -244,25 +280,20 @@ export default function ListPage() {
       const sourceSectionId = dragSourceSectionRef.current || activeTask.sectionId
       const targetSectionId = activeTask.sectionId
 
-      // Perform reordering within the target section tasks only
       const targetSectionTasks = tasks.filter(t => t.sectionId === targetSectionId)
       const oldIndex = targetSectionTasks.findIndex(t => t.id === activeIdStr)
 
-      let targetTaskId: string | undefined = undefined
       let newIndex = targetSectionTasks.findIndex(t => t.id === overIdStr)
-
-      if (newIndex !== -1) {
-        targetTaskId = overIdStr
-      } else {
-        // Dropped on a section panel / empty area -> put at end of section
+      if (newIndex === -1) {
         newIndex = targetSectionTasks.length - 1
       }
 
-      const reorderedSectionTasks = arrayMove(targetSectionTasks, oldIndex, newIndex).map(
-        (t, idx) => ({ ...t, order: idx })
-      )
+      const reorderedSectionTasks = arrayMove(targetSectionTasks, oldIndex, newIndex)
 
-      // Merge back into full task state
+      const movedIndex = reorderedSectionTasks.findIndex(t => t.id === activeIdStr)
+      const prevTaskId = reorderedSectionTasks[movedIndex - 1]?.id
+      const nextTaskId = reorderedSectionTasks[movedIndex + 1]?.id
+
       const reorderedSectionTaskIds = new Set(reorderedSectionTasks.map(t => t.id))
       const updatedTasks = [
         ...tasks.filter(t => !reorderedSectionTaskIds.has(t.id)),
@@ -273,11 +304,11 @@ export default function ListPage() {
       dragSourceSectionRef.current = null
 
       await handleReorderTasks(
-        updatedTasks,
         activeIdStr,
         sourceSectionId,
         targetSectionId,
-        targetTaskId
+        prevTaskId,
+        nextTaskId
       )
     }
   }
@@ -291,8 +322,8 @@ export default function ListPage() {
     await createTask.mutateAsync(task)
   }
 
-  const handleAddSection = async (listId: string, title: string, order: number | undefined) => {
-    await createSection.mutateAsync({ listId, title, order })
+  const handleAddSection = async (listId: string, title: string) => {
+    await createSection.mutateAsync({ listId, title })
   }
 
   useEffect(() => {
@@ -384,9 +415,8 @@ export default function ListPage() {
           onDragEnd={handleDragEnd}
         >
           <Stack gap={'xs'}>
-            {/* Wrap Default Section tasks inside its own SortableContext */}
             {defaultSection && (
-              <Box key={defaultSection.id} id={defaultSection.id}>
+              <DefaultSectionDroppable id={defaultSection.id}>
                 <SortableContext
                   items={defaultSectionTaskIds}
                   strategy={verticalListSortingStrategy}
@@ -405,7 +435,7 @@ export default function ListPage() {
                     onSave={handleAddTask}
                   />
                 )}
-              </Box>
+              </DefaultSectionDroppable>
             )}
 
             <SortableContext items={reorderableSectionIds} strategy={verticalListSortingStrategy}>
@@ -463,7 +493,6 @@ export default function ListPage() {
 
         {canEdit && list && (
           <AddSection
-            newOrder={sections.length}
             listId={list.id}
             onSave={handleAddSection}
           />
