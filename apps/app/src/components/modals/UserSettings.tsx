@@ -10,8 +10,9 @@ import { GeneralSection } from '../settings/GeneralSection'
 import { AccountSection } from '../settings/AccountSection'
 import { usePreferences } from '@/queries/preferences'
 import { InvitesSection } from '../settings/InviteSection'
+import { InfoSection } from '../settings/InfoSection'
 
-type Section = 'general' | 'account' | 'appearance' | 'invites' | 'notifications'
+type Section = 'general' | 'account' | 'appearance' | 'invites' | 'notifications' | 'info'
 
 const NAV_WIDTH = 240
 
@@ -20,7 +21,8 @@ const SECTION_LABELS: Record<Section, string> = {
   account: 'Account',
   appearance: 'Appearance',
   invites: 'Invites',
-  notifications: 'Notifications'
+  notifications: 'Notifications',
+  info: 'Info'
 }
 
 export default function UserSettings({ context, id }: ContextModalProps) {
@@ -93,6 +95,13 @@ export default function UserSettings({ context, id }: ContextModalProps) {
               onClick={() => handleSectionChange('notifications')}
               style={{ borderRadius: 'var(--mantine-radius-md)' }}
             /> */}
+            <NavLink
+              active={section === 'info'}
+              label={SECTION_LABELS.info}
+              leftSection={<IconSettings size={18} />}
+              onClick={() => handleSectionChange('info')}
+              style={{ borderRadius: 'var(--mantine-radius-md)' }}
+            />
           </Stack>
         </Stack>
       </Box>
@@ -162,6 +171,10 @@ export default function UserSettings({ context, id }: ContextModalProps) {
               <Title order={4}>Notifications</Title>
             </Stack>
           )} */}
+
+          {section === 'info' && (
+            <InfoSection />
+          )}
         </ScrollArea>
       </Box>
     </Box>

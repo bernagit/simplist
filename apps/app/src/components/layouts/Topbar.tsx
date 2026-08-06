@@ -34,6 +34,7 @@ import { useAppRoute } from '@/hooks/useAppRoute'
 import ConfirmArchive from '../modals/ConfirmArchive'
 import { modals } from '@mantine/modals'
 import { usePreferences } from '@/queries/preferences'
+import { HotkeyBinding } from '../common/KeyBinding'
 
 export const TOPBAR_HEIGHT = 50
 
@@ -198,7 +199,11 @@ export function Topbar() {
                   </Tooltip>
                 </Menu.Target>
                 <Menu.Dropdown>
-                  <Menu.Item leftSection={<IconEdit size={20} />} onClick={handleEdit}>
+                  <Menu.Item
+                    leftSection={<IconEdit size={20} />}
+                    rightSection={<HotkeyBinding hotkey='EDIT_LIST'></HotkeyBinding>}
+                    onClick={handleEdit}
+                  >
                     Edit
                   </Menu.Item>
                   <Menu.Item leftSection={<IconArchive size={20} />} onClick={handleToggleArchive}>
