@@ -1,6 +1,6 @@
 'use client'
 
-import { MouseEvent } from 'react'
+import { MouseEvent, KeyboardEvent } from 'react'
 import { Button, Checkbox, Group, Stack, Text, TextInput, Textarea, Title } from '@mantine/core'
 
 type TaskContentProps = {
@@ -34,6 +34,21 @@ export default function TaskContent({
   onSave,
   onCancel
 }: TaskContentProps) {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    // Prevent event from bubbling up to drag-and-drop or parent hotkey listeners
+    e.stopPropagation()
+
+    // Trigger save on Ctrl + Enter or Cmd + Enter
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault()
+      onSave()
+    } else if (e.key === 'Escape') {
+      e.preventDefault()
+      // Call cancel with the keyboard event casted as mouse event to satisfy handler type signature
+      onCancel(e as unknown as MouseEvent<HTMLButtonElement>)
+    }
+  }
+
   return (
     <Group align="start">
       <Checkbox
@@ -68,6 +83,7 @@ export default function TaskContent({
               variant="unstyled"
               value={title}
               onChange={e => onTitleChange(e.currentTarget.value)}
+              onKeyDown={handleKeyDown}
               placeholder="Task name"
               styles={{ input: { fontSize: 24, fontWeight: 700 } }}
               autoFocus
@@ -77,6 +93,7 @@ export default function TaskContent({
               variant="unstyled"
               value={description}
               onChange={e => onDescriptionChange(e.currentTarget.value)}
+              onKeyDown={handleKeyDown}
               placeholder="Description"
               autosize
               minRows={2}

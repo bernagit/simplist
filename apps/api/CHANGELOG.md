@@ -1,5 +1,16 @@
 # api
 
+## 0.3.0
+
+### Minor Changes
+
+- 279af11: feat: add task between section and section reorder
+  feat: add shortcuts for PWA app
+  feat: add confirmation for delete/archive list
+  feat: add changelog
+  fix: scroll on main page
+  fix: hotkeys for edit title save and general hotkeys
+
 ## 0.2.1
 
 ### Patch Changes
@@ -7,7 +18,6 @@
 - feat(auth): implemented refresh token and sessions
 - feat(mail): enhance SMTP configuration
 - fix: docker configuration
-
 
 ## v0.2.0
 

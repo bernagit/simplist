@@ -14,7 +14,7 @@ type TaskListProps = {
 }
 
 export default function TaskList({ data, sectionId, canEdit }: TaskListProps) {
-  const tasks = useMemo(() => [...data].sort((a, b) => a.order - b.order), [data])
+  const tasks = useMemo(() => [...data].sort((a, b) => (a.order ?? '').localeCompare(b.order ?? '')), [data])
   const ids = useMemo(() => tasks.map(t => t.id), [tasks])
 
   // Allows dropping tasks into empty section containers

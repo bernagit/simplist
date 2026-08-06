@@ -64,7 +64,6 @@ export default function SectionPanel({
       listId: section.listId,
       sectionId,
       title: newTitle,
-      order: undefined
     })
   }
 
