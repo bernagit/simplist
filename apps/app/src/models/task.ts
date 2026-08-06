@@ -10,7 +10,7 @@ export type Task = {
   durationMinutes: number | null
   recurrenceRule: string | null
   priority: string | null
-  order: number
+  order: string
   createdAt: Date
   updatedAt: Date
 }
@@ -31,7 +31,6 @@ export type CreateTaskInput = {
   durationMinutes: number | null
   recurrenceRule: string | null
   priority: string | null
-  order?: number
 }
 
 export type UpdateTaskInput = {
@@ -45,5 +44,5 @@ export type UpdateTaskInput = {
   listId?: string
   sectionId?: string
   completed?: boolean
-  order?: number
+  order?: string
 }

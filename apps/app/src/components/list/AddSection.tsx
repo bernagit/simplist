@@ -6,11 +6,10 @@ import { useCallback, useState } from 'react'
 
 type AddSectionProps = {
   listId: string
-  newOrder?: number | undefined
-  onSave?: (listId: string, sectionTitle: string, order?: number) => Promise<void> | void
+  onSave?: (listId: string, sectionTitle: string) => Promise<void> | void
 }
 
-export default function AddSection({ listId, newOrder, onSave }: AddSectionProps) {
+export default function AddSection({ listId, onSave }: AddSectionProps) {
   const [isHovered, setIsHovered] = useState(false)
   const [isClicked, setIsClicked] = useState(false)
   const { isMobile } = useSidebar()
@@ -21,11 +20,11 @@ export default function AddSection({ listId, newOrder, onSave }: AddSectionProps
     if (sectionTitle.trim().length === 0) return
 
     if (onSave) {
-      await onSave(listId, sectionTitle.trim(), newOrder)
+      await onSave(listId, sectionTitle.trim())
     }
     setSectionTitle('')
     setIsClicked(false)
-  }, [sectionTitle, onSave, newOrder, listId])
+  }, [sectionTitle, onSave, listId])
 
   if (!isClicked) {
     return (

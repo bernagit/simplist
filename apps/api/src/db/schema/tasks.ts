@@ -7,7 +7,8 @@ import {
   text,
   time,
   timestamp,
-  uuid
+  uuid,
+  varchar
 } from 'drizzle-orm/pg-core'
 
 import { lists } from './lists.js'
@@ -48,7 +49,7 @@ export const tasks = pgTable('tasks', {
 
   priority: priorityEnum('priority'),
 
-  order: integer('order').notNull().default(0),
+  order: varchar('order', { length: 255 }).notNull().default('0'),
 
   createdAt: timestamp('created_at', {
     withTimezone: true

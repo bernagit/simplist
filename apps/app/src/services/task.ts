@@ -28,13 +28,15 @@ async function reorderTasks(input: {
   sourceSectionId: string
   targetSectionId: string
   movedTaskId: string
-  targetTaskId: string | undefined
+  prevTaskId: string | undefined
+  nextTaskId: string | undefined
 }): Promise<Resp<Task[]>> {
   return await api
     .put(`tasks/${input.listId}/${input.sourceSectionId}/reorder`, {
       json: {
         movedTaskId: input.movedTaskId,
-        targetTaskId: input.targetTaskId,
+        prevTaskId: input.prevTaskId,
+        nextTaskId: input.nextTaskId,
         targetSectionId: input.targetSectionId
       }
     })

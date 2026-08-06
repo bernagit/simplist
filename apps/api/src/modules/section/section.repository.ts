@@ -1,14 +1,20 @@
-import { eq, and, max, ilike } from 'drizzle-orm'
+import { eq, and, asc, desc, ilike } from 'drizzle-orm'
+import { LexoRank } from 'lexorank'
 import { lists } from '../../db/schema/lists.js'
 import { sections } from '../../db/schema/sections.js'
 import db from '../../infrastructure/database/db.js'
 
 export class SectionRepository {
-  async create(listId: string, title: string, order: number | undefined = undefined) {
+  async create(listId: string, title: string) {
+    const lastRank = await this.getLastRankInList(listId)
+    const orderRank = lastRank
+      ? LexoRank.parse(lastRank).genNext().toString()
+      : LexoRank.middle().toString()
+
     const newSection = {
       listId,
       title,
-      order
+      order: orderRank
     }
 
     const [section] = await db.insert(sections).values(newSection).returning()
@@ -16,7 +22,7 @@ export class SectionRepository {
     return section
   }
 
-  async update(sectionId: string, data: Partial<{ title: string; order: number | undefined }>) {
+  async update(sectionId: string, data: Partial<{ title: string; order?: string }>) {
     const query = db.update(sections).set(data).where(eq(sections.id, sectionId))
 
     const [section] = await query.returning().execute()
@@ -31,14 +37,19 @@ export class SectionRepository {
   }
 
   async getByListId(listId: string) {
-    const query = db.select().from(sections).where(eq(sections.listId, listId))
+    // LexoRank strings sort lexicographically using ascending order
+    const query = db
+      .select()
+      .from(sections)
+      .where(eq(sections.listId, listId))
+      .orderBy(asc(sections.order))
 
     const result = await query.execute()
     return result
   }
 
   async createDefault(listId: string) {
-    return await this.create(listId, 'DEFAULT', 0)
+    return await this.create(listId, 'DEFAULT')
   }
 
   async getDefaultSection(listId: string) {
@@ -51,14 +62,16 @@ export class SectionRepository {
     return result[0]
   }
 
-  async getLastOrderInList(listId: string) {
-    const query = db
-      .select({ maxOrder: max(sections.order) })
+  async getLastRankInList(listId: string): Promise<string | null> {
+    const result = await db
+      .select({ order: sections.order })
       .from(sections)
       .where(eq(sections.listId, listId))
+      .orderBy(desc(sections.order))
+      .limit(1)
+      .execute()
 
-    const result = await query.execute()
-    return result[0]?.maxOrder ?? 0
+    return result[0]?.order ?? null
   }
 
   async search(userId: string, query: string) {
@@ -81,5 +94,9 @@ export class SectionRepository {
     const query = db.delete(sections).where(eq(sections.id, sectionId))
 
     await query.execute()
+  }
+
+  async reorder(sectionId: string, newOrder: string) {
+    await db.update(sections).set({ order: newOrder }).where(eq(sections.id, sectionId))
   }
 }

@@ -1,3 +1,4 @@
+import { LexoRank } from 'lexorank'
 import { ListMemberRole } from '../../db/schema/listMember.js'
 import { Errors } from '../../types/http.js'
 import { ListRepository } from '../list/list.repository.js'
@@ -25,24 +26,8 @@ export class SectionService {
       throw Errors.forbidden('You do not have permission to create a section in this list')
     }
 
-    // if no order is provided, get the last section and set the order to last order + 1
-    if (data.order === undefined) {
-      const lastSection = await this.repository.getLastOrderInList(data.listId)
-      data.order = lastSection + 1
-    } else {
-      // move all sections with order >= data.order down by 1
-      const sections = await this.repository.getByListId(data.listId)
-      const sectionsToUpdate = sections.filter(
-        section => section.order !== null && section.order >= data.order!
-      )
-
-      for (const section of sectionsToUpdate) {
-        await this.repository.update(section.id, { order: (section.order ?? 0) + 1 })
-      }
-    }
-
     // create the section
-    const section = await this.repository.create(data.listId, data.title, data.order)
+    const section = await this.repository.create(data.listId, data.title)
 
     if (!section) {
       throw Errors.internal('Failed to create section')
@@ -67,18 +52,6 @@ export class SectionService {
 
     if (!isMember) {
       throw Errors.forbidden('You do not have permission to update this section')
-    }
-
-    // if order is provided, move all sections with order >= data.order down by 1
-    if (data.order !== undefined) {
-      const sections = await this.repository.getByListId(section.listId)
-      const sectionsToUpdate = sections.filter(
-        s => s.id !== sectionId && s.order !== null && s.order >= data.order!
-      )
-
-      for (const s of sectionsToUpdate) {
-        await this.repository.update(s.id, { order: (s.order ?? 0) + 1 })
-      }
     }
 
     // update the section
@@ -110,5 +83,57 @@ export class SectionService {
     }
 
     return await this.repository.delete(sectionId)
+  }
+
+  async reorder(
+    listId: string,
+    sectionId: string,
+    prevSectionId: string | undefined,
+    nextSectionId: string | undefined,
+    userId: string
+  ) {
+    const section = await this.repository.getById(sectionId)
+    if (!section) {
+      throw Errors.notFound('Section not found')
+    }
+
+    const members = await this.listRepository.getMembers(listId)
+    const isMember = members.some(
+      member => member.userId === userId && this.canEditRoles.includes(member.role)
+    )
+
+    if (!isMember) {
+      throw Errors.forbidden('You do not have permission to reorder this section')
+    }
+
+    // 1. Fetch surrounding sections to extract their LexoRank strings
+    let prevRank: LexoRank | null = null
+    let nextRank: LexoRank | null = null
+
+    if (prevSectionId) {
+      const prevSec = await this.repository.getById(prevSectionId)
+      if (prevSec) prevRank = LexoRank.parse(prevSec.order)
+    }
+
+    if (nextSectionId) {
+      const nextSec = await this.repository.getById(nextSectionId)
+      if (nextSec) nextRank = LexoRank.parse(nextSec.order)
+    }
+
+    // 2. Compute new midpoint rank
+    let newOrderStr: string
+
+    if (prevRank && nextRank) {
+      newOrderStr = prevRank.between(nextRank).toString()
+    } else if (prevRank) {
+      newOrderStr = prevRank.genNext().toString()
+    } else if (nextRank) {
+      newOrderStr = nextRank.genPrev().toString()
+    } else {
+      newOrderStr = LexoRank.middle().toString()
+    }
+
+    // 3. Persist single update
+    await this.repository.reorder(sectionId, newOrderStr)
   }
 }

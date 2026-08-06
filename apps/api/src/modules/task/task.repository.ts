@@ -1,10 +1,11 @@
 import { format } from 'date-fns'
-import { and, eq, gt, gte, isNotNull, lt, lte, max, ne, sql } from 'drizzle-orm'
+import { and, asc, desc, eq, gte, isNotNull, lte } from 'drizzle-orm'
+import { LexoRank } from 'lexorank'
+import { lists } from '../../db/schema/lists.js'
+import { sections } from '../../db/schema/sections.js'
 import { tasks } from '../../db/schema/tasks.js'
 import db from '../../infrastructure/database/db.js'
 import { CreateTaskInput, UpdateTaskInput } from './task.schema.js'
-import { lists } from '../../db/schema/lists.js'
-import { sections } from '../../db/schema/sections.js'
 
 export class TaskRepository {
   constructor() {}
@@ -17,20 +18,29 @@ export class TaskRepository {
   }
 
   async getByListId(listId: string) {
-    const query = db.select().from(tasks).where(eq(tasks.listId, listId))
+    const query = db.select().from(tasks).where(eq(tasks.listId, listId)).orderBy(asc(tasks.order))
 
     const result = await query.execute()
     return result
   }
 
   async getBySectionId(sectionId: string) {
-    const query = db.select().from(tasks).where(eq(tasks.sectionId, sectionId))
+    const query = db
+      .select()
+      .from(tasks)
+      .where(eq(tasks.sectionId, sectionId))
+      .orderBy(asc(tasks.order))
 
     const result = await query.execute()
     return result
   }
 
   async create(creatorId: string, listId: string, sectionId: string, data: CreateTaskInput) {
+    const lastRank = await this.getLastRankInSection(sectionId)
+    const taskOrder = lastRank
+      ? LexoRank.parse(lastRank).genNext().toString()
+      : LexoRank.middle().toString()
+
     const newTask = {
       listId,
       sectionId,
@@ -41,37 +51,42 @@ export class TaskRepository {
       dueTime: data.dueTime,
       durationMinutes: data.durationMinutes,
       recurrenceRule: data.recurrenceRule,
-      order: data.order,
+      order: taskOrder,
       priority: data.priority
     }
+
     const [task] = await db.insert(tasks).values(newTask).returning()
 
     return task
   }
 
-  async getLastOrderInList(listId: string) {
-    const query = db
-      .select({ maxOrder: max(tasks.order) })
+  async getLastRankInList(listId: string): Promise<string | null> {
+    const result = await db
+      .select({ order: tasks.order })
       .from(tasks)
       .where(eq(tasks.listId, listId))
+      .orderBy(desc(tasks.order))
+      .limit(1)
+      .execute()
 
-    const result = await query.execute()
-    return result[0]?.maxOrder ?? 0
+    return result[0]?.order ?? null
   }
 
-  async getLastOrderInSection(sectionId: string) {
-    const query = db
-      .select({ maxOrder: max(tasks.order) })
+  async getLastRankInSection(sectionId: string): Promise<string | null> {
+    const result = await db
+      .select({ order: tasks.order })
       .from(tasks)
       .where(eq(tasks.sectionId, sectionId))
+      .orderBy(desc(tasks.order))
+      .limit(1)
+      .execute()
 
-    const result = await query.execute()
-    return result[0]?.maxOrder ?? 0
+    return result[0]?.order ?? null
   }
 
   async delete(taskId: string) {
+    // With LexoRank strings, deleting a task is O(1) as no downstream items need shifting
     const query = db.delete(tasks).where(eq(tasks.id, taskId))
-
     await query.execute()
   }
 
@@ -82,59 +97,11 @@ export class TaskRepository {
     return task
   }
 
-  async reorder(
-    movedTaskId: string,
-    sourceSectionId: string,
-    targetSectionId: string,
-    movedOrder: number,
-    targetOrder: number
-  ) {
-    const isSameSection = sourceSectionId === targetSectionId
-
-    await db.transaction(async tx => {
-      if (isSameSection) {
-        // --- SAME SECTION MOVE ---
-        const isMovingDown = movedOrder < targetOrder
-        await tx
-          .update(tasks)
-          .set({
-            order: sql`${tasks.order} ${isMovingDown ? sql`- 1` : sql`+ 1`}`
-          })
-          .where(
-            and(
-              eq(tasks.sectionId, sourceSectionId),
-              ne(tasks.id, movedTaskId),
-              isMovingDown
-                ? and(gt(tasks.order, movedOrder), lte(tasks.order, targetOrder))
-                : and(lt(tasks.order, movedOrder), gte(tasks.order, targetOrder))
-            )
-          )
-
-        await tx.update(tasks).set({ order: targetOrder }).where(eq(tasks.id, movedTaskId))
-      } else {
-        // --- CROSS SECTION MOVE ---
-        // 1. Close gap in source section (shift remaining tasks up)
-        await tx
-          .update(tasks)
-          .set({ order: sql`${tasks.order} - 1` })
-          .where(and(eq(tasks.sectionId, sourceSectionId), gt(tasks.order, movedOrder)))
-
-        // 2. Make room in target section (shift target tasks down)
-        await tx
-          .update(tasks)
-          .set({ order: sql`${tasks.order} + 1` })
-          .where(and(eq(tasks.sectionId, targetSectionId), gte(tasks.order, targetOrder)))
-
-        // 3. Move task to target section with new order
-        await tx
-          .update(tasks)
-          .set({
-            sectionId: targetSectionId,
-            order: targetOrder
-          })
-          .where(eq(tasks.id, movedTaskId))
-      }
-    })
+  async reorder(taskId: string, targetSectionId: string, newOrder: string) {
+    await db
+      .update(tasks)
+      .set({ sectionId: targetSectionId, order: newOrder })
+      .where(eq(tasks.id, taskId))
   }
 
   async getPlannedTasks(
@@ -145,7 +112,7 @@ export class TaskRepository {
   ) {
     const start = format(startDate, 'yyyy-MM-dd')
     const end = format(endDate, 'yyyy-MM-dd')
-    // get all tasks that belongs to the user and have dueDate between startDate and endDate
+
     const query = db
       .select({
         id: tasks.id,
@@ -176,6 +143,8 @@ export class TaskRepository {
           filters.listId ? eq(tasks.listId, filters.listId) : undefined
         )
       )
+      .orderBy(asc(tasks.dueDate), asc(tasks.order))
+
     const result = await query.execute()
     return result
   }

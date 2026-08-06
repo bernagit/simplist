@@ -21,7 +21,7 @@ import PrioritySelector from '../task/ProritySelector'
 type AddTaskProps = {
   ml?: number
   listId: string
-  sectionId?: string | null
+  sectionId: string
   onSave?: (task: CreateTaskInput) => Promise<void> | void
 }
 
@@ -55,7 +55,7 @@ export default function AddTask({ ml, listId, sectionId, onSave }: AddTaskProps)
 
     const task: CreateTaskInput = {
       listId: listId,
-      sectionId: sectionId || null,
+      sectionId: sectionId,
       title: title.trim(),
       description: description.trim() || null,
       dueDate: dueDate,

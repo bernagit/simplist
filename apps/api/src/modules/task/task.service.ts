@@ -1,9 +1,19 @@
+import { LexoRank } from 'lexorank'
 import { ListMemberRole } from '../../db/schema/listMember.js'
 import { Errors } from '../../types/http.js'
 import { ListRepository } from '../list/list.repository.js'
 import { SectionRepository } from '../section/section.repository.js'
 import { TaskRepository } from './task.repository.js'
 import { CreateTaskInput, UpdateTaskInput } from './task.schema.js'
+
+export type ReorderTaskType = {
+  listId: string
+  userId: string
+  movedTaskId: string
+  targetSectionId: string
+  prevTaskId: string | undefined
+  nextTaskId: string | undefined
+}
 
 export class TaskService {
   private readonly repository: TaskRepository = new TaskRepository()
@@ -39,10 +49,6 @@ export class TaskService {
     //   }
     //   sectionId = section.id
     // }
-
-    // get the last order in the section
-    const lastOrder = await this.repository.getLastOrderInSection(sectionId)
-    data.order = lastOrder + 1
 
     const task = await this.repository.create(userId, listId, sectionId, data)
     return task
@@ -98,47 +104,44 @@ export class TaskService {
     await this.repository.update(taskId, { completed })
   }
 
-  async reorder(
-    movedTaskId: string,
-    targetTaskId: string | undefined,
-    listId: string,
-    targetSectionId: string,
-    userId: string
-  ) {
-    const members = await this.listRepository.getMembers(listId)
-    if (!this.isMember(members, userId)) {
+  async reorder(params: ReorderTaskType) {
+    const members = await this.listRepository.getMembers(params.listId)
+    if (!this.isMember(members, params.userId)) {
       throw Errors.forbidden('You do not have permission to reorder tasks in this list')
     }
 
-    const movedTask = await this.repository.getById(movedTaskId)
-    if (!movedTask) {
-      throw Errors.notFound('Moved task not found')
+    const { movedTaskId, targetSectionId, prevTaskId, nextTaskId } = params
+
+    // 1. Fetch adjacent tasks to get their current rank strings
+    let prevRank: LexoRank | null = null
+    let nextRank: LexoRank | null = null
+
+    if (prevTaskId) {
+      const prevTask = await this.repository.getById(prevTaskId)
+      if (prevTask) prevRank = LexoRank.parse(prevTask.order)
     }
 
-    let targetOrder = 0
+    if (nextTaskId) {
+      const nextTask = await this.repository.getById(nextTaskId)
+      if (nextTask) nextRank = LexoRank.parse(nextTask.order)
+    }
 
-    if (targetTaskId) {
-      const targetTask = await this.repository.getById(targetTaskId)
-      if (!targetTask) {
-        throw Errors.notFound('Target task not found')
-      }
-      targetOrder = targetTask.order
+    // 2. Calculate new midpoint rank string
+    let newOrderStr: string
+
+    if (prevRank && nextRank) {
+      newOrderStr = prevRank.between(nextRank).toString()
+    } else if (prevRank) {
+      newOrderStr = prevRank.genNext().toString()
+    } else if (nextRank) {
+      newOrderStr = nextRank.genPrev().toString()
     } else {
-      // If targetTaskId is missing (empty section), place at end of section
-      const targetTasks = await this.repository.getBySectionId(targetSectionId)
-      targetOrder = targetTasks.length > 0 ? Math.max(...targetTasks.map(t => t.order)) + 1 : 0
+      // Empty section
+      newOrderStr = LexoRank.middle().toString()
     }
 
-    await this.repository.reorder(
-      movedTaskId,
-      movedTask.sectionId,
-      targetSectionId,
-      movedTask.order,
-      targetOrder
-    )
-
-    // Return all tasks for the list or affected sections to sync frontend state
-    return await this.repository.getByListId(listId)
+    // 3. Update ONLY the single moved task ($O(1)$ DB operation)
+    await this.repository.reorder(movedTaskId, targetSectionId, newOrderStr)
   }
 
   async getPlannedTasks(
