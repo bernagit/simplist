@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 import { ModalsProvider } from '@mantine/modals'
-import { Box } from '@mantine/core'
+import { Box, Button, Group, Modal, ScrollArea } from '@mantine/core'
 import { Sidebar } from './Sidebar'
 import { Topbar } from './Topbar'
 import { MobileOverlay } from './MobileOverlay'
@@ -18,9 +18,12 @@ import { PUBLIC_ROUTES } from '@/proxy'
 import AuthLayout from '../auth/AuthLayout'
 import UserSettings from '../modals/UserSettings'
 import EditTask from '../modals/EditTask'
+import { useChangelog } from '@/hooks/useChangelog'
+import { ChangelogView } from '../common/ChangelogView'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const { isOpen, currentVersion, rawChangelog, markAsRead } = useChangelog();
 
   const isAuthRoute = PUBLIC_ROUTES.some(route => pathname.startsWith(route))
 
@@ -80,6 +83,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       }}
                     >
                       {children}
+                      <Modal
+                        opened={isOpen}
+                        onClose={markAsRead}
+                        title={`What's New in v${currentVersion}`}
+                        size="lg"
+                      >
+                        <ScrollArea h={350} offsetScrollbars p="xs">
+                          <ChangelogView rawMarkdown={rawChangelog} />
+                        </ScrollArea>
+                        <Group justify="right" mt="md">
+                          <Button onClick={markAsRead}>Got it!</Button>
+                        </Group>
+                      </Modal>
                     </Box>
                   </Box>
                 </Box>

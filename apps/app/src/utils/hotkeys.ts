@@ -34,6 +34,12 @@ export const HOTKEYS = {
     description: 'Open help',
     category: 'General'
   },
+  
+  OPEN_SETTINGS: {
+    keys: ['ctrl+.'],
+    description: 'Open settings',
+    category: 'General'
+  },
 
   GO_HOME: {
     keys: ['g', 'g'],
@@ -57,7 +63,7 @@ export const HOTKEYS = {
     keys: ['g', 's'],
     description: 'Go to "shared with me"',
     category: 'Navigation'
-  }
+  },
 } as const
 
 export type HotkeyId = keyof typeof HOTKEYS

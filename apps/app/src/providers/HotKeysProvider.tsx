@@ -15,12 +15,13 @@ import { useQueryClient } from '@tanstack/react-query'
 import { Resp } from '@/models/base'
 import { CompleteList } from '@/models/lists'
 import { listKeys } from '@/queries/lists'
+import { openSettingsModal } from '@/lib/modals/common'
 
 export function HotkeyProvider({ children }: { children: ReactNode }) {
   const router = useRouter()
   const route = useAppRoute()
   const { toggleColorScheme } = useMantineColorScheme()
-  const { toggle: toggleSidebar } = useSidebar()
+  const { toggle: toggleSidebar, isMobile } = useSidebar()
   const { toggle: toggleHelp } = useHelp()
   const queryClient = useQueryClient()
 
@@ -45,11 +46,16 @@ export function HotkeyProvider({ children }: { children: ReactNode }) {
     }
   }, [queryClient, route.listId])
 
+  const handleOpenSettings = useCallback(() => {
+    openSettingsModal(isMobile)
+  }, [isMobile])
+
   useHotkeys([
     [HOTKEYS.NEW_LIST.keys[0], createListModal],
     [HOTKEYS.TOGGLE_THEME.keys[0], toggleColorScheme],
     [HOTKEYS.TOGGLE_SIDEBAR.keys[0], toggleSidebar],
     [HOTKEYS.TOGGLE_HELP.keys[0], toggleHelp],
+    [HOTKEYS.OPEN_SETTINGS.keys[0], handleOpenSettings],
     [HOTKEYS.SHARE_LIST.keys[0], handleShareList],
     [HOTKEYS.EDIT_LIST.keys[0], handleEditList]
   ])

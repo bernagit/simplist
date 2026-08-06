@@ -1,4 +1,14 @@
 import type { NextConfig } from 'next'
+import fs from 'node:fs';
+import path from 'node:path';
+import packageJson from './package.json';
+
+const fallbackPath = path.resolve(process.cwd(), './CHANGELOG.md');
+
+let rawChangelog = '';
+if (fs.existsSync(fallbackPath)) {
+  rawChangelog = fs.readFileSync(fallbackPath, 'utf8');
+}
 
 const nextConfig: NextConfig = {
   output: 'standalone',
@@ -39,6 +49,10 @@ const nextConfig: NextConfig = {
         ]
       }
     ]
+  },
+  env: {
+    NEXT_PUBLIC_APP_VERSION: packageJson.version,
+    NEXT_PUBLIC_CHANGELOG: rawChangelog
   }
 }
 

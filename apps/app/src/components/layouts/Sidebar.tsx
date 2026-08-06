@@ -29,7 +29,8 @@ import {
   IconLayoutSidebar,
   IconChevronRight,
   IconHelp,
-  IconUsers
+  IconUsers,
+  IconKeyboard
 } from '@tabler/icons-react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
@@ -39,8 +40,10 @@ import { useLists } from '@/queries/lists'
 import { useSidebar } from '@/providers/SidebarProvider'
 import { createListModal } from '@/lib/modals/list'
 import { useLocalStorage } from '@mantine/hooks'
-import { modals } from '@mantine/modals'
 import { useAuth } from '@/providers/AuthProvider'
+import { HotkeyBinding } from '../common/KeyBinding'
+import { openSettingsModal } from '@/lib/modals/common'
+import { useHelp } from '@/providers/HelpProvider'
 
 export const MENU_WIDTH = 290
 const MIN_WIDTH = 240
@@ -58,6 +61,7 @@ export function Sidebar() {
   const theme = useMantineTheme()
   const colorScheme = useComputedColorScheme()
   const { logout } = useAuth()
+  const { toggle: toggleHelp } = useHelp()
   const [sidebarWidth, setSidebarWidth] = useLocalStorage({
     key: 'sidebar-width',
     defaultValue: DEFAULT_WIDTH
@@ -143,19 +147,7 @@ export function Sidebar() {
   }
 
   const handleOpenSettings = useCallback(() => {
-    const width = isMobile ? '100%' : '80rem'
-    modals.openContextModal({
-      modal: 'userSettings',
-      size: width,
-      innerProps: undefined,
-      fullScreen: isMobile,
-      withCloseButton: false,
-      padding: 0,
-      overlayProps: {
-        blur: 3,
-        opacity: 0.55
-      }
-    })
+    openSettingsModal(isMobile)
   }, [isMobile])
 
   useEffect(() => {
@@ -235,6 +227,7 @@ export function Sidebar() {
             <Menu.Dropdown style={{ zIndex: 400 }}>
               <Menu.Item
                 leftSection={<IconSettings size={16} />}
+                rightSection={<HotkeyBinding hotkey='OPEN_SETTINGS'></HotkeyBinding>}
                 onClick={() => handleOpenSettings()}
               >
                 Settings
@@ -430,9 +423,9 @@ export function Sidebar() {
                     style={{ borderRadius: 'var(--mantine-radius-md)' }}
                   />
                   <NavLink
-                    label="Contact Support"
-                    leftSection={<IconUsers size={18} />}
-                    onClick={() => window.open('mailto:simplist@bernitec.it', '_blank')}
+                    label="Keyboard Shortcuts"
+                    leftSection={<IconKeyboard size={18} />}
+                    onClick={() => toggleHelp()}
                     style={{ borderRadius: 'var(--mantine-radius-md)' }}
                   />
                 </Stack>
