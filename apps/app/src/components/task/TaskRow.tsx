@@ -248,7 +248,7 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
               fw={500}
               td={task.completed ? 'line-through' : undefined}
               c={task.completed ? 'dimmed' : 'inherit'}
-              mt={task.description ? 4 : 0}
+              // mt={task.description ? 4 : 0}
             >
               {task.title}
             </Text>

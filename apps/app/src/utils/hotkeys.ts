@@ -36,7 +36,7 @@ export const HOTKEYS = {
   },
   
   OPEN_SETTINGS: {
-    keys: ['ctrl+.'],
+    keys: ['mod+,'],
     description: 'Open settings',
     category: 'General'
   },

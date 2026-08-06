@@ -19,7 +19,6 @@ export async function POST(req: Request) {
 
   const { accessToken, accessTokenExpiresAt, refreshToken, user } = payload.data
 
-
   const cookieStore = await cookies()
 
   cookieStore.set('accessToken', accessToken, {

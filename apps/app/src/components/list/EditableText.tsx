@@ -50,8 +50,16 @@ export function EditableTitle({ canEdit, order, value, onSave }: EditableTitlePr
         onChange={e => setDraft(e.currentTarget.value)}
         onBlur={save}
         onKeyDown={e => {
-          if (e.key === 'Enter') save()
-          if (e.key === 'Escape') cancel()
+          e.stopPropagation()
+          if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+            e.preventDefault()
+            save()
+          } else if (e.key === 'Enter') {
+            e.preventDefault()
+            save()
+          } else if (e.key === 'Escape') {
+            cancel()
+          }
         }}
         variant="unstyled"
         styles={{
