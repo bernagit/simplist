@@ -23,7 +23,7 @@ export class InviteService {
 
     if (data.email) {
       const existing = await this.repository.findByEmail(data.email)
-      if (existing) {
+      if (existing.some(i => i.revoked === false)) {
         throw Errors.conflict('An invite for this email already exists')
       }
     }
@@ -31,7 +31,6 @@ export class InviteService {
     const token = generateInviteToken()
     const tokenHash = hashInviteToken(token)
 
-    // 7 days from now
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
 
     const invite = await this.repository.create(userId, {
@@ -49,6 +48,10 @@ export class InviteService {
     if (data.email) {
       try {
         await mailService.sendInvitation(data.email, inviteUrl)
+        return {
+          inviteUrl,
+          token
+        }
       } catch (error) {
         this.logger.error(
           `Failed to send invitation email to ${data.email}: ${

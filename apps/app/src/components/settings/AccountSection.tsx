@@ -10,19 +10,27 @@ import {
   PasswordInput,
   Stack,
   Text,
-  TextInput
+  TextInput,
+  useMantineTheme
 } from '@mantine/core'
 import { IconAlertTriangle } from '@tabler/icons-react'
 import { modals } from '@mantine/modals'
 import { notifications } from '@mantine/notifications'
 import { useMe, useUpdateMe, useUpdatePassword } from '@/queries/auth'
+import { AvatarPicker } from '../common/AvatarPicker'
 
 export function AccountSection() {
   const { data: me, isLoading } = useMe()
-
+  const theme = useMantineTheme()
+  
   const [name, setName] = useState(me?.name ?? '')
   const [email, setEmail] = useState(me?.email ?? '')
   const [savingProfile, setSavingProfile] = useState(false)
+  const [avatarPickerOpened, setAvatarPickerOpened] = useState(false)
+
+  const [avatar, setAvatar] = useState(
+    me?.avatar ?? null
+  )
 
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
@@ -31,12 +39,15 @@ export function AccountSection() {
   const updateUser = useUpdateMe()
   const changePassword = useUpdatePassword()
 
-  const profileDirty = name !== (me?.name ?? '') || email !== (me?.email ?? '')
+  const profileDirty =
+    name !== (me?.name ?? '') ||
+    email !== (me?.email ?? '') ||
+    avatar !== (me?.avatar ?? null)
 
   const handleSaveProfile = async () => {
     setSavingProfile(true)
     try {
-      await updateUser.mutateAsync({ name, email })
+      await updateUser.mutateAsync({ name, email, avatar })
       notifications.show({
         title: 'Profile updated',
         message: 'Your changes have been saved.',
@@ -115,13 +126,20 @@ export function AccountSection() {
         </div>
 
         <Group align="center" gap="md">
-          <Avatar radius="xl" size="lg">
-            {me?.initials}
+          <Avatar radius="xl" size="lg" color={theme.primaryColor} src={avatar}>
+            {!avatar && me?.initials}
           </Avatar>
-          <Button variant="default" size="xs" disabled>
+          <Button variant="default" size="xs" onClick={() => setAvatarPickerOpened(true)}>
             Change photo
           </Button>
         </Group>
+
+        <AvatarPicker
+          opened={avatarPickerOpened}
+          onClose={() => setAvatarPickerOpened(false)}
+          value={avatar}
+          onChange={setAvatar}
+        />
 
         <TextInput
           label="Email"

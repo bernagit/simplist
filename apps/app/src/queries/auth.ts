@@ -21,7 +21,7 @@ export function useUpdateMe() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (data: { name?: string; email?: string }) => {
+    mutationFn: (data: { name?: string; email?: string, avatar?: string | null }) => {
       return authService.updateCurrentUser(data)
     },
     onSuccess: updatedUser => {

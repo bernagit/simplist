@@ -16,7 +16,8 @@ import {
   Button,
   Tooltip,
   Menu,
-  Stack
+  Stack,
+  useComputedColorScheme
 } from '@mantine/core'
 import {
   IconArchive,
@@ -36,7 +37,7 @@ import { modals } from '@mantine/modals'
 import { usePreferences } from '@/queries/preferences'
 import { HotkeyBinding } from '../common/KeyBinding'
 
-export const TOPBAR_HEIGHT = 50
+export const TOPBAR_HEIGHT = 60
 
 export function Topbar() {
   const router = useRouter()
@@ -48,6 +49,7 @@ export function Topbar() {
   const unarchiveList = useUnarchiveList()
   const { data: pref } = usePreferences(true)
   const preferences = pref?.data
+  const colorScheme = useComputedColorScheme()
 
   const route = useAppRoute()
 
@@ -113,7 +115,14 @@ export function Topbar() {
   }, [route.breadcrumbs, setBreadcrumbs])
 
   return (
-    <Box h={50} style={{ flexShrink: 0 }}>
+    <Box
+      h={TOPBAR_HEIGHT}
+      pb={'sm'}
+      style={{ 
+        flexShrink: 0,
+        borderBottom: `1px solid ${colorScheme === 'dark' ? 'var(--mantine-color-dark-5)' : 'var(--mantine-color-gray-2)'}`
+      }}
+    >
       <Group h="100%" px="md" justify="space-between" wrap="nowrap">
         <Group>
           {!opened && (
@@ -150,7 +159,7 @@ export function Topbar() {
           <Stack gap={0} align="center">
             <Title
               order={3}
-              mt="md"
+              mt={'sm'}
               fw={600}
               style={{
                 display: showTitle ? 'block' : 'none',

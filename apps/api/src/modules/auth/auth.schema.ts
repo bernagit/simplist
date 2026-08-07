@@ -3,8 +3,9 @@ import { z } from 'zod'
 
 export const updateCurrentUserSchema = z.object({
   body: z.object({
-    name: z.string().max(255).min(1).optional()
-    // email: z.email().max(255).optional()
+    name: z.string().max(255).min(1).optional(),
+    // email: z.email().max(255).optional(),
+    avatar: z.string().nullable().optional()
   })
 })
 

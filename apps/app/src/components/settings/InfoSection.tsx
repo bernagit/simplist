@@ -52,7 +52,7 @@ export function InfoSection() {
         {/* Quick Links */}
         <Group gap="xs" mt="md">
           <Anchor
-            href="https://github.com/your-repo/simplist"
+            href="https://github.com/bernagit/simplist"
             target="_blank"
             underline="hover"
           >

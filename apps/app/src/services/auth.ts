@@ -28,7 +28,7 @@ async function getMe(): Promise<Resp<User>> {
   return res
 }
 
-async function updateCurrentUser(data: { name?: string; email?: string }): Promise<Resp<User>> {
+async function updateCurrentUser(data: { name?: string; email?: string, avatar?: string | null }): Promise<Resp<User>> {
   const res = await api.put<Resp<User>>('auth/me', { json: data }).json()
   return res
 }

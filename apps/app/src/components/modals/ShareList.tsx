@@ -16,7 +16,8 @@ import {
   Select,
   Stack,
   Text,
-  TextInput
+  TextInput,
+  useMantineTheme
 } from '@mantine/core'
 import { ContextModalProps, modals } from '@mantine/modals'
 import { IconTrash } from '@tabler/icons-react'
@@ -27,7 +28,7 @@ type ShareListProps = {
 
 export default function ShareList({ innerProps }: ContextModalProps<ShareListProps>) {
   const listId = innerProps?.listId
-
+  const theme = useMantineTheme()
   const [shareWithEmail, setShareWithEmail] = useState('')
   const [role, setRole] = useState<string | null>('viewer')
 
@@ -118,8 +119,8 @@ export default function ShareList({ innerProps }: ContextModalProps<ShareListPro
             <div key={member.id}>
               <Group justify="space-between" align="center">
                 <Group>
-                  <Avatar radius="xl">
-                    {(member.name ?? member.email)?.charAt(0).toUpperCase()}
+                  <Avatar radius="xl" color={theme.primaryColor} src={member.avatar}>
+                    {!member.avatar && (member.name ?? member.email)?.charAt(0).toUpperCase()}
                   </Avatar>
 
                   <div>
