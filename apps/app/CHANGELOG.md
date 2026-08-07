@@ -1,5 +1,12 @@
 # app
 
+## 0.3.1
+
+### Patch Changes
+
+- feat: add avatar support
+- fix: UI and sharing
+
 ## 0.3.0
 
 ### Minor Changes

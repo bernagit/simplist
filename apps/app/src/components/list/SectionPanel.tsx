@@ -7,9 +7,9 @@ import {
   Group,
   Menu,
   RingProgress,
-  Text,
   useMantineTheme,
-  Box
+  Box,
+  Text
 } from '@mantine/core'
 import { IconChevronDown, IconChevronRight, IconDots, IconTrash } from '@tabler/icons-react'
 import { EditableTitle } from './EditableText'
@@ -52,6 +52,9 @@ export default function SectionPanel({
     opacity: isDragging ? 0.4 : 1
   }
 
+  const hasNoTasks = totalTasksCount === 0
+  const progress = hasNoTasks ? 0 : (completedTasksCount / totalTasksCount) * 100
+
   const handleDeleteSection = async (sectionId: string) => {
     await deleteSection.mutateAsync({
       listId: section.listId,
@@ -71,7 +74,7 @@ export default function SectionPanel({
     <Box ref={setNodeRef} style={style}>
       {/* Attach drag handle listeners directly to the section header Group */}
       <Group
-        gap={4}
+        gap={9}
         align="center"
         id={getHTMLSectionId(section.id)}
         mb={4}
@@ -92,16 +95,11 @@ export default function SectionPanel({
         </ActionIcon>
         <RingProgress
           size={30}
-          thickness={2}
-          sections={[
-            {
-              value: totalTasksCount === 0 ? 100 : (completedTasksCount / totalTasksCount) * 100,
-              color: theme.colors.green[6]
-            }
-          ]}
+          thickness={3}
+          sections={[{ value: progress, color: theme.primaryColor }]}
           label={
-            <Center mt={2}>
-              <Text size="xs" c="dimmed">
+            <Center>
+              <Text size="10px" fw={500}>
                 {totalTasksCount}
               </Text>
             </Center>

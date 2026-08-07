@@ -154,7 +154,7 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
       wrap="nowrap"
       justify="space-between"
       align="center"
-      px="xs"
+      px={0}
       py={8}
       style={{
         borderRadius: 6,

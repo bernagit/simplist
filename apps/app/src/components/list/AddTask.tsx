@@ -116,7 +116,8 @@ export default function AddTask({ ml, listId, sectionId, onSave }: AddTaskProps)
         onClick={() => setIsClicked(true)}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        ml={ml ?? 0}
+        ml={0}
+        my={6}
         style={{
           width: '100%',
           cursor: 'pointer',
@@ -126,10 +127,11 @@ export default function AddTask({ ml, listId, sectionId, onSave }: AddTaskProps)
           display: 'flex',
           alignItems: 'center',
           transition: 'color 120ms ease',
+          outline: hovered ? '1px solid var(--mantine-primary-color-filled)' : undefined,
           color: hovered ? theme.colors[theme.primaryColor]?.[8] : 'var(--mantine-color-dimmed)'
         }}
       >
-        <Group gap={6}>
+        <Group gap={6} ml={ml ?? 0}>
           {!hovered ? <IconPlus size={16} /> : <IconCirclePlus size={16} />}
 
           <Text mt={4} size="sm" fw={500} c="inherit">
