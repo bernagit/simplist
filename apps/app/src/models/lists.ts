@@ -36,6 +36,7 @@ export type ListMember = {
   userId: string
   role: 'owner' | 'editor' | 'viewer'
   email: string
+  avatar: string | null
   name: string | null
   joinedAt: Date
 }

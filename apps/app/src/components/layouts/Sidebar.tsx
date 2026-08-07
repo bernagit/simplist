@@ -193,8 +193,8 @@ export function Sidebar() {
                   }}
                 >
                   <Group gap="sm" wrap="nowrap" px="xs" py="xs">
-                    <Avatar radius="xl" color={theme.primaryColor}>
-                      {me?.initials}
+                    <Avatar radius="xl" color={theme.primaryColor} src={me?.avatar ?? null}>
+                      {!me?.avatar && me?.initials}
                     </Avatar>
 
                     <Box flex={1} miw={0}>
@@ -450,7 +450,9 @@ export function Sidebar() {
             cursor: 'col-resize',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            padding: 0,
+            margin: 0,
           }}
         >
           <Box
@@ -464,6 +466,8 @@ export function Sidebar() {
               transition: isResizing ? 'none' : 'background-color 120ms ease'
             }}
             ml={-9}
+            mr={0}
+            p={0}
           />
         </Box>
       )}

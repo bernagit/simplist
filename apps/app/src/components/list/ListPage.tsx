@@ -48,6 +48,7 @@ import {
 } from '@dnd-kit/sortable'
 import TaskRow from '@/components/task/TaskRow'
 import { Section } from '@/models/section'
+import ListMembers from './ListMembers'
 
 function DefaultSectionDroppable({
   id,
@@ -393,18 +394,22 @@ export default function ListPage() {
               </Text>
             )}
           </Box>
-          {!canEdit && (
-            <Tooltip
-              label="You don't have permission to edit this list"
-              position="bottom"
-              withArrow
-              transitionProps={{ transition: 'pop', duration: 200 }}
-            >
-              <ThemeIcon variant="light" size={30}>
-                <IconLock size={18} />
-              </ThemeIcon>
-            </Tooltip>
-          )}
+          <Group gap="xs" wrap="nowrap">
+            <ListMembers members={list.members} />
+
+            {!canEdit && (
+              <Tooltip
+                label="You don't have permission to edit this list"
+                position="bottom"
+                withArrow
+                transitionProps={{ transition: 'pop', duration: 200 }}
+              >
+                <ThemeIcon variant="light" size={30}>
+                  <IconLock size={18} />
+                </ThemeIcon>
+              </Tooltip>
+            )}
+          </Group>
         </Group>
 
         <DndContext

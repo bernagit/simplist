@@ -46,7 +46,8 @@ export const requireAuth = async (req: Request, _res: Response, next: NextFuncti
   req.user = {
     id: user.id,
     email: user.email,
-    name: user.name
+    name: user.name,
+    avatar: user.avatar
   }
 
   next()

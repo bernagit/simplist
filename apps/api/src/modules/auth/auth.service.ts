@@ -194,8 +194,9 @@ export class AuthService {
     }
 
     const updatedUser = await this.userRepository.update(userId, {
-      name: data.name ?? user.name
+      name: data.name ?? user.name,
       // email: data.email ?? user.email
+      avatar: data.avatar ?? user.avatar
     })
 
     return updatedUser

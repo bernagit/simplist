@@ -37,9 +37,8 @@ export class InviteRepository {
   }
 
   async findByEmail(email: string) {
-    const [invite] = await db.select().from(invites).where(eq(invites.email, email)).limit(1)
-
-    return invite ?? null
+    const results = await db.select().from(invites).where(eq(invites.email, email))
+    return results
   }
 
   async findByToken(tokenHash: string) {

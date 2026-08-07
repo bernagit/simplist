@@ -219,6 +219,7 @@ export class ListRepository {
         userId: users.id,
         email: users.email,
         name: users.name,
+        avatar: users.avatar,
         joinedAt: listMembers.joinedAt
       })
       .from(listMembers)
