@@ -78,7 +78,11 @@ export default function SectionPanel({
         align="center"
         id={getHTMLSectionId(section.id)}
         mb={4}
-        style={{ cursor: canEdit ? 'grab' : 'default', userSelect: 'none' }}
+        style={{
+          cursor: canEdit ? 'grab' : 'default',
+          userSelect: 'none',
+          touchAction: 'none'
+        }}
         {...(canEdit ? { ...attributes, ...listeners } : {})}
       >
         <ActionIcon

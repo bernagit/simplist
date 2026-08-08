@@ -193,7 +193,8 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
             opacity: canEdit && (isMobile || hovered) ? 1 : 0,
             cursor: 'grab',
             transition: 'opacity 120ms',
-            marginTop: 2
+            marginTop: 2,
+            touchAction: 'none'
           }}
           mt={0}
         >

@@ -38,7 +38,8 @@ import {
   rectIntersection,
   CollisionDetection,
   DragOverlay,
-  useDroppable
+  useDroppable,
+  TouchSensor
 } from '@dnd-kit/core'
 import {
   SortableContext,
@@ -139,6 +140,12 @@ export default function ListPage() {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { distance: 5 }
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 150,
+        tolerance: 5
+      }
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates
