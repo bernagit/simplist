@@ -28,7 +28,8 @@ export function useAppRoute() {
           if (listId) return [{ label: t('myLists'), href: '/lists' }]
 
           return []
-
+        case 'calendar':
+          return [{ label: t('calendar'), href: '/calendar' }]
         default:
           return [
             {

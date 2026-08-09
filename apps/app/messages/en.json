@@ -37,14 +37,12 @@
     "options": "Options",
     "edit": "Edit",
     "archive": "Archive",
-    "unarchive": "Unarchive",
-    "archiveModalTitle": "Archive List",
-    "archiveConfirm": "Archive",
-    "cancel": "Cancel"
+    "unarchive": "Unarchive"
   },
   "Breadcrumbs": {
     "myLists": "My Lists",
-    "shared": "Shared With Me"
+    "shared": "Shared With Me",
+    "calendar": "Calendar"
   },
   "HelpDrawer": {
     "title": "Keyboard shortcuts",
@@ -79,10 +77,6 @@
     "myListsDesc": "Browse and manage all your personal lists.",
     "sharedListsTitle": "Shared Lists",
     "sharedListsDesc": "Lists that other people shared with you."
-  },
-  "MyListsPage": {
-    "title": "My Lists - Simplist",
-    "description": "View and manage your owned lists."
   },
   "OwnedListOverview": {
     "title": "My Lists",
@@ -134,6 +128,31 @@
     "infoArchivedAt": "Archived At",
     "archived": "Archived"
   },
+  "CalendarPage": {
+    "title": "Calendar - Simplist",
+    "description": "View and manage your calendar tasks."
+  },
+  "ListPage": {
+    "title": "My Lists - Simplist",
+    "description": "View and manage your lists.",
+    "noPermissionTooltip": "You don't have permission to edit this list",
+    "failedReorderSections": "Failed to reorder sections:",
+    "failedReorderTasks": "Failed to reorder tasks:"
+  },
+  "SectionPanel": {
+    "deleteSection": "Delete Section"
+  },
+  "TaskRow": {
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "AddTask": {
+    "addTask": "Add Task",
+    "titlePlaceholder": "Task name",
+    "descriptionPlaceholder": "Description",
+    "cancel": "Cancel",
+    "submit": "Add task"
+  },
   "GeneralSection": {
     "languageTitle": "Language",
     "languageDesc": "Choose your preferred display language.",
@@ -167,6 +186,7 @@
     }
   },
   "DueDateDropdown": {
+    "label": "Date",
     "timeAndDuration": "Time & Duration",
     "dueTimeLabel": "Due Time",
     "dueTimePlaceholder": "Set time",
@@ -186,6 +206,10 @@
   "CustomSchedule": {
     "loading": "Loading...",
     "agenda": "Agenda",
+    "today": "Today",
+    "previous": "Previous",
+    "next": "Next",
+    "noEvents": "No events",
     "views": {
       "day": "Day",
       "week": "Week",
@@ -223,5 +247,252 @@
     "addSection": "Add Section",
     "placeholder": "Section Title",
     "cancel": "Cancel"
+  },
+  "TaskContent": {
+    "titlePlaceholder": "Task name",
+    "descriptionPlaceholder": "Description",
+    "cancel": "Cancel",
+    "save": "Save"
+  },
+  "UserSettings": {
+    "settingsTitle": "Settings",
+    "nav": {
+      "general": "General",
+      "account": "Account",
+      "appearance": "Appearance",
+      "invites": "Invites",
+      "notifications": "Notifications",
+      "info": "Info"
+    },
+    "general": {
+      "title": "General",
+      "subtitle": "General application settings."
+    },
+    "account": {
+      "title": "Account",
+      "subtitle": "Profile, password and email."
+    },
+    "appearance": {
+      "title": "Appearance",
+      "subtitle": "Customize the look and feel of Simplist."
+    },
+    "invites": {
+      "title": "Invites",
+      "subtitle": "Manage your invites and invite new users."
+    },
+    "aria": {
+      "toggleNav": "Toggle settings navigation"
+    }
+  },
+  "AccountSection": {
+    "profile": {
+      "title": "Profile",
+      "subtitle": "Update your name and email address.",
+      "changePhoto": "Change photo",
+      "email": "Email",
+      "name": "Name",
+      "saveChanges": "Save changes",
+      "notifications": {
+        "successTitle": "Profile updated",
+        "successMessage": "Your changes have been saved.",
+        "errorTitle": "Something went wrong",
+        "errorMessage": "Could not update your profile. Please try again."
+      }
+    },
+    "password": {
+      "title": "Password",
+      "subtitle": "Choose a strong password to keep your account secure.",
+      "current": "Current password",
+      "new": "New password",
+      "confirm": "Confirm new password",
+      "update": "Update password",
+      "notifications": {
+        "mismatchTitle": "Passwords do not match",
+        "mismatchMessage": "Please make sure both passwords are identical.",
+        "successTitle": "Password changed",
+        "successMessage": "Your password has been updated.",
+        "errorTitle": "Something went wrong",
+        "errorMessage": "Could not change your password. Please check your current password."
+      }
+    },
+    "dangerZone": {
+      "title": "Danger zone",
+      "subtitle": "Permanently delete your account and all associated data. This cannot be undone.",
+      "deleteAccount": "Delete account",
+      "modal": {
+        "title": "Delete account",
+        "message": "This will permanently delete your account and all your lists and tasks. This action cannot be undone.",
+        "confirm": "Delete account",
+        "cancel": "Cancel"
+      }
+    }
+  },
+  "AppearanceSection": {
+    "theme": {
+      "title": "Theme",
+      "subtitle": "Choose how Simplist looks on this device.",
+      "syncLabel": "Sync appearance across devices",
+      "syncDescription": "Save your theme and accent color to your account instead of only this device.",
+      "options": {
+        "light": "Light",
+        "dark": "Dark",
+        "auto": "System"
+      }
+    },
+    "accentColor": {
+      "title": "Accent color",
+      "subtitle": "Pick the primary color used across buttons, links and highlights.",
+      "ariaLabel": "Use {color} as accent color"
+    }
+  },
+  "InfoSection": {
+    "subtitle": "Self-hosted task & list management engine",
+    "links": {
+      "github": "GitHub",
+      "documentation": "Documentation"
+    },
+    "environment": {
+      "label": "Environment"
+    },
+    "apiEndpoint": {
+      "label": "API Endpoint"
+    },
+    "changelog": {
+      "title": "Release History & Changelog",
+      "latest": "Latest: v{version}",
+      "empty": "No changelog entry found."
+    }
+  },
+  "InvitesSection": {
+    "title": "Invites",
+    "subtitle": "Create and manage invite links for new members.",
+    "buttons": {
+      "cancel": "Cancel",
+      "newInvite": "New invite",
+      "create": "Create invite",
+      "done": "Done"
+    },
+    "panel": {
+      "emailLabel": "Email (optional)",
+      "emailPlaceholder": "person@example.com",
+      "shareText": "Share this link with the invitee:",
+      "copied": "Copied",
+      "copyLink": "Copy link",
+      "qrCodeScan": "Scan to open invite"
+    },
+    "status": {
+      "used": "Used",
+      "expired": "Expired",
+      "pending": "Pending"
+    },
+    "table": {
+      "email": "Email",
+      "status": "Status",
+      "expires": "Expires",
+      "revoke": "Revoke invite",
+      "expiresMobile": "Expires {date}"
+    },
+    "empty": "No invites yet.",
+    "notifications": {
+      "createErrorTitle": "Could not create invite",
+      "revokeErrorTitle": "Could not revoke invite",
+      "errorMessage": "Please try again."
+    }
+  },
+  "AddList": {
+    "titleCreate": "Create a new list",
+    "titleUpdate": "Update list",
+    "fields": {
+      "title": "List Title",
+      "description": "List Description",
+      "color": "Color"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "create": "Create List",
+      "update": "Update List"
+    },
+    "colors": {
+      "darkGray": "Dark Gray",
+      "gray": "Gray",
+      "red": "Red",
+      "pink": "Pink",
+      "purple": "Purple",
+      "violet": "Violet",
+      "indigo": "Indigo",
+      "blue": "Blue",
+      "cyan": "Cyan",
+      "teal": "Teal",
+      "green": "Green",
+      "lime": "Lime",
+      "yellow": "Yellow",
+      "orange": "Orange"
+    }
+  },
+  "ShareList": {
+    "title": "Share list",
+    "fields": {
+      "emailLabel": "Email",
+      "emailPlaceholder": "name@example.com",
+      "roleLabel": "Role"
+    },
+    "roles": {
+      "editor": "Editor",
+      "viewer": "Viewer"
+    },
+    "actions": {
+      "share": "Share",
+      "removeMember": "Remove member"
+    },
+    "members": {
+      "title": "Members",
+      "empty": "This list hasn't been shared with anyone yet."
+    },
+    "confirmDelete": {
+      "title": "Remove member",
+      "message": "Remove {label} from this list? They'll lose access immediately.",
+      "confirm": "Remove",
+      "cancel": "Cancel"
+    },
+    "errors": {
+      "noListId": "Error: No list ID provided."
+    }
+  },
+  "ConfirmArchive": {
+    "title": "Archive List",
+    "message": "Are you sure you want to archive this list?",
+    "warning": "If this list is shared, it will be hidden from other users until you unarchive it.",
+    "actions": {
+      "cancel": "Cancel",
+      "archive": "Archive List"
+    }
+  },
+  "ListMembers": {
+    "you": "(You)",
+    "roles": {
+      "owner": "Owner",
+      "editor": "Editor",
+      "viewer": "Viewer"
+    }
+  },
+  "EditTask": {
+    "title": "Edit Task"
+  },
+  "SpotlightProvider": {
+    "placeholder": "Search...",
+    "groups": {
+      "navigation": "Navigation",
+      "actions": "Actions"
+    },
+    "actions": {
+      "goHome": "Go to Home",
+      "goCalendar": "Go to Calendar",
+      "goLists": "Go to Lists",
+      "goShared": "Go to Shared Lists",
+      "createList": "Create a new list"
+    },
+    "descriptions": {
+      "sectionInList": "Section in list {listName}"
+    }
   }
 }

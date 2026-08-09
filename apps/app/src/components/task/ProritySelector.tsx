@@ -1,128 +1,115 @@
 'use client'
 
-import { useDisclosure } from '@mantine/hooks'
-import {
-  ActionIcon,
-  Box,
-  Button,
-  Collapse,
-  Group,
-  Stack,
-  Text,
-  ThemeIcon,
-  rem
-} from '@mantine/core'
-import { IconChevronDown, IconFlag } from '@tabler/icons-react'
-import { getPriorityColor } from '@/utils/color'
-import HoverableBox from './HoverableBox'
-import { useTranslations } from 'next-intl'
 import { usePriorityOptions } from '@/hooks/useOptionLabel'
+import { getPriorityColor } from '@/utils/color'
+import { Box, Button, Group, Popover, Stack, Text } from '@mantine/core'
+import { IconFlag, IconX } from '@tabler/icons-react'
+import { useTranslations } from 'next-intl'
+import { useMemo, useState } from 'react'
 
-type TaskPriorityFieldProps = {
-  priority: string | null
-  canEdit?: boolean
-  onChange: (priority: string | null) => void
+type PrioritySelectorProps = {
+  selectedPriority: string | null
+  setSelectedPriority: (priority: string | null) => void
 }
 
-export default function TaskPriorityField({
-  priority,
-  canEdit = true,
-  onChange
-}: TaskPriorityFieldProps) {
+export default function PrioritySelector({
+  selectedPriority,
+  setSelectedPriority
+}: PrioritySelectorProps) {
   const t = useTranslations('TaskPriorityField')
+  const colorMemo = useMemo(() => getPriorityColor(selectedPriority), [selectedPriority])
+  const isPrioritySelected = selectedPriority !== null
+  const [open, setOpen] = useState(false)
+
   const priorityOptions = usePriorityOptions()
-  const [opened, { toggle, close }] = useDisclosure(false)
 
-  const color = getPriorityColor(priority)
+  const handlePrioritySelect = (priority: string | null) => {
+    setSelectedPriority(priority)
+    setOpen(false)
+  }
 
-  const activeOption = priorityOptions.find(option => option.value === priority)
+  const activeOption = priorityOptions.find(option => option.value === selectedPriority)
   const label = activeOption?.label ?? t('defaultPriority')
 
-  const isOpen = opened && canEdit
-
   return (
-    <Box
-      style={{
-        border: '1px solid var(--mantine-color-default-border)',
-        borderRadius: 'var(--mantine-radius-md)',
-        overflow: 'hidden'
-      }}
-    >
-      <HoverableBox
-        disabled={!canEdit}
-        onClick={() => canEdit && toggle()}
-        style={{ borderRadius: 0 }}
-        active={false}
-      >
-        <Group justify="space-between" wrap="nowrap" style={{ width: '100%' }}>
-          <Group gap="sm" wrap="nowrap">
-            <ThemeIcon variant="light" color="gray" radius="md" size="md">
-              <IconFlag
-                style={{
-                  width: rem(18),
-                  height: rem(18),
-                  color
-                }}
-              />
-            </ThemeIcon>
-
-            <Stack gap={2}>
-              <Text size="xs" c="dimmed" fw={500} style={{ lineHeight: 1 }}>
-                {t('label')}
-              </Text>
-
-              <Text size="sm" fw={priority ? 600 : 400} c={priority ? 'dark.4' : 'dimmed'}>
-                {label}
-              </Text>
-            </Stack>
-          </Group>
-
-          {canEdit && (
-            <ActionIcon variant="subtle" color="gray" radius="xl">
-              <IconChevronDown
-                style={{
-                  width: rem(16),
-                  height: rem(16),
-                  transform: isOpen ? 'rotate(180deg)' : undefined,
-                  transition: 'transform 150ms ease'
-                }}
-              />
-            </ActionIcon>
-          )}
-        </Group>
-      </HoverableBox>
-
-      <Collapse expanded={isOpen} transitionDuration={180} transitionTimingFunction="ease">
-        <Box
-          p="xs"
-          style={{
-            borderTop: '1px solid var(--mantine-color-default-border)'
-          }}
-        >
-          <Stack gap={4}>
+    <Group gap={0}>
+      <Popover position="bottom-start" shadow="md" opened={open} onChange={setOpen}>
+        <Popover.Target>
+          <Button
+            variant="outline"
+            color={'gray'}
+            c={colorMemo}
+            mt="xs"
+            h={30}
+            px={4}
+            radius={4}
+            style={{
+              fontSize: 13,
+              fontWeight: 500,
+              width: 'fit-content',
+              borderRadius: selectedPriority !== null ? '4px 0px 0px 4px' : 4
+            }}
+            leftSection={<IconFlag size={16} color={colorMemo} />}
+            onClick={() => setOpen(o => !o)}
+          >
+            <Text mt={4} size={'13px'} fw={isPrioritySelected ? 600 : 500}>
+              {isPrioritySelected
+                ? label
+                : t('defaultPriority')}
+            </Text>
+          </Button>
+        </Popover.Target>
+        <Popover.Dropdown p={0}>
+          <Stack gap={0} p={0}>
             {priorityOptions.map(option => (
               <Button
-                key={option.value ?? 'none'}
-                variant={priority === option.value ? 'light' : 'subtle'}
+                key={option.value}
+                variant="subtle"
                 color="gray"
-                justify="flex-start"
+                onClick={() => handlePrioritySelect(option.value)}
                 leftSection={
-                  <IconFlag
-                    size={16}
-                    color={getPriorityColor(option.value)}
-                  />
+                  <Box>
+                    <IconFlag size={16} color={getPriorityColor(option.value)} />
+                  </Box>
                 }
-                onClick={() => {
-                  onChange(option.value)
-                  close()
+                styles={{
+                  root: {
+                    justifyContent: 'flex-start',
+                    paddingLeft: 8,
+                    paddingRight: 8,
+                    borderRadius: 0
+                  },
+                  inner: {
+                    justifyContent: 'flex-start'
+                  }
                 }}
               >
                 {option.label}
               </Button>
             ))}
           </Stack>
-        </Box>
-      </Collapse>
-    </Box>
+        </Popover.Dropdown>
+      </Popover>
+      {selectedPriority !== null && (
+        <Button
+          variant="outline"
+          color="gray"
+          mt="xs"
+          h={30}
+          px={4}
+          radius={4}
+          style={{
+            borderRadius: '0px 4px 4px 0px',
+            borderLeft: 0,
+            fontSize: 13,
+            fontWeight: 500,
+            width: 'fit-content'
+          }}
+          onClick={() => setSelectedPriority(null)}
+        >
+          <IconX size={16} />
+        </Button>
+      )}
+    </Group>
   )
 }

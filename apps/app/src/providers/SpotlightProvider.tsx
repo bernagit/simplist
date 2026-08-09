@@ -13,6 +13,7 @@ import {
 } from '@tabler/icons-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 import { useSidebar } from '@/providers/SidebarProvider'
 import { baseService } from '@/services/base'
@@ -22,6 +23,7 @@ import { HotkeyBinding } from '@/components/common/KeyBinding'
 import { ThemeIcon } from '@mantine/core'
 
 export function SpotlightProvider() {
+  const t = useTranslations('SpotlightProvider')
   const router = useRouter()
   const { isMobile, toggle } = useSidebar()
 
@@ -47,11 +49,11 @@ export function SpotlightProvider() {
   const baseActions = useMemo<(SpotlightActionGroupData | SpotlightActionData)[]>(
     () => [
       {
-        group: 'Navigation',
+        group: t('groups.navigation'),
         actions: [
           {
             id: 'go-home',
-            label: 'Go to Home',
+            label: t('actions.goHome'),
             onClick: () => {
               router.push('/')
               setQuery('')
@@ -62,7 +64,7 @@ export function SpotlightProvider() {
           },
           {
             id: 'go-calendar',
-            label: 'Go to Calendar',
+            label: t('actions.goCalendar'),
             onClick: () => {
               router.push('/calendar')
               setQuery('')
@@ -73,7 +75,7 @@ export function SpotlightProvider() {
           },
           {
             id: 'go-lists',
-            label: 'Go to Lists',
+            label: t('actions.goLists'),
             onClick: () => {
               router.push('/lists')
               setQuery('')
@@ -84,7 +86,7 @@ export function SpotlightProvider() {
           },
           {
             id: 'go-shared',
-            label: 'Go to Shared Lists',
+            label: t('actions.goShared'),
             onClick: () => {
               router.push('/lists/shared')
               setQuery('')
@@ -96,11 +98,11 @@ export function SpotlightProvider() {
         ]
       },
       {
-        group: 'Actions',
+        group: t('groups.actions'),
         actions: [
           {
             id: 'create-list',
-            label: 'Create a new list',
+            label: t('actions.createList'),
             onClick: () => {
               createListModal()
               setQuery('')
@@ -111,7 +113,7 @@ export function SpotlightProvider() {
         ]
       }
     ],
-    [router, isMobile, toggle]
+    [router, isMobile, toggle, t]
   )
 
   // TODO: add recent lists to the spotlight actions
@@ -141,7 +143,7 @@ export function SpotlightProvider() {
       const sections: SpotlightActionData[] = response.data.sections.map(section => ({
         id: section.id,
         label: section.title,
-        description: `Section in list ${section.listName}`,
+        description: t('descriptions.sectionInList', { listName: section.listName }),
         onClick: () => goToSection(section.listId, section.id),
         leftSection: <IconSection size={18} />
       }))
@@ -150,7 +152,7 @@ export function SpotlightProvider() {
     }
 
     search()
-  }, [debouncedQuery, baseActions, goToList, goToSection])
+  }, [debouncedQuery, baseActions, goToList, goToSection, t])
 
   return (
     <Spotlight
@@ -159,7 +161,7 @@ export function SpotlightProvider() {
       onSpotlightClose={() => setActions(baseActions)}
       searchProps={{
         leftSection: <IconSearch size={20} />,
-        placeholder: 'Search...'
+        placeholder: t('placeholder')
       }}
       scrollable
     />

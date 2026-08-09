@@ -26,16 +26,21 @@ import { QRCodeSVG } from 'qrcode.react'
 import { Invite } from '@/models/invite'
 import { notifications } from '@mantine/notifications'
 import { useCreateInvite, useInvites, useRevokeInvite } from '@/queries/invite'
+import { useTranslations } from 'next-intl'
 
-function getStatus(invite: Invite): { label: string; color: string } {
-  if (invite.used) return { label: 'Used', color: 'gray' }
+function getStatus(
+  invite: Invite,
+  t: (key: string) => string
+): { label: string; color: string; key: 'used' | 'expired' | 'pending' } {
+  if (invite.used) return { label: t('status.used'), color: 'gray', key: 'used' }
   if (new Date(invite.expiresAt).getTime() < Date.now()) {
-    return { label: 'Expired', color: 'red' }
+    return { label: t('status.expired'), color: 'red', key: 'expired' }
   }
-  return { label: 'Pending', color: 'green' }
+  return { label: t('status.pending'), color: 'green', key: 'pending' }
 }
 
 export function InvitesSection() {
+  const t = useTranslations('InvitesSection')
   const theme = useMantineTheme()
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
 
@@ -58,12 +63,12 @@ export function InvitesSection() {
       onError: () => {
         notifications.show({
           color: 'red',
-          title: 'Could not create invite',
-          message: 'Please try again.'
+          title: t('notifications.createErrorTitle'),
+          message: t('notifications.errorMessage')
         })
       }
     })
-  }, [createInvite, email])
+  }, [createInvite, email, t])
 
   const handleRevoke = useCallback(
     (inviteId: string) => {
@@ -71,13 +76,13 @@ export function InvitesSection() {
         onError: () => {
           notifications.show({
             color: 'red',
-            title: 'Could not revoke invite',
-            message: 'Please try again.'
+            title: t('notifications.revokeErrorTitle'),
+            message: t('notifications.errorMessage')
           })
         }
       })
     },
-    [revokeInvite]
+    [revokeInvite, t]
   )
 
   const closePanelAndReset = useCallback(() => {
@@ -91,10 +96,10 @@ export function InvitesSection() {
       <Group justify="space-between" align="flex-start" wrap="wrap">
         <div>
           <Text fw={500} size="sm">
-            Invites
+            {t('title')}
           </Text>
           <Text size="xs" c="dimmed">
-            Create and manage invite links for new members.
+            {t('subtitle')}
           </Text>
         </div>
         <Button
@@ -105,7 +110,7 @@ export function InvitesSection() {
           onClick={() => (panelOpen ? closePanelAndReset() : togglePanel())}
           fullWidth={isMobile}
         >
-          {panelOpen ? 'Cancel' : 'New invite'}
+          {panelOpen ? t('buttons.cancel') : t('buttons.newInvite')}
         </Button>
       </Group>
 
@@ -115,26 +120,26 @@ export function InvitesSection() {
             {!createdUrl ? (
               <>
                 <TextInput
-                  label="Email (optional)"
-                  placeholder="person@example.com"
+                  label={t('panel.emailLabel')}
+                  placeholder={t('panel.emailPlaceholder')}
                   value={email}
                   onChange={event => setEmail(event.currentTarget.value)}
                 />
                 <Button onClick={handleCreate} loading={createInvite.isPending} fullWidth>
-                  Create invite
+                  {t('buttons.create')}
                 </Button>
               </>
             ) : (
               <>
                 <Text size="sm" c="dimmed">
-                  Share this link with the invitee:
+                  {t('panel.shareText')}
                 </Text>
 
                 <Group gap="xs" wrap="nowrap">
                   <TextInput value={createdUrl} readOnly style={{ flex: 1 }} />
                   <CopyButton value={createdUrl} timeout={2000}>
                     {({ copied, copy }) => (
-                      <Tooltip label={copied ? 'Copied' : 'Copy link'}>
+                      <Tooltip label={copied ? t('panel.copied') : t('panel.copyLink')}>
                         <ActionIcon variant="light" onClick={copy}>
                           {copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
                         </ActionIcon>
@@ -150,7 +155,7 @@ export function InvitesSection() {
                       <Group gap={4}>
                         <IconQrcode size={14} />
                         <Text size="xs" c="dimmed">
-                          Scan to open invite
+                          {t('panel.qrCodeScan')}
                         </Text>
                       </Group>
                     </Stack>
@@ -158,7 +163,7 @@ export function InvitesSection() {
                 </Center>
 
                 <Button variant="light" onClick={closePanelAndReset} fullWidth>
-                  Done
+                  {t('buttons.done')}
                 </Button>
               </>
             )}
@@ -174,7 +179,7 @@ export function InvitesSection() {
         </Center>
       ) : invites.length === 0 ? (
         <Text size="sm" c="dimmed">
-          No invites yet.
+          {t('empty')}
         </Text>
       ) : (
         <>
@@ -183,16 +188,16 @@ export function InvitesSection() {
             <Table verticalSpacing="sm">
               <Table.Thead>
                 <Table.Tr>
-                  <Table.Th>Email</Table.Th>
-                  <Table.Th>Status</Table.Th>
-                  <Table.Th>Expires</Table.Th>
+                  <Table.Th>{t('table.email')}</Table.Th>
+                  <Table.Th>{t('table.status')}</Table.Th>
+                  <Table.Th>{t('table.expires')}</Table.Th>
                   <Table.Th />
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
                 {invites.map(invite => {
-                  const status = getStatus(invite)
-                  const disabled = invite.used || status.label === 'Expired'
+                  const status = getStatus(invite, t)
+                  const disabled = invite.used || status.key === 'expired'
 
                   return (
                     <Table.Tr key={invite.id}>
@@ -210,7 +215,7 @@ export function InvitesSection() {
                         </Text>
                       </Table.Td>
                       <Table.Td>
-                        <Tooltip label="Revoke invite">
+                        <Tooltip label={t('table.revoke')}>
                           <ActionIcon
                             variant="subtle"
                             color="red"
@@ -235,8 +240,8 @@ export function InvitesSection() {
           {/* Mobile: card list */}
           <Stack gap="xs" hiddenFrom="sm">
             {invites.map(invite => {
-              const status = getStatus(invite)
-              const disabled = invite.used || status.label === 'Expired'
+              const status = getStatus(invite, t)
+              const disabled = invite.used || status.key === 'expired'
 
               return (
                 <Card key={invite.id} withBorder padding="sm" radius="md">
@@ -250,7 +255,9 @@ export function InvitesSection() {
                           {status.label}
                         </Badge>
                         <Text size="xs" c="dimmed">
-                          Expires {new Date(invite.expiresAt).toLocaleDateString()}
+                          {t('table.expiresMobile', {
+                            date: new Date(invite.expiresAt).toLocaleDateString()
+                          })}
                         </Text>
                       </Group>
                     </Box>

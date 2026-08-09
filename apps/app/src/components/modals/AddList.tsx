@@ -1,3 +1,5 @@
+'use client'
+
 import { CreateListInput } from '@/models/lists'
 import { useCreateList, useUpdateList } from '@/queries/lists'
 import {
@@ -10,37 +12,46 @@ import {
   Popover,
   Input,
   ColorPicker,
-  Box
+  Box,
+  Title,
+  ActionIcon
 } from '@mantine/core'
 import { ContextModalProps } from '@mantine/modals'
+import { IconX } from '@tabler/icons-react'
+import { useTranslations } from 'next-intl'
 import { useCallback, useMemo, useState } from 'react'
 
 const maxTitleLength = 200
 const maxDescriptionLength = 500
-const defaultColor = 'gray'
-
-const colorSwatchesWithNames = [
-  { name: 'Dark Gray', color: '#2e2e2e' },
-  { name: 'Gray', color: '#868e96' },
-  { name: 'Red', color: '#fa5252' },
-  { name: 'Pink', color: '#e64980' },
-  { name: 'Purple', color: '#be4bdb' },
-  { name: 'Violet', color: '#7950f2' },
-  { name: 'Indigo', color: '#4c6ef5' },
-  { name: 'Blue', color: '#228be6' },
-  { name: 'Cyan', color: '#15aabf' },
-  { name: 'Teal', color: '#12b886' },
-  { name: 'Green', color: '#40c057' },
-  { name: 'Lime', color: '#82c91e' },
-  { name: 'Yellow', color: '#fab005' },
-  { name: 'Orange', color: '#fd7e14' }
-]
+const defaultColor = '#868e96'
 
 export default function AddList({
   context,
   id,
   innerProps
 }: ContextModalProps<{ listId?: string; data?: CreateListInput }>) {
+  const t = useTranslations('AddList')
+  
+  const colorSwatchesWithNames = useMemo(
+    () => [
+      { name: t('colors.darkGray'), color: '#2e2e2e' },
+      { name: t('colors.gray'), color: '#868e96' },
+      { name: t('colors.red'), color: '#fa5252' },
+      { name: t('colors.pink'), color: '#e64980' },
+      { name: t('colors.purple'), color: '#be4bdb' },
+      { name: t('colors.violet'), color: '#7950f2' },
+      { name: t('colors.indigo'), color: '#4c6ef5' },
+      { name: t('colors.blue'), color: '#228be6' },
+      { name: t('colors.cyan'), color: '#15aabf' },
+      { name: t('colors.teal'), color: '#12b886' },
+      { name: t('colors.green'), color: '#40c057' },
+      { name: t('colors.lime'), color: '#82c91e' },
+      { name: t('colors.yellow'), color: '#fab005' },
+      { name: t('colors.orange'), color: '#fd7e14' }
+    ],
+    [t]
+  )
+
   const listId = innerProps?.listId
   const isUpdateMode = !!listId
   const [title, setTitle] = useState(innerProps?.data?.title || '')
@@ -55,7 +66,8 @@ export default function AddList({
 
   const [colorPickerOpened, setColorPickerOpened] = useState(false)
 
-  const buttonLabel = isUpdateMode ? 'Update List' : 'Create List'
+  const modalTitle = isUpdateMode ? t('titleUpdate') : t('titleCreate')
+  const buttonLabel = isUpdateMode ? t('actions.update') : t('actions.create')
 
   const handleSaveList = useCallback(() => {
     if (isUpdateMode && listId) {
@@ -67,13 +79,18 @@ export default function AddList({
   }, [isUpdateMode, listId, context, id, updateList, title, description, color, createList])
 
   return (
-    <Stack
-      style={{
-        zIndex: 1000
-      }}
-    >
+    <Stack style={{ zIndex: 1000 }}>
+      {/* Header del Modale */}
+      <Group justify="space-between" align="center" pb="xs">
+        <Title order={3}>{modalTitle}</Title>
+        <ActionIcon variant="subtle" color="gray" onClick={() => context.closeModal(id)}>
+          <IconX size={18} />
+        </ActionIcon>
+      </Group>
+
+      {/* Form di inserimento/modifica */}
       <TextInput
-        label="List Title"
+        label={t('fields.title')}
         value={title}
         onChange={e => setTitle(e.currentTarget.value)}
         maxLength={maxTitleLength}
@@ -88,8 +105,9 @@ export default function AddList({
           }
         }}
       />
+
       <Textarea
-        label="List Description"
+        label={t('fields.description')}
         value={description}
         onChange={e => setDescription(e.currentTarget.value)}
         maxLength={maxDescriptionLength}
@@ -106,9 +124,10 @@ export default function AddList({
           }
         }}
       />
+
       <Stack gap={0}>
         <Text size="sm" fw={600}>
-          Color
+          {t('fields.color')}
         </Text>
         <Popover
           opened={colorPickerOpened}
@@ -143,15 +162,10 @@ export default function AddList({
           </Popover.Dropdown>
         </Popover>
       </Stack>
-      <Group justify="flex-end">
-        <Button
-          variant="outline"
-          color="gray"
-          onClick={() => {
-            context.closeModal(id)
-          }}
-        >
-          Cancel
+
+      <Group justify="flex-end" mt="md">
+        <Button variant="outline" color="gray" onClick={() => context.closeModal(id)}>
+          {t('actions.cancel')}
         </Button>
         <Button disabled={!isFormValid} onClick={handleSaveList}>
           {buttonLabel}

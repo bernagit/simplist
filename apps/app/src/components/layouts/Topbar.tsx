@@ -31,10 +31,8 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import { MENU_WIDTH } from './Sidebar'
-import { shareListModal, updateListModal } from '@/lib/modals/list'
+import { confirmArchiveModal, shareListModal, updateListModal } from '@/lib/modals/list'
 import { useAppRoute } from '@/hooks/useAppRoute'
-import ConfirmArchive from '../modals/ConfirmArchive'
-import { modals } from '@mantine/modals'
 import { usePreferences } from '@/queries/preferences'
 import { HotkeyBinding } from '../common/KeyBinding'
 
@@ -78,7 +76,7 @@ export function Topbar() {
 
     if (!list) return false
 
-    return list.archivedAt === null ? false : true
+    return list.archivedAt !== null
   }, [route.listId, queryClient])
 
   const handleToggleArchive = useCallback(async () => {
@@ -88,23 +86,15 @@ export function Topbar() {
       await unarchiveList.mutateAsync(route.listId)
     } else {
       if (preferences?.confirmDelete) {
-        modals.openConfirmModal({
-          title: t('archiveModalTitle'),
-          children: (
-            <ConfirmArchive />
-          ),
-          labels: { confirm: t('archiveConfirm'), cancel: t('cancel') },
-          confirmProps: { color: 'orange' },
-          onConfirm: async () => {
-            if (!route.listId) return
-            await archiveList.mutateAsync(route.listId)
-          }
+        confirmArchiveModal(async () => {
+          if (!route.listId) return
+          await archiveList.mutateAsync(route.listId)
         })
       } else {
         await archiveList.mutateAsync(route.listId)
       }
     }
-  }, [route.listId, isArchived, unarchiveList, preferences?.confirmDelete, archiveList, t])
+  }, [route.listId, isArchived, unarchiveList, preferences?.confirmDelete, archiveList])
 
   const handleShare = useCallback(() => {
     if (!route.listId) return
@@ -120,9 +110,11 @@ export function Topbar() {
     <Box
       h={TOPBAR_HEIGHT}
       pb={'sm'}
-      style={{ 
+      style={{
         flexShrink: 0,
-        borderBottom: `1px solid ${colorScheme === 'dark' ? 'var(--mantine-color-dark-5)' : 'var(--mantine-color-gray-2)'}`
+        borderBottom: `1px solid ${
+          colorScheme === 'dark' ? 'var(--mantine-color-dark-5)' : 'var(--mantine-color-gray-2)'
+        }`
       }}
     >
       <Group h="100%" px="md" justify="space-between" wrap="nowrap">
@@ -212,7 +204,7 @@ export function Topbar() {
                 <Menu.Dropdown>
                   <Menu.Item
                     leftSection={<IconEdit size={20} />}
-                    rightSection={<HotkeyBinding hotkey='EDIT_LIST'></HotkeyBinding>}
+                    rightSection={<HotkeyBinding hotkey="EDIT_LIST" />}
                     onClick={handleEdit}
                   >
                     {t('edit')}

@@ -11,7 +11,6 @@ export function editTaskModal(
 ) {
   modals.openContextModal({
     modal: 'editTask',
-    title: null,
     fullScreen: isMobile,
     withCloseButton: false,
     size: 'xl',

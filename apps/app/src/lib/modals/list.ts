@@ -1,10 +1,10 @@
-import { CreateListInput, OwnedList, SharedList } from '@/models/lists'
+import { CreateListInput } from '@/models/lists'
 import { modals } from '@mantine/modals'
 
 export function createListModal() {
   modals.openContextModal({
     modal: 'addList',
-    title: 'Create a new list',
+    withCloseButton: false,
     size: 'lg',
     innerProps: undefined
   })
@@ -13,7 +13,7 @@ export function createListModal() {
 export function updateListModal(listId: string, data?: CreateListInput) {
   modals.openContextModal({
     modal: 'addList',
-    title: 'Update list',
+    withCloseButton: false,
     size: 'lg',
     innerProps: {
       listId,
@@ -25,7 +25,7 @@ export function updateListModal(listId: string, data?: CreateListInput) {
 export function shareListModal(listId: string) {
   modals.openContextModal({
     modal: 'shareList',
-    title: 'Share list',
+    withCloseButton: false,
     size: 'lg',
     innerProps: {
       listId
@@ -33,24 +33,10 @@ export function shareListModal(listId: string) {
   })
 }
 
-export function openOwnedListInfoModal(list: OwnedList) {
+export const confirmArchiveModal = (onConfirm: () => void) =>
   modals.openContextModal({
-    modal: 'ownedListInfo',
-    title: 'List info',
-    size: 'lg',
-    innerProps: {
-      list
-    }
-  })
-}
-
-export function openSharedListInfoModal(list: SharedList) {
-  modals.openContextModal({
-    modal: 'sharedListInfo',
-    title: 'List info',
-    size: 'lg',
-    innerProps: {
-      list
-    }
-  })
-}
+    modal: 'confirmArchive',
+    withCloseButton: false,
+    innerProps: { onConfirm }
+  }
+)
