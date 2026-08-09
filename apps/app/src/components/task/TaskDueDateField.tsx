@@ -5,8 +5,9 @@ import { ActionIcon, Box, Collapse, Group, Stack, Text, ThemeIcon, rem } from '@
 import { IconCalendar, IconChevronDown, IconX } from '@tabler/icons-react'
 import dayjs from 'dayjs'
 import HoverableBox from './HoverableBox'
-import { RECURRENCE_PRESETS } from '@/utils/constants'
 import DueDateDropdown from './DueDateDropdown'
+import { useTranslations } from 'next-intl'
+import { useRecurrenceOptions } from '@/hooks/useOptionLabel'
 
 type TaskDueDateFieldProps = {
   dueDate: string | null
@@ -31,19 +32,22 @@ export default function TaskDueDateField({
   onDurationChange,
   onRecurrenceChange
 }: TaskDueDateFieldProps) {
+  const t = useTranslations('TaskDueDateField')
+  const recurrenceOptions = useRecurrenceOptions()
   const [opened, { toggle, close }] = useDisclosure(false)
 
   const displaySummary = (() => {
-    if (!dueDate) return 'Set due date'
+    if (!dueDate) return t('setDueDate')
 
+    // dayjs automatically formats month names according to the active locale
     const dateStr = dayjs(dueDate).format('MMM D, YYYY')
-    const timeStr = dueTime ? ` at ${dueTime}` : ''
-    const durationStr = durationMinutes ? ` (${durationMinutes}m)` : ''
+    const timeStr = dueTime ? ` ${t('at', { time: dueTime })}` : ''
+    const durationStr = durationMinutes ? ` ${t('duration', { minutes: durationMinutes })}` : ''
 
     let recurStr = ''
     if (recurrenceRule) {
-      const preset = RECURRENCE_PRESETS.find(p => p.value === recurrenceRule)
-      recurStr = preset ? ` • ${preset.label}` : ' • Recurring'
+      const preset = recurrenceOptions.find(p => p.value === recurrenceRule)
+      recurStr = preset ? ` • ${preset.label}` : ` • ${t('recurring')}`
     }
 
     return `${dateStr}${timeStr}${durationStr}${recurStr}`
@@ -81,7 +85,7 @@ export default function TaskDueDateField({
             </ThemeIcon>
             <Stack gap={2}>
               <Text size="xs" c="dimmed" fw={500} style={{ lineHeight: 1 }}>
-                Due Date
+                {t('label')}
               </Text>
               <Text size="sm" fw={dueDate ? 600 : 400} c={dueDate ? 'dark.4' : 'dimmed'}>
                 {displaySummary}

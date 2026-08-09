@@ -1,9 +1,14 @@
 import OwnedListOverview from '@/components/list/OwnedListOverview'
 import { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 
-export const metadata: Metadata = {
-  title: 'My Lists - Simplist',
-  description: 'View and manage your owned lists.',
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('MyListsPage')
+
+  return {
+    title: t('title'),
+    description: t('description'),
+  }
 }
 
 export default function Page() {

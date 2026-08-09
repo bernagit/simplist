@@ -1,12 +1,16 @@
+'use client'
+
 import { Fragment } from 'react'
 import { Group, Kbd, Text } from '@mantine/core'
 import { HOTKEYS, HotkeyId } from '@/utils/hotkeys'
+import { useTranslations } from 'next-intl'
 
 type Props = {
   hotkey: HotkeyId
 }
 
 export function HotkeyBinding({ hotkey }: Props) {
+  const t = useTranslations('HotkeyBinding')
   const { keys } = HOTKEYS[hotkey]
 
   return (
@@ -27,7 +31,7 @@ export function HotkeyBinding({ hotkey }: Props) {
 
           {stepIndex < keys.length - 1 && (
             <Text span c="dimmed" size="sm">
-              then
+              {t('then')}
             </Text>
           )}
         </Fragment>

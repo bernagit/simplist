@@ -1,9 +1,12 @@
-import { RECURRENCE_PRESETS } from '@/utils/constants'
+'use client'
+
 import { Stack, Divider, Group, rem, ActionIcon, NumberInput, Select } from '@mantine/core'
 import { DatePicker, TimeInput } from '@mantine/dates'
 import { IconClock, IconHourglass, IconRepeat } from '@tabler/icons-react'
 import dayjs from 'dayjs'
 import { useRef } from 'react'
+import { useTranslations } from 'next-intl'
+import { useRecurrenceOptions } from '@/hooks/useOptionLabel'
 
 type DueDateDropdownProps = {
   dueDate: string | null
@@ -26,6 +29,8 @@ export default function DueDateDropdown({
   onDurationChange,
   onRecurrenceChange
 }: DueDateDropdownProps) {
+  const t = useTranslations('DueDateDropdown')
+  const recurrenceOptions = useRecurrenceOptions()
   const timeInputRef = useRef<HTMLInputElement>(null)
 
   const handleDurationChange = (val: string | number) => {
@@ -51,12 +56,12 @@ export default function DueDateDropdown({
         }}
       />
 
-      <Divider size="xs" label="Time & Duration" labelPosition="center" />
+      <Divider size="xs" label={t('timeAndDuration')} labelPosition="center" />
 
       <Group grow gap="xs">
         <TimeInput
-          label="Due Time"
-          placeholder="Set time"
+          label={t('dueTimeLabel')}
+          placeholder={t('dueTimePlaceholder')}
           ref={timeInputRef}
           disabled={!dueDate}
           leftSection={<IconClock style={{ width: rem(16), height: rem(16) }} />}
@@ -75,24 +80,24 @@ export default function DueDateDropdown({
         />
 
         <NumberInput
-          label="Duration"
-          placeholder="Min"
+          label={t('durationLabel')}
+          placeholder={t('durationPlaceholder')}
           disabled={!dueTime}
           min={1}
           value={durationMinutes ?? ''}
           onChange={handleDurationChange}
           leftSection={<IconHourglass style={{ width: rem(16), height: rem(16) }} />}
-          suffix=" min"
+          suffix={t('durationSuffix')}
         />
       </Group>
 
-      <Divider size="xs" label="Recurrence" labelPosition="center" />
+      <Divider size="xs" label={t('recurrence')} labelPosition="center" />
 
       <Select
-        placeholder="Select interval"
+        placeholder={t('recurrencePlaceholder')}
         disabled={!dueDate}
         leftSection={<IconRepeat style={{ width: rem(16), height: rem(16) }} />}
-        data={RECURRENCE_PRESETS}
+        data={recurrenceOptions}
         value={recurrenceRule || 'NONE'}
         onChange={val => {
           onRecurrenceChange(val === 'NONE' ? null : val)

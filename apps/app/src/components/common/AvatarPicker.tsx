@@ -1,8 +1,20 @@
 'use client'
 
 import { useState } from 'react'
-import { Avatar, Modal, SimpleGrid, FileButton, Button, Stack } from '@mantine/core'
-import { IconRefresh } from '@tabler/icons-react'
+import {
+  Avatar,
+  Modal,
+  SimpleGrid,
+  FileButton,
+  Button,
+  Stack,
+  Divider,
+  UnstyledButton,
+  Overlay,
+  Loader
+} from '@mantine/core'
+import { IconRefresh, IconUpload } from '@tabler/icons-react'
+import { useTranslations } from 'next-intl'
 
 const styles = ['sprouts'] as const
 type Style = typeof styles[number]
@@ -59,7 +71,9 @@ export function AvatarPicker({
   value?: string | null
   onChange: (value: string) => void
 }) {
+  const t = useTranslations('AvatarPicker')
   const [options, setOptions] = useState<AvatarOption[]>(() => randomBatch(COUNT))
+  const [loadingSeed, setLoadingSeed] = useState<string | null>(null)
 
   const shuffle = () => setOptions(randomBatch(COUNT))
 
@@ -93,42 +107,96 @@ export function AvatarPicker({
   }
 
   const handlePick = async (option: AvatarOption) => {
-    const dataUri = await urlToDataUri(diceBear(option))
-    onChange(dataUri)
-    onClose()
+    try {
+      setLoadingSeed(option.seed)
+      const dataUri = await urlToDataUri(diceBear(option))
+      onChange(dataUri)
+      onClose()
+    } finally {
+      setLoadingSeed(null)
+    }
   }
 
   return (
-    <Modal zIndex={600} opened={opened} onClose={onClose} title="Choose your avatar" centered>
-      <Stack>
-        <SimpleGrid cols={4}>
+    <Modal
+      zIndex={600}
+      opened={opened}
+      onClose={onClose}
+      title={t('title')}
+      centered
+      radius="md"
+    >
+      <Stack gap="md">
+        <SimpleGrid cols={{ base: 3, sm: 4 }} spacing="sm">
           {options.map((option, i) => {
             const url = diceBear(option)
             const isSelected = value === url
+            const isLoading = loadingSeed === option.seed
 
             return (
-              <Avatar
+              <UnstyledButton
                 key={`${option.style}-${option.seed}-${i}`}
-                src={url}
-                size="xl"
-                radius="xl"
-                style={{
-                  cursor: 'pointer',
-                  outline: isSelected ? '2px solid var(--mantine-color-blue-6)' : 'none',
-                  outlineOffset: 2
-                }}
                 onClick={() => handlePick(option)}
-              />
+                disabled={loadingSeed !== null}
+                style={{
+                  position: 'relative',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  padding: 4,
+                  borderRadius: 'var(--mantine-radius-xl)',
+                  border: isSelected
+                    ? '2px solid var(--mantine-color-primary)'
+                    : '2px solid transparent',
+                  transition: 'transform 150ms ease, border-color 150ms ease',
+                  cursor: 'pointer'
+                }}
+              >
+                <Avatar src={url} size="xl" radius="xl" />
+
+                {isLoading && (
+                  <Overlay
+                    color="#000"
+                    backgroundOpacity={0.4}
+                    radius="xl"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <Loader size="sm" color="white" />
+                  </Overlay>
+                )}
+              </UnstyledButton>
             )
           })}
         </SimpleGrid>
 
-        <Button variant="subtle" size="xs" leftSection={<IconRefresh size={14} />} onClick={shuffle}>
-          Show more
+        <Button
+          variant="light"
+          size="xs"
+          leftSection={<IconRefresh size={14} />}
+          onClick={shuffle}
+          disabled={loadingSeed !== null}
+        >
+          {t('showMore')}
         </Button>
 
+        <Divider labelPosition="center" my="xs" />
+
         <FileButton accept="image/png,image/jpeg,image/webp" onChange={handleFile}>
-          {props => <Button {...props}>Upload image</Button>}
+          {props => (
+            <Button
+              {...props}
+              variant="default"
+              leftSection={<IconUpload size={16} />}
+              disabled={loadingSeed !== null}
+              fullWidth
+            >
+              {t('uploadImage')}
+            </Button>
+          )}
         </FileButton>
       </Stack>
     </Modal>

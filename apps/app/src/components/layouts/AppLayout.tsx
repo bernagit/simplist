@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation'
 import { ModalsProvider } from '@mantine/modals'
 import { Box, Button, Group, Modal, ScrollArea } from '@mantine/core'
+import { useTranslations } from 'next-intl'
 import { Sidebar } from './Sidebar'
 import { Topbar } from './Topbar'
 import { MobileOverlay } from './MobileOverlay'
@@ -20,11 +21,23 @@ import UserSettings from '../modals/UserSettings'
 import EditTask from '../modals/EditTask'
 import { useChangelog } from '@/hooks/useChangelog'
 import { ChangelogView } from '../common/ChangelogView'
+import { useState } from 'react'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const { isOpen, currentVersion, rawChangelog, markAsRead } = useChangelog();
+  const t = useTranslations('AppLayout')
+  const { currentVersion, lastSeenVersion, rawChangelog, markAsRead } = useChangelog()
 
+  const [manualOpen, setManualOpen] = useState(false)
+
+  // Automatically check if version has changed once client storage is resolved
+  const isNewVersion = !!lastSeenVersion && lastSeenVersion !== currentVersion
+  const isModalOpen = manualOpen || isNewVersion
+
+  const handleClose = () => {
+    markAsRead()
+    setManualOpen(false)
+  }
   const isAuthRoute = PUBLIC_ROUTES.some(route => pathname.startsWith(route))
 
   if (isAuthRoute) return <AuthLayout>{children}</AuthLayout>
@@ -84,16 +97,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     >
                       {children}
                       <Modal
-                        opened={isOpen}
-                        onClose={markAsRead}
-                        title={`What's New in v${currentVersion}`}
+                        opened={isModalOpen}
+                        onClose={handleClose}
+                        title={t('whatsNewTitle', { version: currentVersion })}
                         size="lg"
                       >
                         <ScrollArea h={350} offsetScrollbars p="xs">
                           <ChangelogView rawMarkdown={rawChangelog} />
                         </ScrollArea>
                         <Group justify="right" mt="md">
-                          <Button onClick={markAsRead}>Got it!</Button>
+                          <Button onClick={markAsRead}>{t('gotItButton')}</Button>
                         </Group>
                       </Modal>
                     </Box>

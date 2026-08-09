@@ -6,20 +6,26 @@ import { HOTKEYS, HotkeyId } from '@/utils/hotkeys'
 
 import { ActionIcon, Divider, Drawer, Group, ScrollArea, Stack, Text, Title } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
+import { useTranslations } from 'next-intl'
 import { HotkeyBinding } from '../common/KeyBinding'
 
 function ShortcutSection({ title, hotkeys }: { title: string; hotkeys: HotkeyId[] }) {
+  const tCategory = useTranslations('HotkeyCategories')
+  const tHotkeys = useTranslations('Hotkeys')
+
   return (
     <Stack gap={4}>
       <Text fw={600} size="sm">
-        {title}
+        {tCategory.has(title) ? tCategory(title) : title}
       </Text>
 
       <Divider />
 
       {hotkeys.map(hotkey => (
         <Group key={hotkey} justify="space-between" py={4}>
-          <Text size="sm">{HOTKEYS[hotkey].description}</Text>
+          <Text size="sm">
+            {tHotkeys.has(hotkey) ? tHotkeys(hotkey) : HOTKEYS[hotkey].description}
+          </Text>
 
           <HotkeyBinding hotkey={hotkey} />
         </Group>
@@ -29,6 +35,7 @@ function ShortcutSection({ title, hotkeys }: { title: string; hotkeys: HotkeyId[
 }
 
 export default function HelpDrawer() {
+  const t = useTranslations('HelpDrawer')
   const { opened, close } = useHelp()
 
   const sections = useMemo(() => {
@@ -58,7 +65,7 @@ export default function HelpDrawer() {
       <Drawer.Body p={'xs'} h="100%">
         <Stack h="100%">
           <Group justify="space-between">
-            <Title order={4}>Keyboard shortcuts</Title>
+            <Title order={4}>{t('title')}</Title>
 
             <ActionIcon variant="subtle" onClick={close}>
               <IconX size={18} />
@@ -66,7 +73,7 @@ export default function HelpDrawer() {
           </Group>
 
           <Text size="sm" c="dimmed">
-            Use these shortcuts to use the application faster.
+            {t('description')}
           </Text>
 
           <ScrollArea flex={1}>
