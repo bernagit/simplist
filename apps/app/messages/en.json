@@ -1,0 +1,227 @@
+{
+  "Metadata": {
+    "title": "Simplist",
+    "description": "Manage your tasks and lists with ease using Simplist."
+  },
+  "Common": {
+    "welcome": "Welcome to Simplist",
+    "language": "Language"
+  },
+  "AppLayout": {
+    "whatsNewTitle": "What's New in v{version}",
+    "gotItButton": "Got it!"
+  },
+  "Sidebar": {
+    "loading": "Loading...",
+    "settings": "Settings",
+    "logout": "Log out",
+    "toggleSidebar": "Toggle sidebar",
+    "home": "Home",
+    "calendar": "Calendar",
+    "search": "Search",
+    "myLists": "My Lists",
+    "addList": "Add list",
+    "collapseLists": "Collapse lists",
+    "expandLists": "Expand lists",
+    "listIsShared": "List is shared",
+    "sharedWithMe": "Shared With Me",
+    "helpAndSupport": "Help & Support",
+    "documentation": "Documentation",
+    "keyboardShortcuts": "Keyboard Shortcuts",
+    "resizeSidebar": "Resize sidebar"
+  },
+  "Topbar": {
+    "toggleSidebar": "Toggle sidebar",
+    "shareList": "Share list",
+    "share": "Share",
+    "options": "Options",
+    "edit": "Edit",
+    "archive": "Archive",
+    "unarchive": "Unarchive",
+    "archiveModalTitle": "Archive List",
+    "archiveConfirm": "Archive",
+    "cancel": "Cancel"
+  },
+  "Breadcrumbs": {
+    "myLists": "My Lists",
+    "shared": "Shared With Me"
+  },
+  "HelpDrawer": {
+    "title": "Keyboard shortcuts",
+    "description": "Use these shortcuts to use the application faster."
+  },
+  "HotkeyCategories": {
+    "Actions": "Actions",
+    "General": "General",
+    "Navigation": "Navigation"
+  },
+  "Hotkeys": {
+    "NEW_LIST": "Add a new list",
+    "SHARE_LIST": "Share current list",
+    "EDIT_LIST": "Edit current list",
+    "TOGGLE_THEME": "Toggle theme",
+    "TOGGLE_SIDEBAR": "Toggle sidebar",
+    "TOGGLE_HELP": "Open help",
+    "OPEN_SETTINGS": "Open settings",
+    "GO_HOME": "Go home",
+    "GO_CALENDAR": "Go to calendar",
+    "GO_LISTS": "Go to \"My Lists\"",
+    "GO_SHARED_LISTS": "Go to \"Shared With Me\""
+  },
+  "HomePage": {
+    "title": "Home - Simplist",
+    "description": "Welcome to the Simplist homepage.",
+    "welcomeTitle": "Welcome to Simplist 👋",
+    "welcomeSubtitle": "Keep your lists together",
+    "createListButton": "Create a list",
+    "createFirstListButton": "Create your first list",
+    "myListsTitle": "My Lists",
+    "myListsDesc": "Browse and manage all your personal lists.",
+    "sharedListsTitle": "Shared Lists",
+    "sharedListsDesc": "Lists that other people shared with you."
+  },
+  "MyListsPage": {
+    "title": "My Lists - Simplist",
+    "description": "View and manage your owned lists."
+  },
+  "OwnedListOverview": {
+    "title": "My Lists",
+    "listCount": "{count, plural, =1 {1 list} other {# lists}}",
+    "searchPlaceholder": "Search lists...",
+    "statusLabel": "Status",
+    "active": "Active",
+    "all": "All",
+    "archived": "Archived",
+    "reset": "Reset",
+    "noDescription": "No description",
+    "moreInfo": "More Info",
+    "edit": "Edit",
+    "archive": "Archive",
+    "unarchive": "Unarchive",
+    "share": "Share",
+    "delete": "Delete",
+    "infoModalTitle": "List Info",
+    "infoTitle": "Title",
+    "infoDescription": "Description",
+    "infoCreatedAt": "Created At",
+    "infoUpdatedAt": "Updated At",
+    "infoArchivedAt": "Archived At",
+    "deleteModalTitle": "Delete List",
+    "deleteModalConfirm": "Are you sure you want to delete this list? This action cannot be undone.",
+    "deleteConfirmButton": "Delete",
+    "archiveModalTitle": "Archive List",
+    "archiveModalConfirm": "Are you sure you want to archive this list?",
+    "archiveModalWarning": "If this list is shared, it will be hidden from other users until you unarchive it.",
+    "archiveConfirmButton": "Archive",
+    "cancel": "Cancel"
+  },
+  "SharedListsPage": {
+    "title": "Shared With Me - Simplist",
+    "description": "View and manage lists that have been shared with you."
+  },
+  "SharedListOverview": {
+    "title": "Shared With Me",
+    "listCount": "{count, plural, =1 {1 list} other {# lists}}",
+    "searchPlaceholder": "Search lists...",
+    "noDescription": "No description",
+    "moreInfo": "More Info",
+    "infoModalTitle": "List Info",
+    "infoTitle": "Title",
+    "infoDescription": "Description",
+    "infoOwner": "Owner",
+    "infoCreatedAt": "Created At",
+    "infoUpdatedAt": "Updated At",
+    "infoArchivedAt": "Archived At",
+    "archived": "Archived"
+  },
+  "GeneralSection": {
+    "languageTitle": "Language",
+    "languageDesc": "Choose your preferred display language.",
+    "defaultViewTitle": "Default view",
+    "defaultViewDesc": "Choose what opens first when you launch Simplist.",
+    "startOfWeekTitle": "Start of week",
+    "startOfWeekDesc": "Used for the Calendar view.",
+    "confirmDeleteLabel": "Ask for confirmation before deleting/archiving a list",
+    "confirmDeleteDesc": "Show a confirmation dialog when deleting or archiving a list.",
+    "views": {
+      "home": "Home",
+      "calendar": "Calendar"
+    },
+    "days": {
+      "sunday": "Sunday",
+      "monday": "Monday"
+    }
+  },
+  "Constants": {
+    "Priority": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low",
+      "none": "None"
+    },
+    "Recurrence": {
+      "none": "Does not repeat",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly"
+    }
+  },
+  "DueDateDropdown": {
+    "timeAndDuration": "Time & Duration",
+    "dueTimeLabel": "Due Time",
+    "dueTimePlaceholder": "Set time",
+    "durationLabel": "Duration",
+    "durationPlaceholder": "Min",
+    "durationSuffix": " min",
+    "recurrence": "Recurrence",
+    "recurrencePlaceholder": "Select interval"
+  },
+  "TaskDueDateField": {
+    "label": "Due Date",
+    "setDueDate": "Set due date",
+    "at": "at {time}",
+    "duration": "({minutes}m)",
+    "recurring": "Recurring"
+  },
+  "CustomSchedule": {
+    "loading": "Loading...",
+    "agenda": "Agenda",
+    "views": {
+      "day": "Day",
+      "week": "Week",
+      "month": "Month"
+    },
+    "allDay": "All day"
+  },
+  "TaskPriorityField": {
+    "label": "Priority",
+    "defaultPriority": "Priority"
+  },
+  "HotkeyBinding": {
+    "then": "then"
+  },
+  "Changelog": {
+    "empty": "No release notes found.",
+    "sections": {
+      "Added": "Added",
+      "Fixed": "Fixed",
+      "Changed": "Changed",
+      "Removed": "Removed",
+      "Deprecated": "Deprecated",
+      "Patch Changes": "Patch Changes",
+      "Minor Changes": "Minor Changes",
+      "Major Changes": "Major Changes",
+      "Security": "Security"
+    }
+  },
+  "AvatarPicker": {
+    "title": "Choose your avatar",
+    "showMore": "Show more",
+    "uploadImage": "Upload custom image"
+  },
+  "AddSection": {
+    "addSection": "Add Section",
+    "placeholder": "Section Title",
+    "cancel": "Cancel"
+  }
+}

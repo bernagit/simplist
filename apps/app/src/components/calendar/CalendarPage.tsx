@@ -1,6 +1,7 @@
 'use client'
 
 import dayjs from 'dayjs'
+import 'dayjs/locale/it' // Import required dayjs locales
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   Badge,
@@ -31,7 +32,8 @@ import { getHTMLSectionId } from '@/utils/misc'
 import { useRouter } from 'next/navigation'
 import { PlannedTask } from '@/models/task'
 import { IconReload } from '@tabler/icons-react'
-import { PRIORITY_OPTIONS } from '@/utils/constants'
+import { useLocale, useTranslations } from 'next-intl'
+import { usePriorityOptions } from '@/hooks/useOptionLabel'
 
 function getNavigationHandlers(date: DateStringValue, view: Exclude<ScheduleViewLevel, 'year'>) {
   const d = dayjs(date)
@@ -87,11 +89,19 @@ function getHeaderLabel(date: DateStringValue, view: Exclude<ScheduleViewLevel, 
 
 export default function CustomSchedule() {
   const router = useRouter()
+  const locale = useLocale()
+  const t = useTranslations('CustomSchedule')
+  const priorityOptions = usePriorityOptions()
+
+  // Ensure dayjs uses the active app locale for date formatting
+  useEffect(() => {
+    dayjs.locale(locale)
+  }, [locale])
+
   const [date, setDate] = useState<DateStringValue>(dayjs().format('YYYY-MM-DD') as DateStringValue)
   const { isMobile } = useSidebar()
   const [view, setView] = useState<Exclude<ScheduleViewLevel, 'year'>>('week')
   const theme = useMantineTheme()
-  // const [mounted, setMounted] = useState(false)
   const [withAgenda, setWithAgenda] = useState(false)
   const [updatedTasks, setUpdatedTasks] = useState<Record<string, PlannedTask>>({})
 
@@ -202,7 +212,6 @@ export default function CustomSchedule() {
   )
 
   useEffect(() => {
-    // setMounted(true)
     refetch()
   }, [refetch])
 
@@ -219,7 +228,7 @@ export default function CustomSchedule() {
         <ScheduleHeader mb="md">
           <ScheduleHeader.Previous />
           <ScheduleHeader.Control interactive={false} miw={220}>
-            Loading...
+            {t('loading')}
           </ScheduleHeader.Control>
           <ScheduleHeader.Next />
           <ScheduleHeader.Today />
@@ -262,7 +271,7 @@ export default function CustomSchedule() {
           variant={withAgenda ? 'filled' : 'outline'}
           onClick={() => setWithAgenda(prev => !prev)}
         >
-          Agenda
+          {t('agenda')}
         </Button>
 
         <Group ms="auto">
@@ -270,9 +279,9 @@ export default function CustomSchedule() {
             value={view}
             onChange={value => setView(value as Exclude<ScheduleViewLevel, 'year'>)}
             data={[
-              { value: 'day', label: 'Day' },
-              { value: 'week', label: 'Week' },
-              { value: 'month', label: 'Month' }
+              { value: 'day', label: t('views.day') },
+              { value: 'week', label: t('views.week') },
+              { value: 'month', label: t('views.month') }
             ]}
             color={theme.primaryColor}
           />
@@ -287,6 +296,7 @@ export default function CustomSchedule() {
           renderEvent={(event, props) => {
             const task = event as unknown as { data: PlannedTask }
             const isAllDay = !task.data.dueTime
+            const priorityObj = priorityOptions.find(p => p.value === task.data.priority)
 
             return (
               <UnstyledButton {...props}>
@@ -328,16 +338,13 @@ export default function CustomSchedule() {
                             <IconReload size={12} />
                           </Badge>
                         )}
-                        {task.data.priority && (
+                        {priorityObj && (
                           <Badge
                             size="xs"
                             variant="light"
-                            color={
-                              PRIORITY_OPTIONS.find(p => p.value === task.data.priority)?.color ??
-                              'gray'
-                            }
+                            color={priorityObj.color ?? 'gray'}
                           >
-                            {task.data.priority}
+                            {priorityObj.label}
                           </Badge>
                         )}
                       </Group>
@@ -345,7 +352,7 @@ export default function CustomSchedule() {
 
                     <Text size="xs" c="dimmed">
                       {isAllDay
-                        ? 'All day'
+                        ? t('allDay')
                         : `${dayjs(event.start).format('HH:mm')} – ${dayjs(event.end).format('HH:mm')}`}
                     </Text>
 
@@ -381,16 +388,12 @@ export default function CustomSchedule() {
           withAgenda={true}
           dayViewProps={{
             withHeader: false,
-            // startTime: '08:00:00',
-            // endTime: '24:00:00',
             intervalMinutes: 30,
             scrollAreaProps: { mah: '100%' }
-            // withCurrentTimeIndicator: mounted
           }}
           weekViewProps={{
             withHeader: false,
             scrollAreaProps: { mah: '100%' }
-            // withCurrentTimeIndicator: mounted
           }}
           monthViewProps={{
             withHeader: false,
@@ -398,7 +401,6 @@ export default function CustomSchedule() {
           }}
           yearViewProps={{
             withHeader: false
-            // scrollAreaProps: { mah: '100%' },
           }}
         />
       )}

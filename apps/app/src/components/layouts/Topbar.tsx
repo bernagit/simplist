@@ -29,6 +29,7 @@ import {
 import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useMemo } from 'react'
+import { useTranslations } from 'next-intl'
 import { MENU_WIDTH } from './Sidebar'
 import { shareListModal, updateListModal } from '@/lib/modals/list'
 import { useAppRoute } from '@/hooks/useAppRoute'
@@ -40,6 +41,7 @@ import { HotkeyBinding } from '../common/KeyBinding'
 export const TOPBAR_HEIGHT = 60
 
 export function Topbar() {
+  const t = useTranslations('Topbar')
   const router = useRouter()
   const { toggle, opened } = useSidebar()
   const { isMobile } = useSidebar()
@@ -87,11 +89,11 @@ export function Topbar() {
     } else {
       if (preferences?.confirmDelete) {
         modals.openConfirmModal({
-          title: 'Archive List',
+          title: t('archiveModalTitle'),
           children: (
             <ConfirmArchive />
           ),
-          labels: { confirm: 'Archive', cancel: 'Cancel' },
+          labels: { confirm: t('archiveConfirm'), cancel: t('cancel') },
           confirmProps: { color: 'orange' },
           onConfirm: async () => {
             if (!route.listId) return
@@ -102,7 +104,7 @@ export function Topbar() {
         await archiveList.mutateAsync(route.listId)
       }
     }
-  }, [route.listId, isArchived, unarchiveList, preferences?.confirmDelete, archiveList])
+  }, [route.listId, isArchived, unarchiveList, preferences?.confirmDelete, archiveList, t])
 
   const handleShare = useCallback(() => {
     if (!route.listId) return
@@ -132,7 +134,7 @@ export function Topbar() {
               color="gray"
               size="md"
               onClick={toggle}
-              aria-label="Toggle sidebar"
+              aria-label={t('toggleSidebar')}
             >
               <IconLayoutSidebar size={18} />
             </ActionIcon>
@@ -191,17 +193,17 @@ export function Topbar() {
         <Group gap={'xs'}>
           {route.canShare && (
             <>
-              <Tooltip label="Share list" openDelay={300}>
+              <Tooltip label={t('shareList')} openDelay={300}>
                 <Button variant="light" mt="sm" onClick={handleShare}>
                   <Group>
                     <IconUserShare size={16} />
-                    {isMobile ? null : 'Share'}
+                    {isMobile ? null : t('share')}
                   </Group>
                 </Button>
               </Tooltip>
               <Menu shadow="md" width={MENU_WIDTH} position="bottom-end">
                 <Menu.Target>
-                  <Tooltip label="Options" openDelay={500}>
+                  <Tooltip label={t('options')} openDelay={500}>
                     <ActionIcon variant="light" mt="sm" size="lg">
                       <IconDots size={16} />
                     </ActionIcon>
@@ -213,10 +215,10 @@ export function Topbar() {
                     rightSection={<HotkeyBinding hotkey='EDIT_LIST'></HotkeyBinding>}
                     onClick={handleEdit}
                   >
-                    Edit
+                    {t('edit')}
                   </Menu.Item>
                   <Menu.Item leftSection={<IconArchive size={20} />} onClick={handleToggleArchive}>
-                    {isArchived ? 'Unarchive' : 'Archive'}
+                    {isArchived ? t('unarchive') : t('archive')}
                   </Menu.Item>
                 </Menu.Dropdown>
               </Menu>

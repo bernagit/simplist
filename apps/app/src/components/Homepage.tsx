@@ -3,8 +3,10 @@
 import {
   Button,
   Card,
+  Center,
   Container,
   Group,
+  Loader,
   SimpleGrid,
   Stack,
   Text,
@@ -13,18 +15,35 @@ import {
 } from '@mantine/core'
 import { IconArrowRight, IconList, IconPlus, IconUsers } from '@tabler/icons-react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { createListModal } from '@/lib/modals/list'
+import { useLists } from '@/queries/lists'
+import { useMemo } from 'react'
 
 export default function Homepage() {
   const router = useRouter()
+  const t = useTranslations('HomePage')
+
+  const { data, isLoading } = useLists()
+  const hasLists = useMemo(() => !!data?.data?.owned?.length, [data])
+
+  if (isLoading || !data) {
+    return (
+      <Container size="md" py={100}>
+        <Center>
+          <Loader size="lg" />
+        </Center>
+      </Container>
+    )
+  }
 
   return (
     <Container size="md" py={40}>
       <Stack gap={40}>
         <Stack gap={4}>
-          <Title order={1}>Welcome to Simplist 👋</Title>
+          <Title order={1}>{t('welcomeTitle')}</Title>
 
-          <Text c="dimmed">Keep your lists together</Text>
+          <Text c="dimmed">{t('welcomeSubtitle')}</Text>
         </Stack>
 
         <Button
@@ -33,7 +52,7 @@ export default function Homepage() {
           w="fit-content"
           onClick={createListModal}
         >
-          Create your first list
+          {hasLists ? t('createListButton') : t('createFirstListButton')}
         </Button>
 
         <SimpleGrid cols={{ base: 1, sm: 2 }}>
@@ -53,11 +72,11 @@ export default function Homepage() {
             </Group>
 
             <Title order={4} mt="md">
-              My Lists
+              {t('myListsTitle')}
             </Title>
 
             <Text c="dimmed" size="sm">
-              Browse and manage all your personal lists.
+              {t('myListsDesc')}
             </Text>
           </Card>
 
@@ -77,11 +96,11 @@ export default function Homepage() {
             </Group>
 
             <Title order={4} mt="md">
-              Shared Lists
+              {t('sharedListsTitle')}
             </Title>
 
             <Text c="dimmed" size="sm">
-              Lists that other people shared with you.
+              {t('sharedListsDesc')}
             </Text>
           </Card>
         </SimpleGrid>

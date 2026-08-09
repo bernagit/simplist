@@ -3,6 +3,7 @@
 import { useSidebar } from '@/providers/SidebarProvider'
 import { Button, Divider, Group, Stack, Text, TextInput } from '@mantine/core'
 import { useCallback, useState } from 'react'
+import { useTranslations } from 'next-intl'
 
 type AddSectionProps = {
   listId: string
@@ -10,21 +11,33 @@ type AddSectionProps = {
 }
 
 export default function AddSection({ listId, onSave }: AddSectionProps) {
-  const [isHovered, setIsHovered] = useState(false)
-  const [isClicked, setIsClicked] = useState(false)
+  const t = useTranslations('AddSection')
   const { isMobile } = useSidebar()
 
+  const [isHovered, setIsHovered] = useState(false)
+  const [isClicked, setIsClicked] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [sectionTitle, setSectionTitle] = useState('')
 
   const handleSave = useCallback(async () => {
-    if (sectionTitle.trim().length === 0) return
+    if (sectionTitle.trim().length === 0 || isSubmitting) return
 
-    if (onSave) {
-      await onSave(listId, sectionTitle.trim())
+    try {
+      setIsSubmitting(true)
+      if (onSave) {
+        await onSave(listId, sectionTitle.trim())
+      }
+      setSectionTitle('')
+      setIsClicked(false)
+    } finally {
+      setIsSubmitting(false)
     }
-    setSectionTitle('')
+  }, [sectionTitle, isSubmitting, onSave, listId])
+
+  const handleCancel = useCallback(() => {
     setIsClicked(false)
-  }, [sectionTitle, onSave, listId])
+    setSectionTitle('')
+  }, [])
 
   if (!isClicked) {
     return (
@@ -33,7 +46,7 @@ export default function AddSection({ listId, onSave }: AddSectionProps) {
         onMouseLeave={() => setIsHovered(false)}
         label={
           <Text c="dimmed" size="sm">
-            Add Section
+            {t('addSection')}
           </Text>
         }
         style={{
@@ -48,21 +61,37 @@ export default function AddSection({ listId, onSave }: AddSectionProps) {
   }
 
   return (
-    <Stack gap={0} p={0} mt="md" ml={'lg'} w={'90%'}>
-      <TextInput placeholder="Section Title" onChange={e => setSectionTitle(e.target.value)} />
+    <Stack gap={0} p={0} mt="md" ml="lg" w="90%">
+      <TextInput
+        autoFocus
+        placeholder={t('placeholder')}
+        value={sectionTitle}
+        onChange={e => setSectionTitle(e.target.value)}
+        disabled={isSubmitting}
+        onKeyDown={e => {
+          if (e.key === 'Enter') {
+            e.preventDefault()
+            handleSave()
+          } else if (e.key === 'Escape') {
+            handleCancel()
+          }
+        }}
+      />
       <Group justify="flex-end" mt="xs" pt="xs">
         <Button
           variant="subtle"
           color="gray"
-          onClick={() => {
-            setIsClicked(false)
-            setSectionTitle('')
-          }}
+          disabled={isSubmitting}
+          onClick={handleCancel}
         >
-          Cancel
+          {t('cancel')}
         </Button>
-        <Button disabled={sectionTitle.trim().length === 0} onClick={handleSave}>
-          Add Section
+        <Button
+          loading={isSubmitting}
+          disabled={sectionTitle.trim().length === 0}
+          onClick={handleSave}
+        >
+          {t('addSection')}
         </Button>
       </Group>
     </Stack>

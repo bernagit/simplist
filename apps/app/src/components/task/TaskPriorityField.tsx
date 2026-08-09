@@ -14,8 +14,9 @@ import {
 } from '@mantine/core'
 import { IconChevronDown, IconFlag } from '@tabler/icons-react'
 import { getPriorityColor } from '@/utils/color'
-import { PRIORITY_OPTIONS } from '@/utils/constants'
 import HoverableBox from './HoverableBox'
+import { useTranslations } from 'next-intl'
+import { usePriorityOptions } from '@/hooks/useOptionLabel'
 
 type TaskPriorityFieldProps = {
   priority: string | null
@@ -28,13 +29,14 @@ export default function TaskPriorityField({
   canEdit = true,
   onChange
 }: TaskPriorityFieldProps) {
+  const t = useTranslations('TaskPriorityField')
+  const priorityOptions = usePriorityOptions()
   const [opened, { toggle, close }] = useDisclosure(false)
 
   const color = getPriorityColor(priority)
 
-  const label = priority
-    ? (PRIORITY_OPTIONS.find(option => option.value === priority)?.label ?? 'Priority')
-    : 'Priority'
+  const activeOption = priorityOptions.find(option => option.value === priority)
+  const label = activeOption?.label ?? t('defaultPriority')
 
   const isOpen = opened && canEdit
 
@@ -66,7 +68,7 @@ export default function TaskPriorityField({
 
             <Stack gap={2}>
               <Text size="xs" c="dimmed" fw={500} style={{ lineHeight: 1 }}>
-                Priority
+                {t('label')}
               </Text>
 
               <Text size="sm" fw={priority ? 600 : 400} c={priority ? 'dark.4' : 'dimmed'}>
@@ -98,9 +100,9 @@ export default function TaskPriorityField({
           }}
         >
           <Stack gap={4}>
-            {PRIORITY_OPTIONS.map(option => (
+            {priorityOptions.map(option => (
               <Button
-                key={option.value}
+                key={option.value ?? 'none'}
                 variant={priority === option.value ? 'light' : 'subtle'}
                 color="gray"
                 justify="flex-start"

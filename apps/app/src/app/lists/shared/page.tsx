@@ -1,12 +1,16 @@
 import SharedListOverview from '@/components/list/SharedListOverview'
 import { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 
-export const metadata: Metadata = {
-  title: 'Shared With Me - Simplist',
-  description: 'View and manage lists that have been shared with you.',
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('SharedListsPage')
+
+  return {
+    title: t('title'),
+    description: t('description'),
+  }
 }
 
 export default function Page() {
-
   return <SharedListOverview />
 }

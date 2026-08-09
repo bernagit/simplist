@@ -2,6 +2,9 @@ import type { Metadata, Viewport } from 'next'
 
 import { ColorSchemeScript, mantineHtmlProps } from '@mantine/core'
 import { Notifications } from '@mantine/notifications'
+import { NextIntlClientProvider } from 'next-intl'
+import { getLocale, getMessages, getTranslations } from 'next-intl/server'
+
 import AppLayout from '@/components/layouts/AppLayout'
 import '@mantine/core/styles.layer.css'
 import '@mantine/notifications/styles.css'
@@ -17,18 +20,23 @@ import { AppMantineProvider } from '@/providers/AppMantineProvider'
 import { QueryProvider } from '@/providers/QueryProvider'
 import { AuthProvider } from '@/providers/AuthProvider'
 import { hasSessionCookie } from '@/lib/auth'
+import { DayjsProvider } from '@/providers/DayjsProvider'
 
-export const metadata: Metadata = {
-  title: 'Simplist',
-  description: 'Manage your tasks and lists with ease using Simplist.',
-  manifest: '/manifest.json',
-  appleWebApp: {
-    capable: true,
-    title: 'Simplist',
-    statusBarStyle: 'default'
-  },
-  icons: {
-    apple: '/icons/apple-touch-icon.png'
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('Metadata')
+
+  return {
+    title: t('title'),
+    description: t('description'),
+    manifest: '/manifest.json',
+    appleWebApp: {
+      capable: true,
+      title: t('title'),
+      statusBarStyle: 'default'
+    },
+    icons: {
+      apple: '/icons/apple-touch-icon.png'
+    }
   }
 }
 
@@ -42,26 +50,34 @@ export default async function RootLayout({
   children: React.ReactNode
 }>) {
   const sessionCookiePresent = await hasSessionCookie()
+  const locale = await getLocale()
+  const messages = await getMessages()
 
   return (
-    <html lang="en" {...mantineHtmlProps} className="vsc-initialized">
+    <html lang={locale} {...mantineHtmlProps} className="vsc-initialized">
       <head>
         <ColorSchemeScript defaultColorScheme="light" />
       </head>
       <body className="vsc-initialized">
-        <PWARegister />
-        <QueryProvider>
-          <AuthProvider hasSessionCookie={sessionCookiePresent}>
-            <ThemeColorProvider>
-              <AppMantineProvider>
-                <Notifications zIndex={1000} />
-                <ContextMenuProvider>
-                  <AppLayout>{children}</AppLayout>
-                </ContextMenuProvider>
-              </AppMantineProvider>
-            </ThemeColorProvider>
-          </AuthProvider>
-        </QueryProvider>
+        <NextIntlClientProvider messages={messages} locale={locale}>
+          <PWARegister />
+          <QueryProvider>
+            <AuthProvider hasSessionCookie={sessionCookiePresent}>
+              <ThemeColorProvider>
+                <AppMantineProvider>
+                  <Notifications zIndex={1000} />
+                  <ContextMenuProvider>
+                    <DayjsProvider>
+                      <AppLayout>
+                        {children}
+                      </AppLayout>
+                    </DayjsProvider>
+                  </ContextMenuProvider>
+                </AppMantineProvider>
+              </ThemeColorProvider>
+            </AuthProvider>
+          </QueryProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   )

@@ -1,0 +1,227 @@
+{
+  "Metadata": {
+    "title": "Simplist",
+    "description": "Gestisci i tuoi compiti e le tue liste con facilità usando Simplist."
+  },
+  "Common": {
+    "welcome": "Benvenuto in Simplist",
+    "language": "Lingua"
+  },
+  "AppLayout": {
+    "whatsNewTitle": "Cosa c'è di nuovo nella v{version}",
+    "gotItButton": "Ho capito!"
+  },
+  "Sidebar": {
+    "loading": "Caricamento...",
+    "settings": "Impostazioni",
+    "logout": "Disconnettiti",
+    "toggleSidebar": "Alterna barra laterale",
+    "home": "Home",
+    "calendar": "Calendario",
+    "search": "Cerca",
+    "myLists": "Le mie liste",
+    "addList": "Aggiungi lista",
+    "collapseLists": "Comprimi liste",
+    "expandLists": "Espandi liste",
+    "listIsShared": "La lista è condivisa",
+    "sharedWithMe": "Condivise con me",
+    "helpAndSupport": "Aiuto e supporto",
+    "documentation": "Documentazione",
+    "keyboardShortcuts": "Scorciatoie da tastiera",
+    "resizeSidebar": "Ridimensiona barra laterale"
+  },
+  "Topbar": {
+    "toggleSidebar": "Alterna barra laterale",
+    "shareList": "Condividi lista",
+    "share": "Condividi",
+    "options": "Opzioni",
+    "edit": "Modifica",
+    "archive": "Archivia",
+    "unarchive": "Ripristina",
+    "archiveModalTitle": "Archivia lista",
+    "archiveConfirm": "Archivia",
+    "cancel": "Annulla"
+  },
+  "Breadcrumbs": {
+    "myLists": "Le mie liste",
+    "shared": "Condivise con me"
+  },
+  "HelpDrawer": {
+    "title": "Scorciatoie da tastiera",
+    "description": "Usa queste scorciatoie per utilizzare l'applicazione più velocemente."
+  },
+  "HotkeyCategories": {
+    "Actions": "Azioni",
+    "General": "Generale",
+    "Navigation": "Navigazione"
+  },
+  "Hotkeys": {
+    "NEW_LIST": "Aggiungi una nuova lista",
+    "SHARE_LIST": "Condividi lista corrente",
+    "EDIT_LIST": "Modifica lista corrente",
+    "TOGGLE_THEME": "Alterna tema",
+    "TOGGLE_SIDEBAR": "Alterna barra laterale",
+    "TOGGLE_HELP": "Apri aiuto",
+    "OPEN_SETTINGS": "Apri impostazioni",
+    "GO_HOME": "Vai alla home",
+    "GO_CALENDAR": "Vai al calendario",
+    "GO_LISTS": "Vai a \"Le mie liste\"",
+    "GO_SHARED_LISTS": "Vai a \"Condivise con me\""
+  },
+  "HomePage": {
+    "title": "Home - Simplist",
+    "description": "Benvenuto nella pagina principale di Simplist.",
+    "welcomeTitle": "Benvenuto su Simplist 👋",
+    "welcomeSubtitle": "Tieni tutte le tue liste in un unico posto",
+    "createListButton": "Crea una lista",
+    "createFirstListButton": "Crea la tua prima lista",
+    "myListsTitle": "Le mie liste",
+    "myListsDesc": "Esplora e gestisci tutte le tue liste personali.",
+    "sharedListsTitle": "Liste condivise",
+    "sharedListsDesc": "Liste che altre persone hanno condiviso con te."
+  },
+  "MyListsPage": {
+    "title": "Le mie liste - Simplist",
+    "description": "Visualizza e gestisci le tue liste."
+  },
+  "OwnedListOverview": {
+    "title": "Le mie liste",
+    "listCount": "{count, plural, =1 {1 lista} other {# liste}}",
+    "searchPlaceholder": "Cerca liste...",
+    "statusLabel": "Stato",
+    "active": "Attive",
+    "all": "Tutte",
+    "archived": "Archiviate",
+    "reset": "Ripristina",
+    "noDescription": "Nessuna descrizione",
+    "moreInfo": "Più informazioni",
+    "edit": "Modifica",
+    "archive": "Archivia",
+    "unarchive": "Ripristina",
+    "share": "Condividi",
+    "delete": "Elimina",
+    "infoModalTitle": "Informazioni lista",
+    "infoTitle": "Titolo",
+    "infoDescription": "Descrizione",
+    "infoCreatedAt": "Creata il",
+    "infoUpdatedAt": "Aggiornata il",
+    "infoArchivedAt": "Archiviata il",
+    "deleteModalTitle": "Elimina lista",
+    "deleteModalConfirm": "Sei sicuro di voler eliminare questa lista? Questa azione non può essere annullata.",
+    "deleteConfirmButton": "Elimina",
+    "archiveModalTitle": "Archivia lista",
+    "archiveModalConfirm": "Sei sicuro di voler archiviare questa lista?",
+    "archiveModalWarning": "Se la lista è condivisa, verrà nascosta agli altri utenti finché non la ripristini.",
+    "archiveConfirmButton": "Archivia",
+    "cancel": "Annulla"
+  },
+  "SharedListsPage": {
+    "title": "Condivise con me - Simplist",
+    "description": "Visualizza e gestisci le liste che sono state condivise con te."
+  },
+  "SharedListOverview": {
+    "title": "Condivise con me",
+    "listCount": "{count, plural, =1 {1 lista} other {# liste}}",
+    "searchPlaceholder": "Cerca liste...",
+    "noDescription": "Nessuna descrizione",
+    "moreInfo": "Più informazioni",
+    "infoModalTitle": "Informazioni lista",
+    "infoTitle": "Titolo",
+    "infoDescription": "Descrizione",
+    "infoOwner": "Proprietario",
+    "infoCreatedAt": "Creata il",
+    "infoUpdatedAt": "Aggiornata il",
+    "infoArchivedAt": "Archiviata il",
+    "archived": "Archiviata"
+  },
+  "GeneralSection": {
+    "languageTitle": "Lingua",
+    "languageDesc": "Scegli la tua lingua di visualizzazione preferita.",
+    "defaultViewTitle": "Vista predefinita",
+    "defaultViewDesc": "Scegli cosa aprire per primo all'avvio di Simplist.",
+    "startOfWeekTitle": "Inizio della settimana",
+    "startOfWeekDesc": "Utilizzato per la vista Calendario.",
+    "confirmDeleteLabel": "Chiedi conferma prima di eliminare/archiviare una lista",
+    "confirmDeleteDesc": "Mostra una finestra di dialogo di conferma quando elimini o archivi una lista.",
+    "views": {
+      "home": "Home",
+      "calendar": "Calendario"
+    },
+    "days": {
+      "sunday": "Domenica",
+      "monday": "Lunedì"
+    }
+  },
+  "Constants": {
+    "Priority": {
+      "high": "Alta",
+      "medium": "Media",
+      "low": "Bassa",
+      "none": "Nessuna"
+    },
+    "Recurrence": {
+      "none": "Non si ripete",
+      "daily": "Ogni giorno",
+      "weekly": "Ogni settimana",
+      "monthly": "Ogni mese"
+    }
+  },
+  "DueDateDropdown": {
+    "timeAndDuration": "Ora e Durata",
+    "dueTimeLabel": "Ora di scadenza",
+    "dueTimePlaceholder": "Imposta ora",
+    "durationLabel": "Durata",
+    "durationPlaceholder": "Min",
+    "durationSuffix": " min",
+    "recurrence": "Ricorrenza",
+    "recurrencePlaceholder": "Seleziona intervallo"
+  },
+  "TaskDueDateField": {
+    "label": "Data di scadenza",
+    "setDueDate": "Imposta data",
+    "at": "alle {time}",
+    "duration": "({minutes}m)",
+    "recurring": "Ricorrente"
+  },
+  "CustomSchedule": {
+    "loading": "Caricamento...",
+    "agenda": "Agenda",
+    "views": {
+      "day": "Giorno",
+      "week": "Settimana",
+      "month": "Mese"
+    },
+    "allDay": "Tutto il giorno"
+  },
+  "TaskPriorityField": {
+    "label": "Priorità",
+    "defaultPriority": "Priorità"
+  },
+  "HotkeyBinding": {
+    "then": "poi"
+  },
+  "Changelog": {
+    "empty": "Nessuna nota di rilascio trovata.",
+    "sections": {
+      "Added": "Aggiunto",
+      "Fixed": "Risolto",
+      "Changed": "Modificato",
+      "Removed": "Rimosso",
+      "Deprecated": "Deprecato",
+      "Patch Changes": "Correzioni",
+      "Minor Changes": "Nuove funzionalità",
+      "Major Changes": "Cambiamenti strutturali",
+      "Security": "Sicurezza"
+    }
+  },
+  "AvatarPicker": {
+    "title": "Scegli il tuo avatar",
+    "showMore": "Mostra altri",
+    "uploadImage": "Carica un'immagine"
+  },
+  "AddSection": {
+    "addSection": "Aggiungi sezione",
+    "placeholder": "Titolo sezione",
+    "cancel": "Annulla"
+  }
+}

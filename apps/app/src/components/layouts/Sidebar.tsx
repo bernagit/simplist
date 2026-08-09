@@ -35,6 +35,7 @@ import {
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { spotlight } from '@mantine/spotlight'
+import { useTranslations } from 'next-intl'
 import { useMe } from '@/queries/auth'
 import { useLists } from '@/queries/lists'
 import { useSidebar } from '@/providers/SidebarProvider'
@@ -49,10 +50,9 @@ export const MENU_WIDTH = 290
 const MIN_WIDTH = 240
 const MAX_WIDTH = 480
 const DEFAULT_WIDTH = 280
-const MY_LISTS_TEXT = 'My Lists'
-const SHARED_LISTS_TEXT = 'Shared With Me'
 
 export function Sidebar() {
+  const t = useTranslations('Sidebar')
   const { toggle, opened, isMobile } = useSidebar()
   const [ownedListsOpen, setOwnedListsOpen] = useState(true)
   const [sharedListsOpen, setSharedListsOpen] = useState(true)
@@ -199,7 +199,7 @@ export function Sidebar() {
 
                     <Box flex={1} miw={0}>
                       <Text size="sm" fw={500} truncate={'end'}>
-                        {meLoading ? 'Loading...' : me?.name}
+                        {meLoading ? t('loading') : me?.name}
                       </Text>
 
                       <Text size="xs" c="dimmed" truncate={'end'}>
@@ -216,7 +216,7 @@ export function Sidebar() {
                     color="gray"
                     size="md"
                     onClick={toggle}
-                    aria-label="Toggle sidebar"
+                    aria-label={t('toggleSidebar')}
                     mr="xs"
                   >
                     <IconLayoutSidebar size={18} />
@@ -230,11 +230,11 @@ export function Sidebar() {
                 rightSection={<HotkeyBinding hotkey='OPEN_SETTINGS'></HotkeyBinding>}
                 onClick={() => handleOpenSettings()}
               >
-                Settings
+                {t('settings')}
               </Menu.Item>
               <Menu.Divider />
               <Menu.Item color="red" leftSection={<IconLogout size={16} />} onClick={handleLogout}>
-                Log out
+                {t('logout')}
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>
@@ -242,21 +242,21 @@ export function Sidebar() {
           <ScrollArea flex={1} scrollbarSize={4} type="hover">
             <Stack gap={2} p="xs">
               <NavLink
-                label="Home"
+                label={t('home')}
                 leftSection={<IconHome2 size={18} />}
                 active={pathname === '/'}
                 onClick={() => handleNavigate('/')}
                 style={{ borderRadius: 'var(--mantine-radius-md)' }}
               />
               <NavLink
-                label="Calendar"
+                label={t('calendar')}
                 leftSection={<IconCalendar size={18} />}
                 active={pathname === '/calendar'}
                 onClick={() => handleNavigate('/calendar')}
                 style={{ borderRadius: 'var(--mantine-radius-md)' }}
               />
               <NavLink
-                label="Search"
+                label={t('search')}
                 leftSection={<IconSearch size={18} />}
                 active={pathname === '/search'}
                 onClick={() => spotlight.open()}
@@ -275,9 +275,9 @@ export function Sidebar() {
                       c="dimmed"
                       style={{ letterSpacing: '0.06em' }}
                     >
-                      {MY_LISTS_TEXT}
+                      {t('myLists')}
                     </Text>
-                    <Tooltip label="Add list" position="right" withArrow>
+                    <Tooltip label={t('addList')} position="right" withArrow>
                       <ActionIcon
                         variant="subtle"
                         color="gray"
@@ -286,7 +286,7 @@ export function Sidebar() {
                           createListModal()
                           e.stopPropagation()
                         }}
-                        aria-label="Add list"
+                        aria-label={t('addList')}
                       >
                         <IconPlus size={14} />
                       </ActionIcon>
@@ -304,7 +304,7 @@ export function Sidebar() {
                         e.stopPropagation()
                         setOwnedListsOpen(o => !o)
                       }}
-                      aria-label={ownedListsOpen ? 'Collapse lists' : 'Expand lists'}
+                      aria-label={ownedListsOpen ? t('collapseLists') : t('expandLists')}
                     >
                       <IconChevronRight size={14} />
                     </ActionIcon>
@@ -323,7 +323,6 @@ export function Sidebar() {
                     <NavLink
                       key={list.id}
                       label={list.title}
-                      // color={list.color ? `${list.color}` : 'gray'}
                       leftSection={
                         <IconPoint
                           size={24}
@@ -333,7 +332,7 @@ export function Sidebar() {
                       }
                       rightSection={
                         list.shared ? (
-                          <Tooltip label="List is shared" position="right" withArrow>
+                          <Tooltip label={t('listIsShared')} position="right" withArrow>
                             <IconUsers size={16} />
                           </Tooltip>
                         ) : null
@@ -355,7 +354,7 @@ export function Sidebar() {
                     c="dimmed"
                     style={{ letterSpacing: '0.06em' }}
                   >
-                    {SHARED_LISTS_TEXT}
+                    {t('sharedWithMe')}
                   </Text>
                 }
                 rightSection={
@@ -369,7 +368,7 @@ export function Sidebar() {
                         e.stopPropagation()
                         setSharedListsOpen(o => !o)
                       }}
-                      aria-label={sharedListsOpen ? 'Collapse lists' : 'Expand lists'}
+                      aria-label={sharedListsOpen ? t('collapseLists') : t('expandLists')}
                     >
                       <IconChevronRight size={14} />
                     </ActionIcon>
@@ -387,7 +386,6 @@ export function Sidebar() {
                   <NavLink
                     key={list.id}
                     label={list.title}
-                    // color={list.color ? `${list.color}` : 'gray'}
                     leftSection={
                       <IconPoint
                         size={18}
@@ -409,7 +407,7 @@ export function Sidebar() {
             <Popover width={MENU_WIDTH} position="top-start" shadow="md">
               <Popover.Target>
                 <NavLink
-                  label="Help & Support"
+                  label={t('helpAndSupport')}
                   leftSection={<IconHelp size={18} />}
                   style={{ borderRadius: 'var(--mantine-radius-md)' }}
                 />
@@ -417,13 +415,13 @@ export function Sidebar() {
               <Popover.Dropdown>
                 <Stack gap={4}>
                   <NavLink
-                    label="Documentation"
+                    label={t('documentation')}
                     leftSection={<IconHelp size={18} />}
                     onClick={() => window.open('https://docs.simplist.app', '_blank')}
                     style={{ borderRadius: 'var(--mantine-radius-md)' }}
                   />
                   <NavLink
-                    label="Keyboard Shortcuts"
+                    label={t('keyboardShortcuts')}
                     leftSection={<IconKeyboard size={18} />}
                     onClick={() => toggleHelp()}
                     style={{ borderRadius: 'var(--mantine-radius-md)' }}
@@ -442,7 +440,7 @@ export function Sidebar() {
           onMouseLeave={() => setIsHandleHovered(false)}
           role="separator"
           aria-orientation="vertical"
-          aria-label="Resize sidebar"
+          aria-label={t('resizeSidebar')}
           pos="relative"
           w={10}
           style={{
