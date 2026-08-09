@@ -21,8 +21,10 @@ import {
   IconBrandGithub,
   IconExternalLink,
 } from '@tabler/icons-react'
+import { useTranslations } from 'next-intl'
 
 export function InfoSection() {
+  const t = useTranslations('InfoSection')
   const { currentVersion, rawChangelog } = useChangelog()
   const environment = process.env.NODE_ENV || 'development'
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'Local / Proxied'
@@ -40,7 +42,7 @@ export function InfoSection() {
                 Simplist
               </Text>
               <Text size="xs" c="dimmed">
-                Self-hosted task & list management engine
+                {t('subtitle')}
               </Text>
             </div>
           </Group>
@@ -62,7 +64,7 @@ export function InfoSection() {
               leftSection={<IconBrandGithub size={12} />}
               rightSection={<IconExternalLink size={10} />}
             >
-              GitHub
+              {t('links.github')}
             </Badge>
           </Anchor>
           <Anchor href="/docs" target="_blank" underline="hover">
@@ -72,7 +74,7 @@ export function InfoSection() {
               leftSection={<IconBook size={12} />}
               rightSection={<IconExternalLink size={10} />}
             >
-              Documentation
+              {t('links.documentation')}
             </Badge>
           </Anchor>
         </Group>
@@ -84,7 +86,7 @@ export function InfoSection() {
             <IconGitBranch size={16} color="var(--mantine-color-dimmed)" />
             <div>
               <Text size="xs" c="dimmed" fw={500}>
-                Environment
+                {t('environment.label')}
               </Text>
 
               <Group gap={6} mt={2}>
@@ -105,7 +107,7 @@ export function InfoSection() {
             <IconServer size={16} color="var(--mantine-color-dimmed)" />
             <div style={{ overflow: 'hidden' }}>
               <Text size="xs" c="dimmed" fw={500}>
-                API Endpoint
+                {t('apiEndpoint.label')}
               </Text>
               <Text size="xs" fw={600} truncate mt={2}>
                 {apiUrl}
@@ -115,17 +117,17 @@ export function InfoSection() {
         </Card>
       </SimpleGrid>
 
-      {/* 3. Collapsible / Accordion Release Notes */}
+      {/* Release Notes */}
       <Card withBorder padding="0" radius="md">
         <Accordion variant="separated" defaultValue="changelog">
           <Accordion.Item value="changelog" style={{ border: 'none' }}>
             <Accordion.Control>
               <Group justify="space-between">
                 <Text fw={600} size="sm">
-                  Release History & Changelog
+                  {t('changelog.title')}
                 </Text>
                 <Text size="xs" c="dimmed">
-                  Latest: v{currentVersion}
+                  {t('changelog.latest', { version: currentVersion })}
                 </Text>
               </Group>
             </Accordion.Control>
@@ -134,7 +136,7 @@ export function InfoSection() {
                 <ChangelogView rawMarkdown={rawChangelog} />
               ) : (
                 <Text size="sm" c="dimmed">
-                  No changelog entry found.
+                  {t('changelog.empty')}
                 </Text>
               )}
             </Accordion.Panel>

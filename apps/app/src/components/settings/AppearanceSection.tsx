@@ -17,14 +17,16 @@ import { AVAILABLE_THEME_COLORS, useThemeColor } from '@/providers/ThemeColorPro
 import { usePreferences, useUpdatePreferences } from '@/queries/preferences'
 import { useAuth } from '@/providers/AuthProvider'
 import { useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 
 const COLOR_SCHEME_OPTIONS = [
-  { value: 'light', label: 'Light', icon: IconSun },
-  { value: 'dark', label: 'Dark', icon: IconMoon },
-  { value: 'auto', label: 'System', icon: IconDeviceDesktop }
+  { value: 'light', labelKey: 'theme.options.light', icon: IconSun },
+  { value: 'dark', labelKey: 'theme.options.dark', icon: IconMoon },
+  { value: 'auto', labelKey: 'theme.options.auto', icon: IconDeviceDesktop }
 ] as const
 
 export function AppearanceSection() {
+  const t = useTranslations('AppearanceSection')
   const { isAuthenticated } = useAuth()
   const { themeColor, setThemeColor } = useThemeColor()
   const { colorScheme, setColorScheme } = useMantineColorScheme()
@@ -79,21 +81,16 @@ export function AppearanceSection() {
   return (
     <Stack gap="xl">
       <Stack gap="xs">
-        <div>
-          <Text fw={500} size="sm">
-            Theme
-          </Text>
-          <Text size="xs" c="dimmed">
-            Choose how Simplist looks on this device.
-          </Text>
-        </div>
+        <Text size="xs" c="dimmed">
+          {t('theme.subtitle')}
+        </Text>
         {isAuthenticated && (
           <Switch
             checked={syncAppearance}
             disabled={loading}
             onChange={event => handleSyncToggle(event.currentTarget.checked)}
-            label="Sync appearance across devices"
-            description="Save your theme and accent color to your account instead of only this device."
+            label={t('theme.syncLabel')}
+            description={t('theme.syncDescription')}
           />
         )}
         <Group gap="sm">
@@ -134,7 +131,7 @@ export function AppearanceSection() {
                     fw={isActive ? 600 : 400}
                     c={isActive ? `${themeColor}.6` : 'dimmed'}
                   >
-                    {option.label}
+                    {t(option.labelKey)}
                   </Text>
                 </Stack>
               </UnstyledButton>
@@ -146,10 +143,10 @@ export function AppearanceSection() {
       <Stack gap="xs">
         <div>
           <Text fw={500} size="sm">
-            Accent color
+            {t('accentColor.title')}
           </Text>
           <Text size="xs" c="dimmed">
-            Pick the primary color used across buttons, links and highlights.
+            {t('accentColor.subtitle')}
           </Text>
         </div>
 
@@ -161,7 +158,7 @@ export function AppearanceSection() {
               <UnstyledButton
                 key={color}
                 onClick={() => handleThemeColorChange(color)}
-                aria-label={`Use ${color} as accent color`}
+                aria-label={t('accentColor.ariaLabel', { color })}
                 style={{
                   width: rem(36),
                   height: rem(36),

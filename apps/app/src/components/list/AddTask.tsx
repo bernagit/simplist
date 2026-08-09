@@ -17,6 +17,7 @@ import { IconCirclePlus, IconPlus } from '@tabler/icons-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import DateSelector from '../task/DateSelector'
 import PrioritySelector from '../task/ProritySelector'
+import { useTranslations } from 'next-intl'
 
 type AddTaskProps = {
   ml?: number
@@ -26,6 +27,7 @@ type AddTaskProps = {
 }
 
 export default function AddTask({ ml, listId, sectionId, onSave }: AddTaskProps) {
+  const t = useTranslations('AddTask')
   const colorScheme = useComputedColorScheme()
   const theme = useMantineTheme()
   const [isClicked, setIsClicked] = useState(false)
@@ -70,7 +72,7 @@ export default function AddTask({ ml, listId, sectionId, onSave }: AddTaskProps)
     }
 
     clearInputs()
-    // keep the input open after saving
+    // Mantiene l'input aperto dopo il salvataggio
     setIsClicked(true)
     requestAnimationFrame(() => {
       titleInputRef.current?.focus()
@@ -135,7 +137,7 @@ export default function AddTask({ ml, listId, sectionId, onSave }: AddTaskProps)
           {!hovered ? <IconPlus size={16} /> : <IconCirclePlus size={16} />}
 
           <Text mt={4} size="sm" fw={500} c="inherit">
-            Add Task
+            {t('addTask')}
           </Text>
         </Group>
       </Box>
@@ -166,7 +168,7 @@ export default function AddTask({ ml, listId, sectionId, onSave }: AddTaskProps)
           <TextInput
             ref={titleInputRef}
             variant="unstyled"
-            placeholder="Task name"
+            placeholder={t('titlePlaceholder')}
             value={title}
             onChange={e => setTitle(e.currentTarget.value)}
             styles={{
@@ -188,7 +190,7 @@ export default function AddTask({ ml, listId, sectionId, onSave }: AddTaskProps)
           />
           <TextInput
             variant="unstyled"
-            placeholder="Description"
+            placeholder={t('descriptionPlaceholder')}
             value={description}
             onChange={e => setDescription(e.currentTarget.value)}
             mt="xs"
@@ -238,11 +240,11 @@ export default function AddTask({ ml, listId, sectionId, onSave }: AddTaskProps)
                 setIsClicked(false)
               }}
             >
-              Cancel
+              {t('cancel')}
             </Button>
 
             <Button disabled={title.trim().length === 0} type="submit">
-              Add task
+              {t('submit')}
             </Button>
           </Group>
         </Stack>

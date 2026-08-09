@@ -37,17 +37,10 @@ export function GeneralSection({ preferences, loading }: Props) {
 
   return (
     <Stack gap="xl">
-      {/* Language Preference Control */}
       <Stack gap="xs">
-        <div>
-          <Text fw={500} size="sm">
-            {t('languageTitle')}
-          </Text>
-
-          <Text size="xs" c="dimmed">
-            {t('languageDesc')}
-          </Text>
-        </div>
+        <Text size="xs" c="dimmed">
+          {t('languageDesc')}
+        </Text>
 
         <Select
           comboboxProps={{

@@ -19,6 +19,7 @@ import { useDeleteSection, useUpdateSection } from '@/queries/section'
 import { getHTMLSectionId } from '@/utils/misc'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { useTranslations } from 'next-intl'
 
 type SectionPanelProps = {
   section: Section
@@ -35,6 +36,7 @@ export default function SectionPanel({
   canEdit,
   children
 }: SectionPanelProps) {
+  const t = useTranslations('SectionPanel')
   const [isExpanded, setIsExpanded] = useState(true)
   const theme = useMantineTheme()
 
@@ -72,7 +74,6 @@ export default function SectionPanel({
 
   return (
     <Box ref={setNodeRef} style={style}>
-      {/* Attach drag handle listeners directly to the section header Group */}
       <Group
         gap={9}
         align="center"
@@ -139,7 +140,7 @@ export default function SectionPanel({
                 color="red"
                 onClick={() => handleDeleteSection(section.id)}
               >
-                Delete Section
+                {t('deleteSection')}
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>
