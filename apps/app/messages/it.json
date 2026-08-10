@@ -599,5 +599,21 @@
       "successMessage": "La tua password è stata reimpostata con successo.",
       "errorTitle": "Reimpostazione non riuscita"
     }
+  },
+  "Errors": {
+    "notFound": {
+      "code": "404",
+      "title": "Pagina non trovata",
+      "subtitle": "La pagina che stai cercando potrebbe essere stata rimossa, aver cambiato nome o non essere momentaneamente disponibile.",
+      "backHome": "Torna alla Home",
+      "goLists": "Vai alle Liste"
+    },
+    "globalError": {
+      "code": "500",
+      "title": "Si è verificato un errore",
+      "subtitle": "Si è verificato un errore imprevisto. Prova a ricaricare la pagina o contatta il supporto se il problema persiste.",
+      "tryAgain": "Riprova",
+      "backHome": "Torna alla Home"
+    }
   }
 }
