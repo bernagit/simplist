@@ -1,5 +1,11 @@
 # app
 
+## 0.4.0
+
+### Minor Changes
+
+- feat: added internationalization (en/it)
+
 ## 0.3.2
 
 ### Patch Changes
