@@ -599,5 +599,21 @@
       "successMessage": "Your password has been reset successfully.",
       "errorTitle": "Reset failed"
     }
+  },
+  "Errors": {
+    "notFound": {
+      "code": "404",
+      "title": "Page Not Found",
+      "subtitle": "The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.",
+      "backHome": "Back to Home",
+      "goLists": "Go to Lists"
+    },
+    "globalError": {
+      "code": "500",
+      "title": "Something went wrong",
+      "subtitle": "An unexpected error occurred. Please try refreshing the page or contact support if the problem persists.",
+      "tryAgain": "Try again",
+      "backHome": "Back to Home"
+    }
   }
 }
