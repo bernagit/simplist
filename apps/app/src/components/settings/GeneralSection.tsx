@@ -1,9 +1,12 @@
 'use client'
 
 import { Select, Stack, Switch, Text } from '@mantine/core'
+import { useLocale, useTranslations } from 'next-intl'
 import { useUpdatePreferences } from '@/queries/preferences'
 import { UserPreferences } from '@/models/user'
 import { useLists } from '@/queries/lists'
+import { setLocaleAction } from '@/app/actions/locale'
+import type { Locale } from '@/i18n/config'
 
 type Props = {
   preferences?: UserPreferences | undefined
@@ -12,12 +15,20 @@ type Props = {
 
 export function GeneralSection({ preferences, loading }: Props) {
   const updatePreferences = useUpdatePreferences()
-
   const { data: lists } = useLists()
 
+  const locale = useLocale()
+  const t = useTranslations('GeneralSection')
+
+  const handleLanguageChange = async (value: string | null) => {
+    if (value && value !== locale) {
+      await setLocaleAction(value as Locale)
+    }
+  }
+
   const options = [
-    { value: 'home', label: 'Home' },
-    { value: 'calendar', label: 'Calendar' },
+    { value: 'home', label: t('views.home') },
+    { value: 'calendar', label: t('views.calendar') },
     ...(lists?.data.owned.map(list => ({
       value: `list:${list.id}`,
       label: list.title
@@ -27,13 +38,34 @@ export function GeneralSection({ preferences, loading }: Props) {
   return (
     <Stack gap="xl">
       <Stack gap="xs">
+        <Text size="xs" c="dimmed">
+          {t('languageDesc')}
+        </Text>
+
+        <Select
+          comboboxProps={{
+            withinPortal: true,
+            zIndex: 9999
+          }}
+          value={locale}
+          disabled={loading ?? false}
+          onChange={handleLanguageChange}
+          data={[
+            { value: 'en', label: 'English' },
+            { value: 'it', label: 'Italiano' },
+          ]}
+          w={220}
+        />
+      </Stack>
+
+      <Stack gap="xs">
         <div>
           <Text fw={500} size="sm">
-            Default view
+            {t('defaultViewTitle')}
           </Text>
 
           <Text size="xs" c="dimmed">
-            Choose what opens first when you launch Simplist.
+            {t('defaultViewDesc')}
           </Text>
         </div>
 
@@ -58,11 +90,11 @@ export function GeneralSection({ preferences, loading }: Props) {
       <Stack gap="xs">
         <div>
           <Text fw={500} size="sm">
-            Start of week
+            {t('startOfWeekTitle')}
           </Text>
 
           <Text size="xs" c="dimmed">
-            Used for the Calendar view.
+            {t('startOfWeekDesc')}
           </Text>
         </div>
 
@@ -82,11 +114,11 @@ export function GeneralSection({ preferences, loading }: Props) {
           data={[
             {
               value: 'sunday',
-              label: 'Sunday'
+              label: t('days.sunday')
             },
             {
               value: 'monday',
-              label: 'Monday'
+              label: t('days.monday')
             }
           ]}
           w={220}
@@ -101,8 +133,8 @@ export function GeneralSection({ preferences, loading }: Props) {
             confirmDelete: event.currentTarget.checked
           })
         }
-        label="Ask for confirmation before deleting/archiving a list"
-        description="Show a confirmation dialog when deleting or archiving a list."
+        label={t('confirmDeleteLabel')}
+        description={t('confirmDeleteDesc')}
       />
     </Stack>
   )

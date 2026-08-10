@@ -29,17 +29,17 @@ import {
 import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useMemo } from 'react'
+import { useTranslations } from 'next-intl'
 import { MENU_WIDTH } from './Sidebar'
-import { shareListModal, updateListModal } from '@/lib/modals/list'
+import { confirmArchiveModal, shareListModal, updateListModal } from '@/lib/modals/list'
 import { useAppRoute } from '@/hooks/useAppRoute'
-import ConfirmArchive from '../modals/ConfirmArchive'
-import { modals } from '@mantine/modals'
 import { usePreferences } from '@/queries/preferences'
 import { HotkeyBinding } from '../common/KeyBinding'
 
 export const TOPBAR_HEIGHT = 60
 
 export function Topbar() {
+  const t = useTranslations('Topbar')
   const router = useRouter()
   const { toggle, opened } = useSidebar()
   const { isMobile } = useSidebar()
@@ -76,7 +76,7 @@ export function Topbar() {
 
     if (!list) return false
 
-    return list.archivedAt === null ? false : true
+    return list.archivedAt !== null
   }, [route.listId, queryClient])
 
   const handleToggleArchive = useCallback(async () => {
@@ -86,17 +86,9 @@ export function Topbar() {
       await unarchiveList.mutateAsync(route.listId)
     } else {
       if (preferences?.confirmDelete) {
-        modals.openConfirmModal({
-          title: 'Archive List',
-          children: (
-            <ConfirmArchive />
-          ),
-          labels: { confirm: 'Archive', cancel: 'Cancel' },
-          confirmProps: { color: 'orange' },
-          onConfirm: async () => {
-            if (!route.listId) return
-            await archiveList.mutateAsync(route.listId)
-          }
+        confirmArchiveModal(async () => {
+          if (!route.listId) return
+          await archiveList.mutateAsync(route.listId)
         })
       } else {
         await archiveList.mutateAsync(route.listId)
@@ -118,9 +110,11 @@ export function Topbar() {
     <Box
       h={TOPBAR_HEIGHT}
       pb={'sm'}
-      style={{ 
+      style={{
         flexShrink: 0,
-        borderBottom: `1px solid ${colorScheme === 'dark' ? 'var(--mantine-color-dark-5)' : 'var(--mantine-color-gray-2)'}`
+        borderBottom: `1px solid ${
+          colorScheme === 'dark' ? 'var(--mantine-color-dark-5)' : 'var(--mantine-color-gray-2)'
+        }`
       }}
     >
       <Group h="100%" px="md" justify="space-between" wrap="nowrap">
@@ -132,7 +126,7 @@ export function Topbar() {
               color="gray"
               size="md"
               onClick={toggle}
-              aria-label="Toggle sidebar"
+              aria-label={t('toggleSidebar')}
             >
               <IconLayoutSidebar size={18} />
             </ActionIcon>
@@ -191,17 +185,17 @@ export function Topbar() {
         <Group gap={'xs'}>
           {route.canShare && (
             <>
-              <Tooltip label="Share list" openDelay={300}>
+              <Tooltip label={t('shareList')} openDelay={300}>
                 <Button variant="light" mt="sm" onClick={handleShare}>
                   <Group>
                     <IconUserShare size={16} />
-                    {isMobile ? null : 'Share'}
+                    {isMobile ? null : t('share')}
                   </Group>
                 </Button>
               </Tooltip>
               <Menu shadow="md" width={MENU_WIDTH} position="bottom-end">
                 <Menu.Target>
-                  <Tooltip label="Options" openDelay={500}>
+                  <Tooltip label={t('options')} openDelay={500}>
                     <ActionIcon variant="light" mt="sm" size="lg">
                       <IconDots size={16} />
                     </ActionIcon>
@@ -210,13 +204,13 @@ export function Topbar() {
                 <Menu.Dropdown>
                   <Menu.Item
                     leftSection={<IconEdit size={20} />}
-                    rightSection={<HotkeyBinding hotkey='EDIT_LIST'></HotkeyBinding>}
+                    rightSection={<HotkeyBinding hotkey="EDIT_LIST" />}
                     onClick={handleEdit}
                   >
-                    Edit
+                    {t('edit')}
                   </Menu.Item>
                   <Menu.Item leftSection={<IconArchive size={20} />} onClick={handleToggleArchive}>
-                    {isArchived ? 'Unarchive' : 'Archive'}
+                    {isArchived ? t('unarchive') : t('archive')}
                   </Menu.Item>
                 </Menu.Dropdown>
               </Menu>

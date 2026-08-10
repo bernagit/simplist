@@ -2,6 +2,7 @@
 
 import { MouseEvent, KeyboardEvent } from 'react'
 import { Button, Checkbox, Group, Stack, Text, TextInput, Textarea, Title } from '@mantine/core'
+import { useTranslations } from 'next-intl'
 
 type TaskContentProps = {
   completed: boolean
@@ -34,17 +35,19 @@ export default function TaskContent({
   onSave,
   onCancel
 }: TaskContentProps) {
+  const t = useTranslations('TaskContent')
+
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    // Prevent event from bubbling up to drag-and-drop or parent hotkey listeners
+    // Impedisce la propagazione per evitare il drag-and-drop o listener di tasti di scelta rapida padri
     e.stopPropagation()
 
-    // Trigger save on Ctrl + Enter or Cmd + Enter
+    // Salva con Ctrl + Invio o Cmd + Invio
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
       onSave()
     } else if (e.key === 'Escape') {
       e.preventDefault()
-      // Call cancel with the keyboard event casted as mouse event to satisfy handler type signature
+      // Esegue il cast dell'evento da tastiera a MouseEvent per rispettare la firma dell'handler
       onCancel(e as unknown as MouseEvent<HTMLButtonElement>)
     }
   }
@@ -84,7 +87,7 @@ export default function TaskContent({
               value={title}
               onChange={e => onTitleChange(e.currentTarget.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Task name"
+              placeholder={t('titlePlaceholder')}
               styles={{ input: { fontSize: 24, fontWeight: 700 } }}
               autoFocus
             />
@@ -94,16 +97,16 @@ export default function TaskContent({
               value={description}
               onChange={e => onDescriptionChange(e.currentTarget.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Description"
+              placeholder={t('descriptionPlaceholder')}
               autosize
               minRows={2}
             />
 
             <Group justify="flex-end">
               <Button variant="subtle" color="gray" onClick={onCancel}>
-                Cancel
+                {t('cancel')}
               </Button>
-              <Button onClick={onSave}>Save</Button>
+              <Button onClick={onSave}>{t('save')}</Button>
             </Group>
           </>
         ) : (

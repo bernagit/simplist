@@ -1,0 +1,603 @@
+{
+  "Metadata": {
+    "title": "Simplist",
+    "description": "Gestisci i tuoi compiti e le tue liste con facilità usando Simplist."
+  },
+  "Common": {
+    "welcome": "Benvenuto in Simplist",
+    "language": "Lingua"
+  },
+  "AppLayout": {
+    "whatsNewTitle": "Cosa c'è di nuovo nella v{version}",
+    "gotItButton": "Ho capito!"
+  },
+  "Sidebar": {
+    "loading": "Caricamento...",
+    "settings": "Impostazioni",
+    "logout": "Logout",
+    "toggleSidebar": "Alterna barra laterale",
+    "home": "Home",
+    "calendar": "Calendario",
+    "search": "Cerca",
+    "myLists": "Le mie liste",
+    "addList": "Aggiungi lista",
+    "collapseLists": "Comprimi liste",
+    "expandLists": "Espandi liste",
+    "listIsShared": "La lista è condivisa",
+    "sharedWithMe": "Condivise con me",
+    "helpAndSupport": "Aiuto e supporto",
+    "documentation": "Documentazione",
+    "keyboardShortcuts": "Scorciatoie da tastiera",
+    "resizeSidebar": "Ridimensiona barra laterale"
+  },
+  "Topbar": {
+    "toggleSidebar": "Alterna barra laterale",
+    "shareList": "Condividi lista",
+    "share": "Condividi",
+    "options": "Opzioni",
+    "edit": "Modifica",
+    "archive": "Archivia",
+    "unarchive": "Ripristina"
+  },
+  "Breadcrumbs": {
+    "myLists": "Le mie liste",
+    "shared": "Condivise con me",
+    "calendar": "Calendario"
+  },
+  "HelpDrawer": {
+    "title": "Scorciatoie da tastiera",
+    "description": "Usa queste scorciatoie per utilizzare l'applicazione più velocemente."
+  },
+  "HotkeyCategories": {
+    "Actions": "Azioni",
+    "General": "Generale",
+    "Navigation": "Navigazione"
+  },
+  "Hotkeys": {
+    "NEW_LIST": "Aggiungi una nuova lista",
+    "SHARE_LIST": "Condividi lista corrente",
+    "EDIT_LIST": "Modifica lista corrente",
+    "TOGGLE_THEME": "Alterna tema",
+    "TOGGLE_SIDEBAR": "Alterna barra laterale",
+    "TOGGLE_HELP": "Apri aiuto",
+    "OPEN_SETTINGS": "Apri impostazioni",
+    "GO_HOME": "Vai alla home",
+    "GO_CALENDAR": "Vai al calendario",
+    "GO_LISTS": "Vai a \"Le mie liste\"",
+    "GO_SHARED_LISTS": "Vai a \"Condivise con me\""
+  },
+  "HomePage": {
+    "title": "Home - Simplist",
+    "description": "Benvenuto nella pagina principale di Simplist.",
+    "welcomeTitle": "Benvenuto su Simplist 👋",
+    "welcomeSubtitle": "Tieni tutte le tue liste in un unico posto",
+    "createListButton": "Crea una lista",
+    "createFirstListButton": "Crea la tua prima lista",
+    "myListsTitle": "Le mie liste",
+    "myListsDesc": "Esplora e gestisci tutte le tue liste personali.",
+    "sharedListsTitle": "Liste condivise",
+    "sharedListsDesc": "Liste che altre persone hanno condiviso con te."
+  },
+  "OwnedListOverview": {
+    "title": "Le mie liste",
+    "listCount": "{count, plural, =1 {1 lista} other {# liste}}",
+    "searchPlaceholder": "Cerca liste...",
+    "statusLabel": "Stato",
+    "active": "Attive",
+    "all": "Tutte",
+    "archived": "Archiviate",
+    "reset": "Ripristina",
+    "noDescription": "Nessuna descrizione",
+    "moreInfo": "Più informazioni",
+    "edit": "Modifica",
+    "archive": "Archivia",
+    "unarchive": "Ripristina",
+    "share": "Condividi",
+    "delete": "Elimina",
+    "infoModalTitle": "Informazioni lista",
+    "infoTitle": "Titolo",
+    "infoDescription": "Descrizione",
+    "infoCreatedAt": "Creata il",
+    "infoUpdatedAt": "Aggiornata il",
+    "infoArchivedAt": "Archiviata il",
+    "deleteModalTitle": "Elimina lista",
+    "deleteModalConfirm": "Sei sicuro di voler eliminare questa lista? Questa azione non può essere annullata.",
+    "deleteConfirmButton": "Elimina",
+    "archiveModalTitle": "Archivia lista",
+    "archiveModalConfirm": "Sei sicuro di voler archiviare questa lista?",
+    "archiveModalWarning": "Se la lista è condivisa, verrà nascosta agli altri utenti finché non la ripristini.",
+    "archiveConfirmButton": "Archivia",
+    "cancel": "Annulla"
+  },
+  "SharedListsPage": {
+    "title": "Condivise con me - Simplist",
+    "description": "Visualizza e gestisci le liste che sono state condivise con te."
+  },
+  "SharedListOverview": {
+    "title": "Condivise con me",
+    "listCount": "{count, plural, =1 {1 lista} other {# liste}}",
+    "searchPlaceholder": "Cerca liste...",
+    "noDescription": "Nessuna descrizione",
+    "moreInfo": "Più informazioni",
+    "infoModalTitle": "Informazioni lista",
+    "infoTitle": "Titolo",
+    "infoDescription": "Descrizione",
+    "infoOwner": "Proprietario",
+    "infoCreatedAt": "Creata il",
+    "infoUpdatedAt": "Aggiornata il",
+    "infoArchivedAt": "Archiviata il",
+    "archived": "Archiviata"
+  },
+  "CalendarPage": {
+    "title": "Calendario - Simplist",
+    "description": "Visualizza e gestisci i tuoi impegni nel calendario."
+  },
+  "ListPage": {
+    "title": "Le mie liste - Simplist",
+    "description": "Visualizza e gestisci le tue liste.",
+    "noPermissionTooltip": "Non hai i permessi per modificare questa lista",
+    "failedReorderSections": "Impossibile riordinare le sezioni:",
+    "failedReorderTasks": "Impossibile riordinare le attività:"
+  },
+  "SectionPanel": {
+    "deleteSection": "Elimina sezione"
+  },
+  "TaskRow": {
+    "edit": "Modifica",
+    "delete": "Elimina"
+  },
+  "AddTask": {
+    "addTask": "Aggiungi attività",
+    "titlePlaceholder": "Nome attività",
+    "descriptionPlaceholder": "Descrizione",
+    "cancel": "Annulla",
+    "submit": "Aggiungi attività"
+  },
+  "GeneralSection": {
+    "languageTitle": "Lingua",
+    "languageDesc": "Scegli la tua lingua di visualizzazione preferita.",
+    "defaultViewTitle": "Vista predefinita",
+    "defaultViewDesc": "Scegli cosa aprire per primo all'avvio di Simplist.",
+    "startOfWeekTitle": "Inizio della settimana",
+    "startOfWeekDesc": "Utilizzato per la vista Calendario.",
+    "confirmDeleteLabel": "Chiedi conferma prima di eliminare/archiviare una lista",
+    "confirmDeleteDesc": "Mostra una finestra di dialogo di conferma quando elimini o archivi una lista.",
+    "views": {
+      "home": "Home",
+      "calendar": "Calendario"
+    },
+    "days": {
+      "sunday": "Domenica",
+      "monday": "Lunedì"
+    }
+  },
+  "Constants": {
+    "Priority": {
+      "high": "Alta",
+      "medium": "Media",
+      "low": "Bassa",
+      "none": "Nessuna"
+    },
+    "Recurrence": {
+      "none": "Non si ripete",
+      "daily": "Ogni giorno",
+      "weekly": "Ogni settimana",
+      "monthly": "Ogni mese"
+    }
+  },
+  "DueDateDropdown": {
+    "label": "Data",
+    "timeAndDuration": "Ora e Durata",
+    "dueTimeLabel": "Ora di scadenza",
+    "dueTimePlaceholder": "Imposta ora",
+    "durationLabel": "Durata",
+    "durationPlaceholder": "Min",
+    "durationSuffix": " min",
+    "recurrence": "Ricorrenza",
+    "recurrencePlaceholder": "Seleziona intervallo"
+  },
+  "TaskDueDateField": {
+    "label": "Data di scadenza",
+    "setDueDate": "Imposta data",
+    "at": "alle {time}",
+    "duration": "({minutes}m)",
+    "recurring": "Ricorrente"
+  },
+  "CustomSchedule": {
+    "loading": "Caricamento...",
+    "agenda": "Agenda",
+    "today": "Oggi",
+    "previous": "Precedente",
+    "next": "Successivo",
+    "noEvents": "Nessun evento",
+    "views": {
+      "day": "Giorno",
+      "week": "Settimana",
+      "month": "Mese"
+    },
+    "allDay": "Tutto il giorno"
+  },
+  "TaskPriorityField": {
+    "label": "Priorità",
+    "defaultPriority": "Priorità"
+  },
+  "HotkeyBinding": {
+    "then": "poi"
+  },
+  "Changelog": {
+    "empty": "Nessuna nota di rilascio trovata.",
+    "sections": {
+      "Added": "Aggiunto",
+      "Fixed": "Risolto",
+      "Changed": "Modificato",
+      "Removed": "Rimosso",
+      "Deprecated": "Deprecato",
+      "Patch Changes": "Correzioni",
+      "Minor Changes": "Nuove funzionalità",
+      "Major Changes": "Cambiamenti strutturali",
+      "Security": "Sicurezza"
+    }
+  },
+  "AvatarPicker": {
+    "title": "Scegli il tuo avatar",
+    "showMore": "Mostra altri",
+    "uploadImage": "Carica un'immagine"
+  },
+  "AddSection": {
+    "addSection": "Aggiungi sezione",
+    "placeholder": "Titolo sezione",
+    "cancel": "Annulla"
+  },
+  "TaskContent": {
+    "titlePlaceholder": "Nome attività",
+    "descriptionPlaceholder": "Descrizione",
+    "cancel": "Annulla",
+    "save": "Salva"
+  },
+  "UserSettings": {
+    "settingsTitle": "Impostazioni",
+    "nav": {
+      "general": "Generali",
+      "account": "Account",
+      "appearance": "Aspetto",
+      "invites": "Inviti",
+      "notifications": "Notifiche",
+      "info": "Informazioni"
+    },
+    "general": {
+      "title": "Generali",
+      "subtitle": "Impostazioni generali dell'applicazione."
+    },
+    "account": {
+      "title": "Account",
+      "subtitle": "Profilo, password ed email."
+    },
+    "appearance": {
+      "title": "Aspetto",
+      "subtitle": "Personalizza l'aspetto di Simplist."
+    },
+    "invites": {
+      "title": "Inviti",
+      "subtitle": "Gestisci i tuoi inviti e invita nuovi utenti."
+    },
+    "aria": {
+      "toggleNav": "Alterna navigazione impostazioni"
+    }
+  },
+  "AccountSection": {
+    "profile": {
+      "title": "Profilo",
+      "subtitle": "Aggiorna il tuo nome ed indirizzo email.",
+      "changePhoto": "Cambia foto",
+      "email": "Email",
+      "name": "Nome",
+      "saveChanges": "Salva modifiche",
+      "notifications": {
+        "successTitle": "Profilo aggiornato",
+        "successMessage": "Le tue modifiche sono state salvate.",
+        "errorTitle": "Qualcosa è andato storto",
+        "errorMessage": "Impossibile aggiornare il profilo. Riprova."
+      }
+    },
+    "password": {
+      "title": "Password",
+      "subtitle": "Scegli una password robusta per proteggere il tuo account.",
+      "current": "Password attuale",
+      "new": "Nuova password",
+      "confirm": "Conferma nuova password",
+      "update": "Aggiorna password",
+      "notifications": {
+        "mismatchTitle": "Le password non coincidono",
+        "mismatchMessage": "Assicurati che entrambe le password siano identiche.",
+        "successTitle": "Password modificata",
+        "successMessage": "La tua password è stata aggiornata.",
+        "errorTitle": "Qualcosa è andato storto",
+        "errorMessage": "Impossibile modificare la password. Verifica la password attuale."
+      }
+    },
+    "dangerZone": {
+      "title": "Zona pericolosa",
+      "subtitle": "Elimina definitivamente il tuo account e tutti i dati associati. L'azione non è reversibile.",
+      "deleteAccount": "Elimina account",
+      "modal": {
+        "title": "Elimina account",
+        "message": "Questo eliminerà definitivamente il tuo account, tutte le tue liste e le tue attività. Questa azione non può essere annullata.",
+        "confirm": "Elimina account",
+        "cancel": "Annulla"
+      }
+    }
+  },
+  "AppearanceSection": {
+    "theme": {
+      "title": "Tema",
+      "subtitle": "Scegli l'aspetto di Simplist su questo dispositivo.",
+      "syncLabel": "Sincronizza l'aspetto su tutti i dispositivi",
+      "syncDescription": "Salva il tema e il colore d'accento sul tuo account anziché solo su questo dispositivo.",
+      "options": {
+        "light": "Chiaro",
+        "dark": "Scuro",
+        "auto": "Sistema"
+      }
+    },
+    "accentColor": {
+      "title": "Colore d'accento",
+      "subtitle": "Scegli il colore principale usato per pulsanti, link ed elementi in evidenza.",
+      "ariaLabel": "Usa {color} come colore d'accento"
+    }
+  },
+  "InfoSection": {
+    "subtitle": "Gestore di attività e liste per self-hosting",
+    "links": {
+      "github": "GitHub",
+      "documentation": "Documentazione"
+    },
+    "environment": {
+      "label": "Ambiente"
+    },
+    "apiEndpoint": {
+      "label": "Endpoint API"
+    },
+    "changelog": {
+      "title": "Storico Rilasci & Changelog",
+      "latest": "Ultima: v{version}",
+      "empty": "Nessuna voce di changelog trovata."
+    }
+  },
+  "InvitesSection": {
+    "title": "Inviti",
+    "subtitle": "Crea e gestisci i link di invito per i nuovi membri.",
+    "buttons": {
+      "cancel": "Annulla",
+      "newInvite": "Nuovo invito",
+      "create": "Crea invito",
+      "done": "Fatto"
+    },
+    "panel": {
+      "emailLabel": "Email (opzionale)",
+      "emailPlaceholder": "persona@esempio.com",
+      "shareText": "Condividi questo link con la persona invitata:",
+      "copied": "Copiato",
+      "copyLink": "Copia link",
+      "qrCodeScan": "Scansiona per aprire l'invito"
+    },
+    "status": {
+      "used": "Utilizzato",
+      "expired": "Scaduto",
+      "pending": "In attesa"
+    },
+    "table": {
+      "email": "Email",
+      "status": "Stato",
+      "expires": "Scadenza",
+      "revoke": "Revoca invito",
+      "expiresMobile": "Scade il {date}"
+    },
+    "empty": "Nessun invito presente.",
+    "notifications": {
+      "createErrorTitle": "Impossibile creare l'invito",
+      "revokeErrorTitle": "Impossibile revocare l'invito",
+      "errorMessage": "Per favore riprova."
+    }
+  },
+  "AddList": {
+    "titleCreate": "Crea una nuova lista",
+    "titleUpdate": "Aggiorna lista",
+    "fields": {
+      "title": "Titolo lista",
+      "description": "Descrizione lista",
+      "color": "Colore"
+    },
+    "actions": {
+      "cancel": "Annulla",
+      "create": "Crea Lista",
+      "update": "Aggiorna Lista"
+    },
+    "colors": {
+      "darkGray": "Grigio Scuro",
+      "gray": "Grigio",
+      "red": "Rosso",
+      "pink": "Rosa",
+      "purple": "Viola",
+      "violet": "Violetto",
+      "indigo": "Indaco",
+      "blue": "Blu",
+      "cyan": "Ciano",
+      "teal": "Ottanio",
+      "green": "Verde",
+      "lime": "Lime",
+      "yellow": "Giallo",
+      "orange": "Arancione"
+    }
+  },
+  "ShareList": {
+    "title": "Condividi lista",
+    "fields": {
+      "emailLabel": "Email",
+      "emailPlaceholder": "nome@esempio.com",
+      "roleLabel": "Ruolo"
+    },
+    "roles": {
+      "editor": "Editor",
+      "viewer": "Visualizzatore"
+    },
+    "actions": {
+      "share": "Condividi",
+      "removeMember": "Rimuovi membro"
+    },
+    "members": {
+      "title": "Membri",
+      "empty": "Questa lista non è ancora stata condivisa con nessuno."
+    },
+    "confirmDelete": {
+      "title": "Rimuovi membro",
+      "message": "Rimuovere {label} da questa lista? Perderà l'accesso immediatamente.",
+      "confirm": "Rimuovi",
+      "cancel": "Annulla"
+    },
+    "errors": {
+      "noListId": "Errore: ID della lista non fornito."
+    }
+  },
+  "ConfirmArchive": {
+    "title": "Archivia Lista",
+    "message": "Sei sicuro di voler archiviare questa lista?",
+    "warning": "Se questa lista è condivisa, verrà nascosta agli altri utenti finché non la ripristinerai.",
+    "actions": {
+      "cancel": "Annulla",
+      "archive": "Archivia Lista"
+    }
+  },
+  "ListMembers": {
+    "you": "(Tu)",
+    "roles": {
+      "owner": "Proprietario",
+      "editor": "Editor",
+      "viewer": "Visualizzatore"
+    }
+  },
+  "EditTask": {
+    "title": "Modifica Attività"
+  },
+  "SpotlightProvider": {
+    "placeholder": "Cerca...",
+    "groups": {
+      "navigation": "Navigazione",
+      "actions": "Azioni"
+    },
+    "actions": {
+      "goHome": "Vai alla Home",
+      "goCalendar": "Vai al Calendario",
+      "goLists": "Vai alle Liste",
+      "goShared": "Vai alle Liste Condivise",
+      "createList": "Crea una nuova lista"
+    },
+    "descriptions": {
+      "sectionInList": "Sezione nella lista {listName}"
+    }
+  },
+  "LoginPage": {
+    "title": "Bentornato",
+    "subtitle": "Accedi per continuare a usare Simplist."
+  },
+  "LoginForm": {
+    "emailLabel": "Email",
+    "emailPlaceholder": "mario@esempio.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "La tua password",
+    "forgotPassword": "Password dimenticata?",
+    "submitButton": "Accedi",
+    "validation": {
+      "emailInvalid": "Inserisci un indirizzo email valido",
+      "passwordMinLength": "La password deve contenere almeno 6 caratteri"
+    },
+    "notifications": {
+      "loginFailed": "Accesso non riuscito"
+    }
+  },
+  "ForgotPasswordPage": {
+    "title": "Password dimenticata?",
+    "subtitle": "Inserisci il tuo indirizzo email e ti invieremo un link per reimpostare la password."
+  },
+  "ForgotPasswordForm": {
+    "emailLabel": "Email",
+    "emailPlaceholder": "mario@esempio.com",
+    "submitButton": "Invia link di ripristino",
+    "rememberPassword": "Ricordi la password? Accedi",
+    "successMessage": "Controlla la tua email per il link di ripristino della password.",
+    "backToLogin": "Torna al login",
+    "validation": {
+      "emailInvalid": "Inserisci un indirizzo email valido"
+    },
+    "notifications": {
+      "successTitle": "Email inviata",
+      "successMessage": "Se esiste un account associato a questa email, riceverai un link per reimpostare la password.",
+      "errorTitle": "Richiesta non riuscita"
+    }
+  },
+  "RegisterPage": {
+    "loading": {
+      "title": "Verifica invito in corso...",
+      "text": "Caricamento..."
+    },
+    "invalid": {
+      "title": "Invito richiesto",
+      "subtitle": "Questo invito non è più valido.",
+      "message": "Questo invito è scaduto oppure è già stato utilizzato.",
+      "backToLogin": "Torna al login"
+    },
+    "form": {
+      "title": "Sei stato invitato!",
+      "subtitle": "Completa il tuo account per unirti a Simplist.",
+      "emailLabel": "Email",
+      "nameLabel": "Nome e cognome",
+      "namePlaceholder": "Mario Rossi",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Scegli una password sicura",
+      "confirmPasswordLabel": "Conferma password",
+      "confirmPasswordPlaceholder": "Ripeti la tua password",
+      "submitButton": "Crea account",
+      "divider": "OPPURE",
+      "passkeyButton": "Registrati con Passkey",
+      "passkeyTooltip": "In arrivo a breve",
+      "alreadyHaveAccount": "Hai già un account?",
+      "signIn": "Accedi"
+    },
+    "validation": {
+      "emailInvalid": "Inserisci un indirizzo email valido",
+      "nameMinLength": "Inserisci il tuo nome",
+      "passwordMinLength": "La password deve contenere almeno 8 caratteri",
+      "passwordsDontMatch": "Le password non corrispondono"
+    },
+    "notifications": {
+      "successTitle": "Registrazione completata",
+      "successMessage": "Ti sei registrato ed effettuato l'accesso con successo.",
+      "errorTitle": "Registrazione non riuscita"
+    }
+  },
+  "ResetPasswordPage": {
+    "title": "Reimposta la tua password",
+    "subtitle": "Inserisci qui sotto la nuova password per reimpostare quella del tuo account."
+  },
+  "ResetPasswordForm": {
+    "emailLabel": "Email",
+    "passwordLabel": "Nuova password",
+    "passwordPlaceholder": "Inserisci la tua nuova password",
+    "confirmPasswordLabel": "Conferma password",
+    "confirmPasswordPlaceholder": "Conferma la tua nuova password",
+    "submitButton": "Reimposta password",
+    "backToLogin": "Torna al login",
+    "successMessage": "La tua password è stata aggiornata con successo.",
+    "goToLogin": "Vai al login",
+    "validation": {
+      "passwordMinLength": "La password deve contenere almeno 8 caratteri",
+      "passwordsDontMatch": "Le password non corrispondono"
+    },
+    "notifications": {
+      "invalidLinkTitle": "Link non valido",
+      "invalidLinkMessage": "Il link di ripristino della password non è valido o è incompleto.",
+      "successTitle": "Password aggiornata",
+      "successMessage": "La tua password è stata reimpostata con successo.",
+      "errorTitle": "Reimpostazione non riuscita"
+    }
+  }
+}

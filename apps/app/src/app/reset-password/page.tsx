@@ -1,11 +1,16 @@
+'use client'
+
 import { AuthCard } from '@/components/auth/AuthCard'
 import ResetPasswordForm from '@/components/auth/ResetPasswordForm'
+import { useTranslations } from 'next-intl'
 
 export default function ResetPasswordPage() {
+  const t = useTranslations('ResetPasswordPage')
+
   return (
     <AuthCard
-      title="Reset your password"
-      subtitle="Enter your new password below to reset your account password."
+      title={t('title')}
+      subtitle={t('subtitle')}
     >
       <ResetPasswordForm />
     </AuthCard>

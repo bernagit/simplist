@@ -1,9 +1,14 @@
 import ListPage from '@/components/list/ListPage'
 import { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 
-export const metadata: Metadata = {
-  title: 'My Lists',
-  description: 'View and manage your lists.'
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('ListPage')
+
+  return {
+    title: t('title'),
+    description: t('description')
+  }
 }
 
 export default function Page() {

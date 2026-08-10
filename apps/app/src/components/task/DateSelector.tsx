@@ -6,6 +6,7 @@ import { useDisclosure } from '@mantine/hooks'
 import { IconCalendar, IconX } from '@tabler/icons-react'
 import DueDateDropdown from './DueDateDropdown'
 import { useSidebar } from '@/providers/SidebarProvider'
+import { useTranslations } from 'next-intl'
 
 type DateSelectorProps = {
   dueDate: string | null
@@ -30,6 +31,7 @@ export default function DateSelector({
   onDurationChange,
   onRecurrenceChange
 }: DateSelectorProps) {
+  const t = useTranslations('DueDateDropdown')
   const shortDate = formatDate(dueDate)
   const { isMobile } = useSidebar()
   const [drawerOpened, { open: openDrawer, close: closeDrawer }] = useDisclosure(false)
@@ -103,7 +105,7 @@ export default function DateSelector({
             >
               <IconCalendar size={16} style={{ marginRight: 4 }} />
               <Text mt={4} size={'13px'} fw={500}>
-                {shortDate ? shortDate : 'Date'}
+                {shortDate ? shortDate : t('label')}
               </Text>
             </Button>
           </Popover.Target>

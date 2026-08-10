@@ -18,19 +18,19 @@ import { modals } from '@mantine/modals'
 import { notifications } from '@mantine/notifications'
 import { useMe, useUpdateMe, useUpdatePassword } from '@/queries/auth'
 import { AvatarPicker } from '../common/AvatarPicker'
+import { useTranslations } from 'next-intl'
 
 export function AccountSection() {
+  const t = useTranslations('AccountSection')
   const { data: me, isLoading } = useMe()
   const theme = useMantineTheme()
-  
+
   const [name, setName] = useState(me?.name ?? '')
   const [email, setEmail] = useState(me?.email ?? '')
   const [savingProfile, setSavingProfile] = useState(false)
   const [avatarPickerOpened, setAvatarPickerOpened] = useState(false)
 
-  const [avatar, setAvatar] = useState(
-    me?.avatar ?? null
-  )
+  const [avatar, setAvatar] = useState(me?.avatar ?? null)
 
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
@@ -49,14 +49,14 @@ export function AccountSection() {
     try {
       await updateUser.mutateAsync({ name, email, avatar })
       notifications.show({
-        title: 'Profile updated',
-        message: 'Your changes have been saved.',
+        title: t('profile.notifications.successTitle'),
+        message: t('profile.notifications.successMessage'),
         color: 'green'
       })
     } catch {
       notifications.show({
-        title: 'Something went wrong',
-        message: 'Could not update your profile. Please try again.',
+        title: t('profile.notifications.errorTitle'),
+        message: t('profile.notifications.errorMessage'),
         color: 'red'
       })
     } finally {
@@ -67,8 +67,8 @@ export function AccountSection() {
   const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
       notifications.show({
-        title: 'Passwords do not match',
-        message: 'Please make sure both passwords are identical.',
+        title: t('password.notifications.mismatchTitle'),
+        message: t('password.notifications.mismatchMessage'),
         color: 'red'
       })
       return
@@ -78,8 +78,8 @@ export function AccountSection() {
     try {
       await changePassword.mutateAsync({ currentPassword, newPassword })
       notifications.show({
-        title: 'Password changed',
-        message: 'Your password has been updated.',
+        title: t('password.notifications.successTitle'),
+        message: t('password.notifications.successMessage'),
         color: 'green'
       })
       setCurrentPassword('')
@@ -87,8 +87,8 @@ export function AccountSection() {
       setConfirmPassword('')
     } catch {
       notifications.show({
-        title: 'Something went wrong',
-        message: 'Could not change your password. Please check your current password.',
+        title: t('password.notifications.errorTitle'),
+        message: t('password.notifications.errorMessage'),
         color: 'red'
       })
     } finally {
@@ -98,15 +98,13 @@ export function AccountSection() {
 
   const openDeleteAccountModal = () =>
     modals.openConfirmModal({
-      title: 'Delete account',
+      title: t('dangerZone.modal.title'),
       centered: true,
-      children: (
-        <Text size="sm">
-          This will permanently delete your account and all your lists and tasks. This action cannot
-          be undone.
-        </Text>
-      ),
-      labels: { confirm: 'Delete account', cancel: 'Cancel' },
+      children: <Text size="sm">{t('dangerZone.modal.message')}</Text>,
+      labels: {
+        confirm: t('dangerZone.modal.confirm'),
+        cancel: t('dangerZone.modal.cancel')
+      },
       confirmProps: { color: 'red' },
       onConfirm: async () => {
         // await accountService.deleteAccount()
@@ -116,21 +114,16 @@ export function AccountSection() {
   return (
     <Stack gap="xl">
       <Stack gap="xs">
-        <div>
-          <Text fw={500} size="sm">
-            Profile
-          </Text>
-          <Text size="xs" c="dimmed">
-            Update your name and email address.
-          </Text>
-        </div>
+        <Text size="xs" c="dimmed">
+          {t('profile.subtitle')}
+        </Text>
 
         <Group align="center" gap="md">
           <Avatar radius="xl" size="lg" color={theme.primaryColor} src={avatar}>
             {!avatar && me?.initials}
           </Avatar>
           <Button variant="default" size="xs" onClick={() => setAvatarPickerOpened(true)}>
-            Change photo
+            {t('profile.changePhoto')}
           </Button>
         </Group>
 
@@ -142,7 +135,7 @@ export function AccountSection() {
         />
 
         <TextInput
-          label="Email"
+          label={t('profile.email')}
           value={email}
           onChange={event => setEmail(event.currentTarget.value)}
           disabled={true}
@@ -150,7 +143,7 @@ export function AccountSection() {
         />
 
         <TextInput
-          label="Name"
+          label={t('profile.name')}
           value={name}
           onChange={event => setName(event.currentTarget.value)}
           disabled={isLoading}
@@ -164,7 +157,7 @@ export function AccountSection() {
             disabled={!profileDirty}
             size="sm"
           >
-            Save changes
+            {t('profile.saveChanges')}
           </Button>
         </Group>
       </Stack>
@@ -174,29 +167,29 @@ export function AccountSection() {
       <Stack gap="xs">
         <div>
           <Text fw={500} size="sm">
-            Password
+            {t('password.title')}
           </Text>
           <Text size="xs" c="dimmed">
-            Choose a strong password to keep your account secure.
+            {t('password.subtitle')}
           </Text>
         </div>
 
         <PasswordInput
-          label="Current password"
+          label={t('password.current')}
           value={currentPassword}
           onChange={event => setCurrentPassword(event.currentTarget.value)}
           maw={360}
         />
 
         <PasswordInput
-          label="New password"
+          label={t('password.new')}
           value={newPassword}
           onChange={event => setNewPassword(event.currentTarget.value)}
           maw={360}
         />
 
         <PasswordInput
-          label="Confirm new password"
+          label={t('password.confirm')}
           value={confirmPassword}
           onChange={event => setConfirmPassword(event.currentTarget.value)}
           maw={360}
@@ -209,7 +202,7 @@ export function AccountSection() {
             disabled={!currentPassword || !newPassword || !confirmPassword}
             size="sm"
           >
-            Update password
+            {t('password.update')}
           </Button>
         </Group>
       </Stack>
@@ -220,16 +213,16 @@ export function AccountSection() {
         <Group gap={6}>
           <IconAlertTriangle size={16} color="var(--mantine-color-red-6)" />
           <Text fw={500} size="sm" c="red">
-            Danger zone
+            {t('dangerZone.title')}
           </Text>
         </Group>
         <Text size="xs" c="dimmed">
-          Permanently delete your account and all associated data. This cannot be undone.
+          {t('dangerZone.subtitle')}
         </Text>
 
         <Box>
           <Button disabled color="red" variant="light" size="sm" onClick={openDeleteAccountModal}>
-            Delete account
+            {t('dangerZone.deleteAccount')}
           </Button>
         </Box>
       </Stack>

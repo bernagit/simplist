@@ -50,6 +50,7 @@ import {
 import TaskRow from '@/components/task/TaskRow'
 import { Section } from '@/models/section'
 import ListMembers from './ListMembers'
+import { useTranslations } from 'next-intl'
 
 function DefaultSectionDroppable({
   id,
@@ -67,6 +68,7 @@ function DefaultSectionDroppable({
 }
 
 export default function ListPage() {
+  const t = useTranslations('ListPage')
   const params = useParams()
   const lastCrossedRef = useRef<boolean>(false)
   const { setTitle, setDescription, setShowTitle, showTitle: showTopbarTitle } = useTopbar()
@@ -91,7 +93,6 @@ export default function ListPage() {
   const [activeId, setActiveId] = useState<string | null>(null)
   const [activeType, setActiveType] = useState<'section' | 'task' | null>(null)
 
-  // Track initial section ID when drag starts to handle backend sync cleanly
   const dragSourceSectionRef = useRef<string | null>(null)
 
   if (list && list !== prevList) {
@@ -174,7 +175,7 @@ export default function ListPage() {
         nextSectionId
       })
     } catch (error) {
-      console.error('Failed to reorder sections:', error)
+      console.error(t('failedReorderSections'), error)
     }
   }
 
@@ -196,7 +197,7 @@ export default function ListPage() {
         nextTaskId
       })
     } catch (error) {
-      console.error('Failed to reorder tasks:', error)
+      console.error(t('failedReorderTasks'), error)
     }
   }
 
@@ -255,7 +256,6 @@ export default function ListPage() {
       return
     }
 
-    // --- REORDER SECTIONS (LexoRank) ---
     if (activeType === 'section') {
       if (activeIdStr === list?.defaultSectionId || overIdStr === list?.defaultSectionId) {
         return
@@ -265,22 +265,18 @@ export default function ListPage() {
       const newIndex = sections.findIndex(s => s.id === overIdStr)
 
       if (oldIndex !== -1 && newIndex !== -1) {
-        // 1. Move array visually for immediate UI feedback
         const reorderedSections = arrayMove(sections, oldIndex, newIndex)
         setSections(reorderedSections)
 
-        // 2. Derive adjacent section IDs
         const movedIndex = reorderedSections.findIndex(s => s.id === activeIdStr)
         const prevSectionId = reorderedSections[movedIndex - 1]?.id
         const nextSectionId = reorderedSections[movedIndex + 1]?.id
 
-        // 3. Send neighboring section IDs to backend
         await handleReorderSections(activeIdStr, prevSectionId, nextSectionId)
       }
       return
     }
 
-    // --- REORDER TASKS ---
     if (activeType === 'task') {
       const activeTask = tasks.find(t => t.id === activeIdStr)
       if (!activeTask) return
@@ -406,7 +402,7 @@ export default function ListPage() {
 
             {!canEdit && (
               <Tooltip
-                label="You don't have permission to edit this list"
+                label={t('noPermissionTooltip')}
                 position="bottom"
                 withArrow
                 transitionProps={{ transition: 'pop', duration: 200 }}
@@ -426,7 +422,7 @@ export default function ListPage() {
           onDragOver={handleDragOver}
           onDragEnd={handleDragEnd}
         >
-          <Stack gap={'xs'}>
+          <Stack gap="xs">
             {defaultSection && (
               <DefaultSectionDroppable id={defaultSection.id}>
                 <SortableContext
@@ -451,7 +447,7 @@ export default function ListPage() {
             )}
 
             <SortableContext items={reorderableSectionIds} strategy={verticalListSortingStrategy}>
-              <Stack gap={'xs'}>
+              <Stack gap="xs">
                 {reorderableSections.map(section => {
                   const sectionTasks = tasks.filter(t => t.sectionId === section.id)
                   const sectionTaskIds = sectionTasks.map(t => t.id)

@@ -25,6 +25,7 @@ import { CompleteList } from '@/models/lists'
 import { listKeys } from '@/queries/lists'
 import { useRouter } from 'next/navigation'
 import { useMe } from '@/queries/auth'
+import { useTranslations } from 'next-intl'
 
 type TaskRowProps = {
   task: Task
@@ -32,6 +33,7 @@ type TaskRowProps = {
 }
 
 export default function TaskRow({ task, canEdit }: TaskRowProps) {
+  const t = useTranslations('TaskRow')
   const router = useRouter()
   const { isMobile } = useSidebar()
   const colorMemo = useMemo(() => getPriorityColor(task.priority), [task.priority])
@@ -45,7 +47,6 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
 
   const linkMemo = useMemo(() => {
     const list = queryClient.getQueryData<Resp<CompleteList>>(listKeys.detail(task.listId))?.data
-    // check if it is a shared list and if the user is the owner
     const isSharedList = list?.ownerId !== me?.id
     const listUrl = isSharedList ? `/lists/shared/${task.listId}` : `/lists/${task.listId}`
     let sectionUrl = listUrl
@@ -121,7 +122,7 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
       {
         key: 'edit',
         icon: <IconEdit size={20} />,
-        title: 'Edit',
+        title: t('edit'),
         onClick: () => {
           handleClick(task)
         },
@@ -130,7 +131,7 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
       {
         key: 'delete',
         icon: <IconTrash size={20} />,
-        title: 'Delete',
+        title: t('delete'),
         color: 'red',
         onClick: () => {
           handleDeleteTask(task)
@@ -138,7 +139,7 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
         disabled: !canEdit
       }
     ],
-    [canEdit, handleClick, handleDeleteTask, task]
+    [canEdit, handleClick, handleDeleteTask, task, t]
   )
 
   useEffect(() => {
@@ -249,7 +250,6 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
               fw={500}
               td={task.completed ? 'line-through' : undefined}
               c={task.completed ? 'dimmed' : 'inherit'}
-              // mt={task.description ? 4 : 0}
             >
               {task.title}
             </Text>

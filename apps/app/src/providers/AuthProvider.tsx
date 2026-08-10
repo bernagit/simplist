@@ -53,6 +53,7 @@ export function AuthProvider({
   async function logout() {
     await authService.logout()
     setSessionActive(false)
+    
   }
 
   return (

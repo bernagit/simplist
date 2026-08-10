@@ -3,7 +3,7 @@
 import { ActionIcon, Box, Group, NavLink, ScrollArea, Stack, Text, Title } from '@mantine/core'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import { ContextModalProps } from '@mantine/modals'
-import { IconMoon, IconSettings, IconUser, IconLayoutSidebar, IconX, IconUsers } from '@tabler/icons-react'
+import { IconMoon, IconSettings, IconUser, IconLayoutSidebar, IconX, IconUsers, IconInfoCircle } from '@tabler/icons-react'
 import { useState } from 'react'
 import { AppearanceSection } from '../settings/AppearanceSection'
 import { GeneralSection } from '../settings/GeneralSection'
@@ -11,21 +11,14 @@ import { AccountSection } from '../settings/AccountSection'
 import { usePreferences } from '@/queries/preferences'
 import { InvitesSection } from '../settings/InviteSection'
 import { InfoSection } from '../settings/InfoSection'
+import { useTranslations } from 'next-intl'
 
 type Section = 'general' | 'account' | 'appearance' | 'invites' | 'notifications' | 'info'
 
 const NAV_WIDTH = 240
 
-const SECTION_LABELS: Record<Section, string> = {
-  general: 'General',
-  account: 'Account',
-  appearance: 'Appearance',
-  invites: 'Invites',
-  notifications: 'Notifications',
-  info: 'Info'
-}
-
 export default function UserSettings({ context, id }: ContextModalProps) {
+  const t = useTranslations('UserSettings')
   const [opened, { toggle }] = useDisclosure(false)
   const [section, setSection] = useState<Section>('general')
   const isMobile = useMediaQuery('(max-width: 768px)') ?? false
@@ -36,8 +29,18 @@ export default function UserSettings({ context, id }: ContextModalProps) {
     if (isMobile) toggle()
   }
 
+  const navLabels: Record<Section, string> = {
+    general: t('nav.general'),
+    account: t('nav.account'),
+    appearance: t('nav.appearance'),
+    invites: t('nav.invites'),
+    notifications: t('nav.notifications'),
+    info: t('nav.info')
+  }
+
   return (
     <Box style={{ display: 'flex', height: '80dvh', position: 'relative', overflow: 'hidden' }}>
+      {/* Sidebar Navigazione */}
       <Box
         w={NAV_WIDTH}
         p="md"
@@ -54,12 +57,12 @@ export default function UserSettings({ context, id }: ContextModalProps) {
         }}
       >
         <Stack gap="md">
-          <Title order={3}>Settings</Title>
+          <Title order={3}>{t('settingsTitle')}</Title>
 
           <Stack gap={4}>
             <NavLink
               active={section === 'general'}
-              label={SECTION_LABELS.general}
+              label={navLabels.general}
               leftSection={<IconSettings size={18} />}
               onClick={() => handleSectionChange('general')}
               style={{ borderRadius: 'var(--mantine-radius-md)' }}
@@ -67,7 +70,7 @@ export default function UserSettings({ context, id }: ContextModalProps) {
 
             <NavLink
               active={section === 'account'}
-              label={SECTION_LABELS.account}
+              label={navLabels.account}
               leftSection={<IconUser size={18} />}
               onClick={() => handleSectionChange('account')}
               style={{ borderRadius: 'var(--mantine-radius-md)' }}
@@ -75,7 +78,7 @@ export default function UserSettings({ context, id }: ContextModalProps) {
 
             <NavLink
               active={section === 'appearance'}
-              label={SECTION_LABELS.appearance}
+              label={navLabels.appearance}
               leftSection={<IconMoon size={18} />}
               onClick={() => handleSectionChange('appearance')}
               style={{ borderRadius: 'var(--mantine-radius-md)' }}
@@ -83,22 +86,16 @@ export default function UserSettings({ context, id }: ContextModalProps) {
 
             <NavLink
               active={section === 'invites'}
-              label={SECTION_LABELS.invites}
+              label={navLabels.invites}
               leftSection={<IconUsers size={18} />}
               onClick={() => handleSectionChange('invites')}
               style={{ borderRadius: 'var(--mantine-radius-md)' }}
             />
-            {/* <NavLink
-              active={section === 'notifications'}
-              label={SECTION_LABELS.notifications}
-              leftSection={<IconBell size={18} />}
-              onClick={() => handleSectionChange('notifications')}
-              style={{ borderRadius: 'var(--mantine-radius-md)' }}
-            /> */}
+
             <NavLink
               active={section === 'info'}
-              label={SECTION_LABELS.info}
-              leftSection={<IconSettings size={18} />}
+              label={navLabels.info}
+              leftSection={<IconInfoCircle size={18} />}
               onClick={() => handleSectionChange('info')}
               style={{ borderRadius: 'var(--mantine-radius-md)' }}
             />
@@ -106,7 +103,9 @@ export default function UserSettings({ context, id }: ContextModalProps) {
         </Stack>
       </Box>
 
+      {/* Contenuto Principale */}
       <Box style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+        {/* Header con Titolo e Bottone di Chiusura */}
         <Group
           justify="space-between"
           p="md"
@@ -120,61 +119,51 @@ export default function UserSettings({ context, id }: ContextModalProps) {
               color="gray"
               onClick={toggle}
               hiddenFrom="sm"
-              aria-label="Toggle settings navigation"
+              aria-label={t('aria.toggleNav')}
             >
               <IconLayoutSidebar size={18} />
             </ActionIcon>
 
-            <Title order={3}>{SECTION_LABELS[section]}</Title>
+            <Title order={3}>{navLabels[section]}</Title>
           </Group>
 
-          <ActionIcon variant="subtle" onClick={() => context.closeModal(id)}>
-            <IconX />
+          {/* Tasto per chiudere il Modale di Contesto */}
+          <ActionIcon variant="subtle" color="gray" onClick={() => context.closeModal(id)}>
+            <IconX size={18} />
           </ActionIcon>
         </Group>
 
+        {/* Corpo della Sezione */}
         <ScrollArea flex={1} p="lg">
           {section === 'general' && (
             <Stack>
-              <Title order={4}>General</Title>
-              <Text c="dimmed">General application settings.</Text>
+              <Text c="dimmed">{t('general.subtitle')}</Text>
               <GeneralSection preferences={pref?.data} loading={prefLoading} />
             </Stack>
           )}
 
           {section === 'account' && (
             <Stack>
-              <Title order={4}>Account</Title>
-              <Text c="dimmed">Profile, password and email.</Text>
+              <Text c="dimmed">{t('account.subtitle')}</Text>
               <AccountSection />
             </Stack>
           )}
 
           {section === 'appearance' && (
             <Stack>
-              <Title order={4}>Appearance</Title>
-              <Text c="dimmed">Customize the look and feel of Simplist.</Text>
+              <Text c="dimmed">{t('appearance.subtitle')}</Text>
               <AppearanceSection />
             </Stack>
           )}
 
           {section === 'invites' && (
             <Stack>
-              <Title order={4}>Invites</Title>
-              <Text c="dimmed">Manage your invites and invite new users.</Text>
+              <Text c="dimmed">{t('invites.subtitle')}</Text>
               <InvitesSection />
             </Stack>
           )}
 
-          {/* {section === 'notifications' && (
-            <Stack>
-              <Title order={4}>Notifications</Title>
-            </Stack>
-          )} */}
-
-          {section === 'info' && (
-            <InfoSection />
-          )}
+          {section === 'info' && <InfoSection />}
         </ScrollArea>
       </Box>
     </Box>

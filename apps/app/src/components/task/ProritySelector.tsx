@@ -1,9 +1,10 @@
 'use client'
 
+import { usePriorityOptions } from '@/hooks/useOptionLabel'
 import { getPriorityColor } from '@/utils/color'
-import { PRIORITY_OPTIONS } from '@/utils/constants'
 import { Box, Button, Group, Popover, Stack, Text } from '@mantine/core'
 import { IconFlag, IconX } from '@tabler/icons-react'
+import { useTranslations } from 'next-intl'
 import { useMemo, useState } from 'react'
 
 type PrioritySelectorProps = {
@@ -15,14 +16,20 @@ export default function PrioritySelector({
   selectedPriority,
   setSelectedPriority
 }: PrioritySelectorProps) {
+  const t = useTranslations('TaskPriorityField')
   const colorMemo = useMemo(() => getPriorityColor(selectedPriority), [selectedPriority])
   const isPrioritySelected = selectedPriority !== null
   const [open, setOpen] = useState(false)
+
+  const priorityOptions = usePriorityOptions()
 
   const handlePrioritySelect = (priority: string | null) => {
     setSelectedPriority(priority)
     setOpen(false)
   }
+
+  const activeOption = priorityOptions.find(option => option.value === selectedPriority)
+  const label = activeOption?.label ?? t('defaultPriority')
 
   return (
     <Group gap={0}>
@@ -47,14 +54,14 @@ export default function PrioritySelector({
           >
             <Text mt={4} size={'13px'} fw={isPrioritySelected ? 600 : 500}>
               {isPrioritySelected
-                ? PRIORITY_OPTIONS.find(option => option.value === selectedPriority)?.label
-                : 'Priority'}
+                ? label
+                : t('defaultPriority')}
             </Text>
           </Button>
         </Popover.Target>
         <Popover.Dropdown p={0}>
           <Stack gap={0} p={0}>
-            {PRIORITY_OPTIONS.map(option => (
+            {priorityOptions.map(option => (
               <Button
                 key={option.value}
                 variant="subtle"

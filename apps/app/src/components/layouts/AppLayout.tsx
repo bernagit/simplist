@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation'
 import { ModalsProvider } from '@mantine/modals'
 import { Box, Button, Group, Modal, ScrollArea } from '@mantine/core'
+import { useLocale, useTranslations } from 'next-intl'
 import { Sidebar } from './Sidebar'
 import { Topbar } from './Topbar'
 import { MobileOverlay } from './MobileOverlay'
@@ -20,91 +21,114 @@ import UserSettings from '../modals/UserSettings'
 import EditTask from '../modals/EditTask'
 import { useChangelog } from '@/hooks/useChangelog'
 import { ChangelogView } from '../common/ChangelogView'
+import { useState } from 'react'
+import { DatesProvider } from '@mantine/dates'
+import ConfirmArchive from '../modals/ConfirmArchive'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const { isOpen, currentVersion, rawChangelog, markAsRead } = useChangelog();
+  const locale = useLocale()
+  const t = useTranslations('AppLayout')
+  const { currentVersion, lastSeenVersion, rawChangelog, markAsRead } = useChangelog()
 
+  const [manualOpen, setManualOpen] = useState(false)
+
+  // Automatically check if version has changed once client storage is resolved
+  const isNewVersion = !!lastSeenVersion && lastSeenVersion !== currentVersion
+  const isModalOpen = manualOpen || isNewVersion
+
+  const handleClose = () => {
+    markAsRead()
+    setManualOpen(false)
+  }
   const isAuthRoute = PUBLIC_ROUTES.some(route => pathname.startsWith(route))
 
   if (isAuthRoute) return <AuthLayout>{children}</AuthLayout>
 
   return (
-    <ModalsProvider
-      modals={{
-        addList: AddList,
-        shareList: ShareList,
-        userSettings: UserSettings,
-        editTask: EditTask
-      }}
-      modalProps={{
-        withinPortal: true,
-        zIndex: 400,
-        closeOnClickOutside: false
+    <DatesProvider
+      settings={{
+        locale,
+        firstDayOfWeek: locale === 'en' ? 0 : 1 // 0 = Sunday (US), 1 = Monday (EU/IT)
       }}
     >
-      <TopbarProvider>
-        <SidebarProvider>
-          <HelpProvider>
-            <HotkeyProvider>
-              <SpotlightProvider />
-              <Box display="flex" h="100dvh" style={{ overflow: 'hidden' }}>
-                <Sidebar />
-                <MobileOverlay />
-                <Box
-                  flex={1}
-                  display="flex"
-                  style={{
-                    flexDirection: 'column',
-                    overflow: 'hidden',
-                    minWidth: 0
-                  }}
-                >
-                  <Topbar />
+      <ModalsProvider
+        modals={{
+          addList: AddList,
+          shareList: ShareList,
+          userSettings: UserSettings,
+          editTask: EditTask,
+          confirmArchive: ConfirmArchive
+        }}
+        modalProps={{
+          withinPortal: true,
+          zIndex: 400,
+          closeOnClickOutside: false
+        }}
+      >
+        <TopbarProvider>
+          <SidebarProvider>
+            <HelpProvider>
+              <HotkeyProvider>
+                <SpotlightProvider />
+                <Box display="flex" h="100dvh" style={{ overflow: 'hidden' }}>
+                  <Sidebar />
+                  <MobileOverlay />
                   <Box
-                    id="app-scroll-container"
-                    component="main"
                     flex={1}
+                    display="flex"
                     style={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      overflowY: 'auto',
-                      overflowX: 'hidden',
-                      minHeight: 0,
-                      WebkitOverflowScrolling: 'touch'
+                      flexDirection: 'column',
+                      overflow: 'hidden',
+                      minWidth: 0
                     }}
                   >
+                    <Topbar />
                     <Box
-                      w={{ base: '100%', lg: '60%' }}
-                      p="md"
+                      id="app-scroll-container"
+                      component="main"
+                      flex={1}
                       style={{
-                        flex: 1,
-                        minHeight: '100%'
+                        display: 'flex',
+                        justifyContent: 'center',
+                        overflowY: 'auto',
+                        overflowX: 'hidden',
+                        minHeight: 0,
+                        WebkitOverflowScrolling: 'touch'
                       }}
                     >
-                      {children}
-                      <Modal
-                        opened={isOpen}
-                        onClose={markAsRead}
-                        title={`What's New in v${currentVersion}`}
-                        size="lg"
+                      <Box
+                        w={{ base: '100%', lg: '60%' }}
+                        p="md"
+                        style={{
+                          flex: 1,
+                          minHeight: '100%'
+                        }}
                       >
-                        <ScrollArea h={350} offsetScrollbars p="xs">
-                          <ChangelogView rawMarkdown={rawChangelog} />
-                        </ScrollArea>
-                        <Group justify="right" mt="md">
-                          <Button onClick={markAsRead}>Got it!</Button>
-                        </Group>
-                      </Modal>
+                        {children}
+                        <Modal
+                          opened={isModalOpen}
+                          onClose={handleClose}
+                          title={t('whatsNewTitle', { version: currentVersion })}
+                          size="lg"
+                        >
+                          <ScrollArea h={350} offsetScrollbars p="xs">
+                            <ChangelogView rawMarkdown={rawChangelog} />
+                          </ScrollArea>
+                          <Group justify="right" mt="md">
+                            <Button onClick={markAsRead}>{t('gotItButton')}</Button>
+                          </Group>
+                        </Modal>
+                      </Box>
                     </Box>
                   </Box>
+                  <HelpDrawer />
                 </Box>
-                <HelpDrawer />
-              </Box>
-            </HotkeyProvider>
-          </HelpProvider>
-        </SidebarProvider>
-      </TopbarProvider>
-    </ModalsProvider>
+              </HotkeyProvider>
+            </HelpProvider>
+          </SidebarProvider>
+        </TopbarProvider>
+      </ModalsProvider>
+    </DatesProvider>
   )
 }

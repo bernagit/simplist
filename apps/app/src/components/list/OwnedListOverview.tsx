@@ -13,8 +13,10 @@ import dayjs from "dayjs"
 import { useContextMenu } from "mantine-contextmenu"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
+import { useTranslations } from "next-intl"
 
 export default function OwnedListOverview() {
+  const t = useTranslations('OwnedListOverview')
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState('')
   const [debouncedQuery] = useDebouncedValue(searchQuery, 300)
@@ -80,13 +82,13 @@ export default function OwnedListOverview() {
   const handleDeleteList = (listId: string) => {
     if (preferences?.confirmDelete) {
       modals.openConfirmModal({
-        title: 'Delete List',
+        title: t('deleteModalTitle'),
         children: (
           <Text size="sm">
-            Are you sure you want to delete this list? This action cannot be undone.
+            {t('deleteModalConfirm')}
           </Text>
         ),
-        labels: { confirm: 'Delete', cancel: 'Cancel' },
+        labels: { confirm: t('deleteConfirmButton'), cancel: t('cancel') },
         confirmProps: { color: 'red' },
         onConfirm: async () => {
           await deleteList.mutateAsync(listId)
@@ -102,27 +104,27 @@ export default function OwnedListOverview() {
       {
         key: 'info',
         icon: <IconInfoCircle size={20} />,
-        title: 'More Info',
+        title: t('moreInfo'),
         onClick: () => {
           modals.open({
-            title: 'List Info',
+            title: t('infoModalTitle'),
             children: (
               <Stack gap="xs">
                 <Text size="sm">
-                  <strong>Title:</strong> {list.title}
+                  <strong>{t('infoTitle')}:</strong> {list.title}
                 </Text>
                 <Text size="sm">
-                  <strong>Description:</strong> {list.description || 'No description'}
+                  <strong>{t('infoDescription')}:</strong> {list.description || t('noDescription')}
                 </Text>
                 <Text size="sm">
-                  <strong>Created At:</strong> {dayjs(list.createdAt).format('DD MMM YYYY, HH:mm')}
+                  <strong>{t('infoCreatedAt')}:</strong> {dayjs(list.createdAt).format('DD MMM YYYY, HH:mm')}
                 </Text>
                 <Text size="sm">
-                  <strong>Updated At:</strong> {dayjs(list.updatedAt).format('DD MMM YYYY, HH:mm')}
+                  <strong>{t('infoUpdatedAt')}:</strong> {dayjs(list.updatedAt).format('DD MMM YYYY, HH:mm')}
                 </Text>
                 {list.archivedAt && (
                   <Text size="sm">
-                    <strong>Archived At:</strong> {dayjs(list.archivedAt).format('DD MMM YYYY, HH:mm')}
+                    <strong>{t('infoArchivedAt')}:</strong> {dayjs(list.archivedAt).format('DD MMM YYYY, HH:mm')}
                   </Text>
                 )}
               </Stack>
@@ -133,7 +135,7 @@ export default function OwnedListOverview() {
       {
         key: 'edit',
         icon: <IconEdit size={20} />,
-        title: 'Edit',
+        title: t('edit'),
         onClick: () => {
           updateListModal(list.id, list)
         }
@@ -141,25 +143,25 @@ export default function OwnedListOverview() {
       {
         key: 'archive',
         icon: list.archivedAt ? <IconArchiveOff size={20} /> : <IconArchive size={20} />,
-        title: list.archivedAt ? 'Unarchive' : 'Archive',
+        title: list.archivedAt ? t('unarchive') : t('archive'),
         onClick: async () => {
           if (list.archivedAt) {
             await unarchiveList.mutateAsync(list.id)
           } else {
             if (preferences?.confirmDelete) {
               modals.openConfirmModal({
-                title: 'Archive List',
+                title: t('archiveModalTitle'),
                 children: (
                   <Stack gap="xs">
                     <Text size="sm">
-                      Are you sure you want to archive this list?
+                      {t('archiveModalConfirm')}
                     </Text>
                     <Text size="sm" c="dimmed">
-                      If this list is shared, it will be hidden from other users until you unarchive it.
+                      {t('archiveModalWarning')}
                     </Text>
                   </Stack>
                 ),
-                labels: { confirm: 'Archive', cancel: 'Cancel' },
+                labels: { confirm: t('archiveConfirmButton'), cancel: t('cancel') },
                 confirmProps: { color: 'orange' },
                 onConfirm: async () => {
                   await archiveList.mutateAsync(list.id)
@@ -174,7 +176,7 @@ export default function OwnedListOverview() {
       {
         key: 'share',
         icon: <IconShare size={20} />,
-        title: 'Share',
+        title: t('share'),
         onClick: () => {
           shareListModal(list.id)
         }
@@ -185,7 +187,7 @@ export default function OwnedListOverview() {
       {
         key: 'delete',
         icon: <IconTrash size={20} />,
-        title: 'Delete',
+        title: t('delete'),
         color: 'red',
         onClick: () => {
           handleDeleteList(list.id)
@@ -206,9 +208,9 @@ export default function OwnedListOverview() {
     <Container size="lg" py="xl">
       <Group justify="space-between" mb="xl">
         <div>
-          <Title order={1}>{'My Lists'}</Title>
+          <Title order={1}>{t('title')}</Title>
           <Text c="dimmed">
-            {filteredData.length} {filteredData.length === 1 ? 'list' : 'lists'}
+            {t('listCount', { count: filteredData.length })}
           </Text>
         </div>
         <ActionIcon size="lg" radius="md" variant="filled" onClick={createListModal}>
@@ -218,7 +220,7 @@ export default function OwnedListOverview() {
       <Stack mb="md" gap="sm">
         <Group gap="sm" align="center">
           <TextInput
-            placeholder="Search lists..."
+            placeholder={t('searchPlaceholder')}
             value={searchQuery}
             onChange={e => setSearchQuery(e.currentTarget.value)}
             flex={1}
@@ -251,7 +253,7 @@ export default function OwnedListOverview() {
             <Stack gap="md">
               <div>
                 <Text size="sm" fw={600} mb={6}>
-                  Status
+                  {t('statusLabel')}
                 </Text>
 
                 <SegmentedControl
@@ -259,9 +261,9 @@ export default function OwnedListOverview() {
                   value={status}
                   onChange={value => setStatus(value as StatusFilter)}
                   data={[
-                    { label: 'Active', value: 'active' },
-                    { label: 'All', value: 'all' },
-                    { label: 'Archived', value: 'archived' }
+                    { label: t('active'), value: 'active' },
+                    { label: t('all'), value: 'all' },
+                    { label: t('archived'), value: 'archived' }
                   ]}
                 />
               </div>
@@ -270,7 +272,7 @@ export default function OwnedListOverview() {
 
               <Group justify="flex-end">
                 <Button variant="subtle" size="xs" onClick={() => setStatus('active')}>
-                  Reset
+                  {t('reset')}
                 </Button>
               </Group>
             </Stack>
@@ -310,7 +312,7 @@ export default function OwnedListOverview() {
                   <Group gap="xs">
                     {list.archivedAt && (
                       <Badge color="gray" variant="light">
-                        Archived
+                        {t('archived')}
                       </Badge>
                     )}
 
@@ -322,7 +324,7 @@ export default function OwnedListOverview() {
                   <Title order={4}>{list.title}</Title>
 
                   <Text c="dimmed" size="sm" lineClamp={2} mt={4}>
-                    {list.description || 'No description'}
+                    {list.description || t('noDescription')}
                   </Text>
                 </div>
               </Stack>

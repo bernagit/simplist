@@ -1,0 +1,603 @@
+{
+  "Metadata": {
+    "title": "Simplist",
+    "description": "Manage your tasks and lists with ease using Simplist."
+  },
+  "Common": {
+    "welcome": "Welcome to Simplist",
+    "language": "Language"
+  },
+  "AppLayout": {
+    "whatsNewTitle": "What's New in v{version}",
+    "gotItButton": "Got it!"
+  },
+  "Sidebar": {
+    "loading": "Loading...",
+    "settings": "Settings",
+    "logout": "Log out",
+    "toggleSidebar": "Toggle sidebar",
+    "home": "Home",
+    "calendar": "Calendar",
+    "search": "Search",
+    "myLists": "My Lists",
+    "addList": "Add list",
+    "collapseLists": "Collapse lists",
+    "expandLists": "Expand lists",
+    "listIsShared": "List is shared",
+    "sharedWithMe": "Shared With Me",
+    "helpAndSupport": "Help & Support",
+    "documentation": "Documentation",
+    "keyboardShortcuts": "Keyboard Shortcuts",
+    "resizeSidebar": "Resize sidebar"
+  },
+  "Topbar": {
+    "toggleSidebar": "Toggle sidebar",
+    "shareList": "Share list",
+    "share": "Share",
+    "options": "Options",
+    "edit": "Edit",
+    "archive": "Archive",
+    "unarchive": "Unarchive"
+  },
+  "Breadcrumbs": {
+    "myLists": "My Lists",
+    "shared": "Shared With Me",
+    "calendar": "Calendar"
+  },
+  "HelpDrawer": {
+    "title": "Keyboard shortcuts",
+    "description": "Use these shortcuts to use the application faster."
+  },
+  "HotkeyCategories": {
+    "Actions": "Actions",
+    "General": "General",
+    "Navigation": "Navigation"
+  },
+  "Hotkeys": {
+    "NEW_LIST": "Add a new list",
+    "SHARE_LIST": "Share current list",
+    "EDIT_LIST": "Edit current list",
+    "TOGGLE_THEME": "Toggle theme",
+    "TOGGLE_SIDEBAR": "Toggle sidebar",
+    "TOGGLE_HELP": "Open help",
+    "OPEN_SETTINGS": "Open settings",
+    "GO_HOME": "Go home",
+    "GO_CALENDAR": "Go to calendar",
+    "GO_LISTS": "Go to \"My Lists\"",
+    "GO_SHARED_LISTS": "Go to \"Shared With Me\""
+  },
+  "HomePage": {
+    "title": "Home - Simplist",
+    "description": "Welcome to the Simplist homepage.",
+    "welcomeTitle": "Welcome to Simplist 👋",
+    "welcomeSubtitle": "Keep your lists together",
+    "createListButton": "Create a list",
+    "createFirstListButton": "Create your first list",
+    "myListsTitle": "My Lists",
+    "myListsDesc": "Browse and manage all your personal lists.",
+    "sharedListsTitle": "Shared Lists",
+    "sharedListsDesc": "Lists that other people shared with you."
+  },
+  "OwnedListOverview": {
+    "title": "My Lists",
+    "listCount": "{count, plural, =1 {1 list} other {# lists}}",
+    "searchPlaceholder": "Search lists...",
+    "statusLabel": "Status",
+    "active": "Active",
+    "all": "All",
+    "archived": "Archived",
+    "reset": "Reset",
+    "noDescription": "No description",
+    "moreInfo": "More Info",
+    "edit": "Edit",
+    "archive": "Archive",
+    "unarchive": "Unarchive",
+    "share": "Share",
+    "delete": "Delete",
+    "infoModalTitle": "List Info",
+    "infoTitle": "Title",
+    "infoDescription": "Description",
+    "infoCreatedAt": "Created At",
+    "infoUpdatedAt": "Updated At",
+    "infoArchivedAt": "Archived At",
+    "deleteModalTitle": "Delete List",
+    "deleteModalConfirm": "Are you sure you want to delete this list? This action cannot be undone.",
+    "deleteConfirmButton": "Delete",
+    "archiveModalTitle": "Archive List",
+    "archiveModalConfirm": "Are you sure you want to archive this list?",
+    "archiveModalWarning": "If this list is shared, it will be hidden from other users until you unarchive it.",
+    "archiveConfirmButton": "Archive",
+    "cancel": "Cancel"
+  },
+  "SharedListsPage": {
+    "title": "Shared With Me - Simplist",
+    "description": "View and manage lists that have been shared with you."
+  },
+  "SharedListOverview": {
+    "title": "Shared With Me",
+    "listCount": "{count, plural, =1 {1 list} other {# lists}}",
+    "searchPlaceholder": "Search lists...",
+    "noDescription": "No description",
+    "moreInfo": "More Info",
+    "infoModalTitle": "List Info",
+    "infoTitle": "Title",
+    "infoDescription": "Description",
+    "infoOwner": "Owner",
+    "infoCreatedAt": "Created At",
+    "infoUpdatedAt": "Updated At",
+    "infoArchivedAt": "Archived At",
+    "archived": "Archived"
+  },
+  "CalendarPage": {
+    "title": "Calendar - Simplist",
+    "description": "View and manage your calendar tasks."
+  },
+  "ListPage": {
+    "title": "My Lists - Simplist",
+    "description": "View and manage your lists.",
+    "noPermissionTooltip": "You don't have permission to edit this list",
+    "failedReorderSections": "Failed to reorder sections:",
+    "failedReorderTasks": "Failed to reorder tasks:"
+  },
+  "SectionPanel": {
+    "deleteSection": "Delete Section"
+  },
+  "TaskRow": {
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "AddTask": {
+    "addTask": "Add Task",
+    "titlePlaceholder": "Task name",
+    "descriptionPlaceholder": "Description",
+    "cancel": "Cancel",
+    "submit": "Add task"
+  },
+  "GeneralSection": {
+    "languageTitle": "Language",
+    "languageDesc": "Choose your preferred display language.",
+    "defaultViewTitle": "Default view",
+    "defaultViewDesc": "Choose what opens first when you launch Simplist.",
+    "startOfWeekTitle": "Start of week",
+    "startOfWeekDesc": "Used for the Calendar view.",
+    "confirmDeleteLabel": "Ask for confirmation before deleting/archiving a list",
+    "confirmDeleteDesc": "Show a confirmation dialog when deleting or archiving a list.",
+    "views": {
+      "home": "Home",
+      "calendar": "Calendar"
+    },
+    "days": {
+      "sunday": "Sunday",
+      "monday": "Monday"
+    }
+  },
+  "Constants": {
+    "Priority": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low",
+      "none": "None"
+    },
+    "Recurrence": {
+      "none": "Does not repeat",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly"
+    }
+  },
+  "DueDateDropdown": {
+    "label": "Date",
+    "timeAndDuration": "Time & Duration",
+    "dueTimeLabel": "Due Time",
+    "dueTimePlaceholder": "Set time",
+    "durationLabel": "Duration",
+    "durationPlaceholder": "Min",
+    "durationSuffix": " min",
+    "recurrence": "Recurrence",
+    "recurrencePlaceholder": "Select interval"
+  },
+  "TaskDueDateField": {
+    "label": "Due Date",
+    "setDueDate": "Set due date",
+    "at": "at {time}",
+    "duration": "({minutes}m)",
+    "recurring": "Recurring"
+  },
+  "CustomSchedule": {
+    "loading": "Loading...",
+    "agenda": "Agenda",
+    "today": "Today",
+    "previous": "Previous",
+    "next": "Next",
+    "noEvents": "No events",
+    "views": {
+      "day": "Day",
+      "week": "Week",
+      "month": "Month"
+    },
+    "allDay": "All day"
+  },
+  "TaskPriorityField": {
+    "label": "Priority",
+    "defaultPriority": "Priority"
+  },
+  "HotkeyBinding": {
+    "then": "then"
+  },
+  "Changelog": {
+    "empty": "No release notes found.",
+    "sections": {
+      "Added": "Added",
+      "Fixed": "Fixed",
+      "Changed": "Changed",
+      "Removed": "Removed",
+      "Deprecated": "Deprecated",
+      "Patch Changes": "Patch Changes",
+      "Minor Changes": "Minor Changes",
+      "Major Changes": "Major Changes",
+      "Security": "Security"
+    }
+  },
+  "AvatarPicker": {
+    "title": "Choose your avatar",
+    "showMore": "Show more",
+    "uploadImage": "Upload custom image"
+  },
+  "AddSection": {
+    "addSection": "Add Section",
+    "placeholder": "Section Title",
+    "cancel": "Cancel"
+  },
+  "TaskContent": {
+    "titlePlaceholder": "Task name",
+    "descriptionPlaceholder": "Description",
+    "cancel": "Cancel",
+    "save": "Save"
+  },
+  "UserSettings": {
+    "settingsTitle": "Settings",
+    "nav": {
+      "general": "General",
+      "account": "Account",
+      "appearance": "Appearance",
+      "invites": "Invites",
+      "notifications": "Notifications",
+      "info": "Info"
+    },
+    "general": {
+      "title": "General",
+      "subtitle": "General application settings."
+    },
+    "account": {
+      "title": "Account",
+      "subtitle": "Profile, password and email."
+    },
+    "appearance": {
+      "title": "Appearance",
+      "subtitle": "Customize the look and feel of Simplist."
+    },
+    "invites": {
+      "title": "Invites",
+      "subtitle": "Manage your invites and invite new users."
+    },
+    "aria": {
+      "toggleNav": "Toggle settings navigation"
+    }
+  },
+  "AccountSection": {
+    "profile": {
+      "title": "Profile",
+      "subtitle": "Update your name and email address.",
+      "changePhoto": "Change photo",
+      "email": "Email",
+      "name": "Name",
+      "saveChanges": "Save changes",
+      "notifications": {
+        "successTitle": "Profile updated",
+        "successMessage": "Your changes have been saved.",
+        "errorTitle": "Something went wrong",
+        "errorMessage": "Could not update your profile. Please try again."
+      }
+    },
+    "password": {
+      "title": "Password",
+      "subtitle": "Choose a strong password to keep your account secure.",
+      "current": "Current password",
+      "new": "New password",
+      "confirm": "Confirm new password",
+      "update": "Update password",
+      "notifications": {
+        "mismatchTitle": "Passwords do not match",
+        "mismatchMessage": "Please make sure both passwords are identical.",
+        "successTitle": "Password changed",
+        "successMessage": "Your password has been updated.",
+        "errorTitle": "Something went wrong",
+        "errorMessage": "Could not change your password. Please check your current password."
+      }
+    },
+    "dangerZone": {
+      "title": "Danger zone",
+      "subtitle": "Permanently delete your account and all associated data. This cannot be undone.",
+      "deleteAccount": "Delete account",
+      "modal": {
+        "title": "Delete account",
+        "message": "This will permanently delete your account and all your lists and tasks. This action cannot be undone.",
+        "confirm": "Delete account",
+        "cancel": "Cancel"
+      }
+    }
+  },
+  "AppearanceSection": {
+    "theme": {
+      "title": "Theme",
+      "subtitle": "Choose how Simplist looks on this device.",
+      "syncLabel": "Sync appearance across devices",
+      "syncDescription": "Save your theme and accent color to your account instead of only this device.",
+      "options": {
+        "light": "Light",
+        "dark": "Dark",
+        "auto": "System"
+      }
+    },
+    "accentColor": {
+      "title": "Accent color",
+      "subtitle": "Pick the primary color used across buttons, links and highlights.",
+      "ariaLabel": "Use {color} as accent color"
+    }
+  },
+  "InfoSection": {
+    "subtitle": "Self-hosted task & list management engine",
+    "links": {
+      "github": "GitHub",
+      "documentation": "Documentation"
+    },
+    "environment": {
+      "label": "Environment"
+    },
+    "apiEndpoint": {
+      "label": "API Endpoint"
+    },
+    "changelog": {
+      "title": "Release History & Changelog",
+      "latest": "Latest: v{version}",
+      "empty": "No changelog entry found."
+    }
+  },
+  "InvitesSection": {
+    "title": "Invites",
+    "subtitle": "Create and manage invite links for new members.",
+    "buttons": {
+      "cancel": "Cancel",
+      "newInvite": "New invite",
+      "create": "Create invite",
+      "done": "Done"
+    },
+    "panel": {
+      "emailLabel": "Email (optional)",
+      "emailPlaceholder": "person@example.com",
+      "shareText": "Share this link with the invitee:",
+      "copied": "Copied",
+      "copyLink": "Copy link",
+      "qrCodeScan": "Scan to open invite"
+    },
+    "status": {
+      "used": "Used",
+      "expired": "Expired",
+      "pending": "Pending"
+    },
+    "table": {
+      "email": "Email",
+      "status": "Status",
+      "expires": "Expires",
+      "revoke": "Revoke invite",
+      "expiresMobile": "Expires {date}"
+    },
+    "empty": "No invites yet.",
+    "notifications": {
+      "createErrorTitle": "Could not create invite",
+      "revokeErrorTitle": "Could not revoke invite",
+      "errorMessage": "Please try again."
+    }
+  },
+  "AddList": {
+    "titleCreate": "Create a new list",
+    "titleUpdate": "Update list",
+    "fields": {
+      "title": "List Title",
+      "description": "List Description",
+      "color": "Color"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "create": "Create List",
+      "update": "Update List"
+    },
+    "colors": {
+      "darkGray": "Dark Gray",
+      "gray": "Gray",
+      "red": "Red",
+      "pink": "Pink",
+      "purple": "Purple",
+      "violet": "Violet",
+      "indigo": "Indigo",
+      "blue": "Blue",
+      "cyan": "Cyan",
+      "teal": "Teal",
+      "green": "Green",
+      "lime": "Lime",
+      "yellow": "Yellow",
+      "orange": "Orange"
+    }
+  },
+  "ShareList": {
+    "title": "Share list",
+    "fields": {
+      "emailLabel": "Email",
+      "emailPlaceholder": "name@example.com",
+      "roleLabel": "Role"
+    },
+    "roles": {
+      "editor": "Editor",
+      "viewer": "Viewer"
+    },
+    "actions": {
+      "share": "Share",
+      "removeMember": "Remove member"
+    },
+    "members": {
+      "title": "Members",
+      "empty": "This list hasn't been shared with anyone yet."
+    },
+    "confirmDelete": {
+      "title": "Remove member",
+      "message": "Remove {label} from this list? They'll lose access immediately.",
+      "confirm": "Remove",
+      "cancel": "Cancel"
+    },
+    "errors": {
+      "noListId": "Error: No list ID provided."
+    }
+  },
+  "ConfirmArchive": {
+    "title": "Archive List",
+    "message": "Are you sure you want to archive this list?",
+    "warning": "If this list is shared, it will be hidden from other users until you unarchive it.",
+    "actions": {
+      "cancel": "Cancel",
+      "archive": "Archive List"
+    }
+  },
+  "ListMembers": {
+    "you": "(You)",
+    "roles": {
+      "owner": "Owner",
+      "editor": "Editor",
+      "viewer": "Viewer"
+    }
+  },
+  "EditTask": {
+    "title": "Edit Task"
+  },
+  "SpotlightProvider": {
+    "placeholder": "Search...",
+    "groups": {
+      "navigation": "Navigation",
+      "actions": "Actions"
+    },
+    "actions": {
+      "goHome": "Go to Home",
+      "goCalendar": "Go to Calendar",
+      "goLists": "Go to Lists",
+      "goShared": "Go to Shared Lists",
+      "createList": "Create a new list"
+    },
+    "descriptions": {
+      "sectionInList": "Section in list {listName}"
+    }
+  },
+  "LoginPage": {
+    "title": "Welcome back",
+    "subtitle": "Sign in to continue using Simplist."
+  },
+  "LoginForm": {
+    "emailLabel": "Email",
+    "emailPlaceholder": "john@example.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Your password",
+    "forgotPassword": "Forgot password?",
+    "submitButton": "Sign in",
+    "validation": {
+      "emailInvalid": "Please enter a valid email",
+      "passwordMinLength": "Password must be at least 6 characters"
+    },
+    "notifications": {
+      "loginFailed": "Login failed"
+    }
+  },
+  "ForgotPasswordPage": {
+    "title": "Forgot your password?",
+    "subtitle": "Enter your email address and we'll send you a link to reset your password."
+  },
+  "ForgotPasswordForm": {
+    "emailLabel": "Email",
+    "emailPlaceholder": "john@example.com",
+    "submitButton": "Send reset link",
+    "rememberPassword": "Remember your password? Sign in",
+    "successMessage": "Check your email for a password reset link.",
+    "backToLogin": "Back to login",
+    "validation": {
+      "emailInvalid": "Please enter a valid email"
+    },
+    "notifications": {
+      "successTitle": "Email sent",
+      "successMessage": "If an account exists with this email, you will receive a password reset link.",
+      "errorTitle": "Request failed"
+    }
+  },
+  "RegisterPage": {
+    "loading": {
+      "title": "Checking invitation...",
+      "text": "Loading..."
+    },
+    "invalid": {
+      "title": "Invitation required",
+      "subtitle": "This invitation is no longer valid.",
+      "message": "This invitation has expired or has already been used.",
+      "backToLogin": "Back to login"
+    },
+    "form": {
+      "title": "You're invited!",
+      "subtitle": "Complete your account to join Simplist.",
+      "emailLabel": "Email",
+      "nameLabel": "Full name",
+      "namePlaceholder": "John Doe",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Choose a secure password",
+      "confirmPasswordLabel": "Confirm password",
+      "confirmPasswordPlaceholder": "Repeat your password",
+      "submitButton": "Create account",
+      "divider": "OR",
+      "passkeyButton": "Register with Passkey",
+      "passkeyTooltip": "Coming soon",
+      "alreadyHaveAccount": "Already have an account?",
+      "signIn": "Sign in"
+    },
+    "validation": {
+      "emailInvalid": "Please enter a valid email",
+      "nameMinLength": "Please enter your name",
+      "passwordMinLength": "Password must contain at least 8 characters",
+      "passwordsDontMatch": "Passwords do not match"
+    },
+    "notifications": {
+      "successTitle": "Registration successful",
+      "successMessage": "You have successfully registered and logged in.",
+      "errorTitle": "Registration failed"
+    }
+  },
+  "ResetPasswordPage": {
+    "title": "Reset your password",
+    "subtitle": "Enter your new password below to reset your account password."
+  },
+  "ResetPasswordForm": {
+    "emailLabel": "Email",
+    "passwordLabel": "New password",
+    "passwordPlaceholder": "Enter your new password",
+    "confirmPasswordLabel": "Confirm password",
+    "confirmPasswordPlaceholder": "Confirm your new password",
+    "submitButton": "Reset password",
+    "backToLogin": "Back to login",
+    "successMessage": "Your password has been updated successfully.",
+    "goToLogin": "Go to login",
+    "validation": {
+      "passwordMinLength": "Password must be at least 8 characters",
+      "passwordsDontMatch": "Passwords do not match"
+    },
+    "notifications": {
+      "invalidLinkTitle": "Invalid reset link",
+      "invalidLinkMessage": "The password reset link is invalid or incomplete.",
+      "successTitle": "Password updated",
+      "successMessage": "Your password has been reset successfully.",
+      "errorTitle": "Reset failed"
+    }
+  }
+}

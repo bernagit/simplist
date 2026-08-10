@@ -2,6 +2,9 @@ import type { NextConfig } from 'next'
 import fs from 'node:fs';
 import path from 'node:path';
 import packageJson from './package.json';
+import createNextIntlPlugin from 'next-intl/plugin'
+
+const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts')
 
 const fallbackPath = path.resolve(process.cwd(), './CHANGELOG.md');
 
@@ -56,4 +59,4 @@ const nextConfig: NextConfig = {
   }
 }
 
-export default nextConfig
+export default withNextIntl(nextConfig)

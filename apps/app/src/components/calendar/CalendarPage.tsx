@@ -1,6 +1,7 @@
 'use client'
 
 import dayjs from 'dayjs'
+import 'dayjs/locale/it' // Import required dayjs locales
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   Badge,
@@ -31,7 +32,8 @@ import { getHTMLSectionId } from '@/utils/misc'
 import { useRouter } from 'next/navigation'
 import { PlannedTask } from '@/models/task'
 import { IconReload } from '@tabler/icons-react'
-import { PRIORITY_OPTIONS } from '@/utils/constants'
+import { useLocale, useTranslations } from 'next-intl'
+import { usePriorityOptions } from '@/hooks/useOptionLabel'
 
 function getNavigationHandlers(date: DateStringValue, view: Exclude<ScheduleViewLevel, 'year'>) {
   const d = dayjs(date)
@@ -87,11 +89,19 @@ function getHeaderLabel(date: DateStringValue, view: Exclude<ScheduleViewLevel, 
 
 export default function CustomSchedule() {
   const router = useRouter()
+  const locale = useLocale()
+  const t = useTranslations('CustomSchedule')
+  const priorityOptions = usePriorityOptions()
+
+  // Ensure dayjs uses the active app locale for date formatting
+  useEffect(() => {
+    dayjs.locale(locale)
+  }, [locale])
+
   const [date, setDate] = useState<DateStringValue>(dayjs().format('YYYY-MM-DD') as DateStringValue)
   const { isMobile } = useSidebar()
   const [view, setView] = useState<Exclude<ScheduleViewLevel, 'year'>>('week')
   const theme = useMantineTheme()
-  // const [mounted, setMounted] = useState(false)
   const [withAgenda, setWithAgenda] = useState(false)
   const [updatedTasks, setUpdatedTasks] = useState<Record<string, PlannedTask>>({})
 
@@ -202,7 +212,6 @@ export default function CustomSchedule() {
   )
 
   useEffect(() => {
-    // setMounted(true)
     refetch()
   }, [refetch])
 
@@ -219,10 +228,10 @@ export default function CustomSchedule() {
         <ScheduleHeader mb="md">
           <ScheduleHeader.Previous />
           <ScheduleHeader.Control interactive={false} miw={220}>
-            Loading...
+            {t('loading')}
           </ScheduleHeader.Control>
           <ScheduleHeader.Next />
-          <ScheduleHeader.Today />
+          <ScheduleHeader.Today title='ookokoo' />
         </ScheduleHeader>
 
         <Center style={{ flex: 1, minHeight: 0 }}>
@@ -243,6 +252,7 @@ export default function CustomSchedule() {
     >
       <ScheduleHeader mb="md">
         <ScheduleHeader.Previous
+          labels={{ previous: t('previous') }}
           onClick={() => setDate(nav.previous.format('YYYY-MM-DD') as DateStringValue)}
         />
 
@@ -251,18 +261,21 @@ export default function CustomSchedule() {
         </ScheduleHeader.Control>
 
         <ScheduleHeader.Next
+          labels={{ next: t('next') }}
           onClick={() => setDate(nav.next.format('YYYY-MM-DD') as DateStringValue)}
         />
 
         <ScheduleHeader.Today
+          labels={{ today: t('today') }}
           onClick={() => setDate(dayjs().format('YYYY-MM-DD') as DateStringValue)}
         />
+
         <Button
           size="compact-md"
           variant={withAgenda ? 'filled' : 'outline'}
           onClick={() => setWithAgenda(prev => !prev)}
         >
-          Agenda
+          {t('agenda')}
         </Button>
 
         <Group ms="auto">
@@ -270,138 +283,143 @@ export default function CustomSchedule() {
             value={view}
             onChange={value => setView(value as Exclude<ScheduleViewLevel, 'year'>)}
             data={[
-              { value: 'day', label: 'Day' },
-              { value: 'week', label: 'Week' },
-              { value: 'month', label: 'Month' }
+              { value: 'day', label: t('views.day') },
+              { value: 'week', label: t('views.week') },
+              { value: 'month', label: t('views.month') }
             ]}
             color={theme.primaryColor}
           />
         </Group>
       </ScheduleHeader>
-      {withAgenda ? (
-        <AgendaView
-          rangeStart={visibleRange.start}
-          rangeEnd={visibleRange.end}
-          style={{ flex: 1, minHeight: 0 }}
-          events={events}
-          renderEvent={(event, props) => {
-            const task = event as unknown as { data: PlannedTask }
-            const isAllDay = !task.data.dueTime
+      {
+        withAgenda ? (
+          <AgendaView
+            rangeStart={visibleRange.start}
+            rangeEnd={visibleRange.end}
+            style={{ flex: 1, minHeight: 0 }}
+            events={events}
+            renderEvent={(event, props) => {
+              const task = event as unknown as { data: PlannedTask }
+              const isAllDay = !task.data.dueTime
+              const priorityObj = priorityOptions.find(p => p.value === task.data.priority)
 
-            return (
-              <UnstyledButton {...props}>
-                <Box
-                  style={{
-                    display: 'flex',
-                    gap: 'var(--mantine-spacing-sm)',
-                    padding: 'var(--mantine-spacing-xs) var(--mantine-spacing-sm)',
-                    opacity: task.data.completed ? 0.55 : 1
-                  }}
-                >
+              return (
+                <UnstyledButton {...props}>
                   <Box
                     style={{
-                      width: 4,
-                      borderRadius: 2,
-                      flexShrink: 0,
-                      backgroundColor: task.data.color
+                      display: 'flex',
+                      gap: 'var(--mantine-spacing-sm)',
+                      padding: 'var(--mantine-spacing-xs) var(--mantine-spacing-sm)',
+                      opacity: task.data.completed ? 0.55 : 1
                     }}
-                  />
+                  >
+                    <Box
+                      style={{
+                        width: 4,
+                        borderRadius: 2,
+                        flexShrink: 0,
+                        backgroundColor: task.data.color
+                      }}
+                    />
 
-                  <Stack gap={2} style={{ flex: 1, minWidth: 0 }}>
-                    <Group justify="space-between" wrap="nowrap" gap="xs">
+                    <Stack gap={2} style={{ flex: 1, minWidth: 0 }}>
+                      <Group justify="space-between" wrap="nowrap" gap="xs">
+                        <Text
+                          size="sm"
+                          fw={500}
+                          td={task.data.completed ? 'line-through' : undefined}
+                          style={{
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
+                          }}
+                        >
+                          {task.data.title}
+                        </Text>
+
+                        <Group gap={4} wrap="nowrap">
+                          {task.data.recurrenceRule && (
+                            <Badge size="xs" variant="light" color="gray">
+                              <IconReload size={12} />
+                            </Badge>
+                          )}
+                          {priorityObj && (
+                            <Badge
+                              size="xs"
+                              variant="light"
+                              color={priorityObj.color ?? 'gray'}
+                            >
+                              {priorityObj.label}
+                            </Badge>
+                          )}
+                        </Group>
+                      </Group>
+
+                      <Text size="xs" c="dimmed">
+                        {isAllDay
+                          ? t('allDay')
+                          : `${dayjs(event.start).format('HH:mm')} – ${dayjs(event.end).format('HH:mm')}`}
+                      </Text>
+
                       <Text
-                        size="sm"
-                        fw={500}
-                        td={task.data.completed ? 'line-through' : undefined}
+                        size="xs"
+                        c="dimmed"
+                        mt={2}
                         style={{
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap'
                         }}
                       >
-                        {task.data.title}
+                        {task.data.listTitle}
+                        {task.data.sectionTitle ? ` › ${task.data.sectionTitle}` : ''}
                       </Text>
-
-                      <Group gap={4} wrap="nowrap">
-                        {task.data.recurrenceRule && (
-                          <Badge size="xs" variant="light" color="gray">
-                            <IconReload size={12} />
-                          </Badge>
-                        )}
-                        {task.data.priority && (
-                          <Badge
-                            size="xs"
-                            variant="light"
-                            color={
-                              PRIORITY_OPTIONS.find(p => p.value === task.data.priority)?.color ??
-                              'gray'
-                            }
-                          >
-                            {task.data.priority}
-                          </Badge>
-                        )}
-                      </Group>
-                    </Group>
-
-                    <Text size="xs" c="dimmed">
-                      {isAllDay
-                        ? 'All day'
-                        : `${dayjs(event.start).format('HH:mm')} – ${dayjs(event.end).format('HH:mm')}`}
-                    </Text>
-
-                    <Text
-                      size="xs"
-                      c="dimmed"
-                      mt={2}
-                      style={{
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap'
-                      }}
-                    >
-                      {task.data.listTitle}
-                      {task.data.sectionTitle ? ` › ${task.data.sectionTitle}` : ''}
-                    </Text>
-                  </Stack>
-                </Box>
-              </UnstyledButton>
-            )
-          }}
-          onEventClick={handleEventClick}
-        />
-      ) : (
-        <Schedule
-          style={{ flex: 1, minHeight: 0 }}
-          date={date}
-          onDateChange={setDate}
-          view={view}
-          onViewChange={value => setView(value as Exclude<ScheduleViewLevel, 'year'>)}
-          events={events}
-          onEventClick={handleEventClick}
-          withAgenda={true}
-          dayViewProps={{
-            withHeader: false,
-            // startTime: '08:00:00',
-            // endTime: '24:00:00',
-            intervalMinutes: 30,
-            scrollAreaProps: { mah: '100%' }
-            // withCurrentTimeIndicator: mounted
-          }}
-          weekViewProps={{
-            withHeader: false,
-            scrollAreaProps: { mah: '100%' }
-            // withCurrentTimeIndicator: mounted
-          }}
-          monthViewProps={{
-            withHeader: false,
-            scrollAreaProps: { mah: '100%' }
-          }}
-          yearViewProps={{
-            withHeader: false
-            // scrollAreaProps: { mah: '100%' },
-          }}
-        />
-      )}
-    </Box>
+                    </Stack>
+                  </Box>
+                </UnstyledButton>
+              )
+            }}
+            onEventClick={handleEventClick}
+          />
+        ) : (
+          <Schedule
+            style={{ flex: 1, minHeight: 0 }}
+            date={date}
+            onDateChange={setDate}
+            view={view}
+            onViewChange={value => setView(value as Exclude<ScheduleViewLevel, 'year'>)}
+            events={events}
+            onEventClick={handleEventClick}
+            withAgenda={true}
+            labels={{
+              today: t('today'),
+              allDay: t('allDay'),
+              agenda: t('agenda'),
+              day: t('views.day'),
+              week: t('views.week'),
+              month: t('views.month'),
+              noEvents: t('noEvents', { defaultValue: 'No events' }),
+              moreLabel: (count) => `+${count}`
+            }}
+            dayViewProps={{
+              withHeader: false,
+              intervalMinutes: 30,
+              scrollAreaProps: { mah: '100%' }
+            }}
+            weekViewProps={{
+              withHeader: false,
+              scrollAreaProps: { mah: '100%' },
+            }}
+            monthViewProps={{
+              withHeader: false,
+              scrollAreaProps: { mah: '100%' }
+            }}
+            yearViewProps={{
+              withHeader: false
+            }}
+          />
+        )
+      }
+    </Box >
   )
 }

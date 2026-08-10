@@ -15,7 +15,8 @@ import {
   ThemeIcon,
   Badge,
   Text,
-  TextInput} from '@mantine/core'
+  TextInput
+} from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { modals } from '@mantine/modals'
 import {
@@ -26,16 +27,17 @@ import dayjs from 'dayjs'
 import { useContextMenu } from 'mantine-contextmenu'
 import { useRouter } from 'next/navigation'
 import { useMemo, useState } from 'react'
+import { useTranslations } from 'next-intl'
 
 export default function SharedListOverview() {
+  const t = useTranslations('SharedListOverview')
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState('')
   const [debouncedQuery] = useDebouncedValue(searchQuery, 300)
   const { showContextMenu } = useContextMenu()
-  
+
   const { data: lists, isLoading } = useLists()
   const data = useMemo(() => lists?.data.shared ?? [], [lists])
-  
 
   const filteredData = useMemo(() => {
     let lists = [...data]
@@ -62,30 +64,30 @@ export default function SharedListOverview() {
       {
         key: 'info',
         icon: <IconInfoCircle size={20} />,
-        title: 'More Info',
+        title: t('moreInfo'),
         onClick: () => {
           modals.open({
-            title: 'List Info',
+            title: t('infoModalTitle'),
             children: (
               <Stack gap="xs">
                 <Text size="sm">
-                  <strong>Title:</strong> {list.title}
+                  <strong>{t('infoTitle')}:</strong> {list.title}
                 </Text>
                 <Text size="sm">
-                  <strong>Description:</strong> {list.description || 'No description'}
+                  <strong>{t('infoDescription')}:</strong> {list.description || t('noDescription')}
                 </Text>
                 <Text size="sm">
-                  <strong>Owner:</strong> {(list as SharedList).owner.name} ({(list as SharedList).owner.email})
+                  <strong>{t('infoOwner')}:</strong> {(list as SharedList).owner.name} ({(list as SharedList).owner.email})
                 </Text>
                 <Text size="sm">
-                  <strong>Created At:</strong> {dayjs(list.createdAt).format('DD MMM YYYY, HH:mm')}
+                  <strong>{t('infoCreatedAt')}:</strong> {dayjs(list.createdAt).format('DD MMM YYYY, HH:mm')}
                 </Text>
                 <Text size="sm">
-                  <strong>Updated At:</strong> {dayjs(list.updatedAt).format('DD MMM YYYY, HH:mm')}
+                  <strong>{t('infoUpdatedAt')}:</strong> {dayjs(list.updatedAt).format('DD MMM YYYY, HH:mm')}
                 </Text>
                 {list.archivedAt && (
                   <Text size="sm">
-                    <strong>Archived At:</strong> {dayjs(list.archivedAt).format('DD MMM YYYY, HH:mm')}
+                    <strong>{t('infoArchivedAt')}:</strong> {dayjs(list.archivedAt).format('DD MMM YYYY, HH:mm')}
                   </Text>
                 )}
               </Stack>
@@ -108,16 +110,16 @@ export default function SharedListOverview() {
     <Container size="lg" py="xl">
       <Group justify="space-between" mb="xl">
         <div>
-          <Title order={1}>Shared With Me</Title>
+          <Title order={1}>{t('title')}</Title>
           <Text c="dimmed">
-            {filteredData.length} {filteredData.length === 1 ? 'list' : 'lists'}
+            {t('listCount', { count: filteredData.length })}
           </Text>
         </div>
       </Group>
       <Stack mb="md" gap="sm">
         <Group gap="sm" align="center">
           <TextInput
-            placeholder="Search lists..."
+            placeholder={t('searchPlaceholder')}
             value={searchQuery}
             onChange={e => setSearchQuery(e.currentTarget.value)}
             flex={1}
@@ -152,7 +154,7 @@ export default function SharedListOverview() {
                   <Group gap="xs">
                     {list.archivedAt && (
                       <Badge color="gray" variant="light">
-                        Archived
+                        {t('archived')}
                       </Badge>
                     )}
 
@@ -164,7 +166,7 @@ export default function SharedListOverview() {
                   <Title order={4}>{list.title}</Title>
 
                   <Text c="dimmed" size="sm" lineClamp={2} mt={4}>
-                    {list.description || 'No description'}
+                    {list.description || t('noDescription')}
                   </Text>
                 </div>
               </Stack>

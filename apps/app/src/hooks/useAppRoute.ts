@@ -2,11 +2,13 @@
 
 import { usePathname } from 'next/navigation'
 import { useMemo } from 'react'
+import { useTranslations } from 'next-intl'
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 
 export function useAppRoute() {
   const pathname = usePathname()
+  const t = useTranslations('Breadcrumbs')
 
   return useMemo(() => {
     const segments = pathname.split('/').filter(Boolean)
@@ -21,14 +23,13 @@ export function useAppRoute() {
 
       switch (segments[0]) {
         case 'lists':
-          if (segments.length === 1) return [{ label: 'My Lists', href: '/lists' }]
-
-          if (isShared) return [{ label: 'Shared', href: '/lists/shared' }]
-
-          if (listId) return [{ label: 'My Lists', href: '/lists' }]
+          if (segments.length === 1) return [{ label: t('myLists'), href: '/lists' }]
+          if (isShared) return [{ label: t('shared'), href: '/lists/shared' }]
+          if (listId) return [{ label: t('myLists'), href: '/lists' }]
 
           return []
-
+        case 'calendar':
+          return [{ label: t('calendar'), href: '/calendar' }]
         default:
           return [
             {
@@ -51,5 +52,5 @@ export function useAppRoute() {
 
       canShare: !!listId && !isShared
     }
-  }, [pathname])
+  }, [pathname, t])
 }

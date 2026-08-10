@@ -1,3 +1,5 @@
+'use client'
+
 import { useCallback, useMemo, useState } from 'react'
 import {
   useChangeListMemberRole,
@@ -18,18 +20,21 @@ import {
   Stack,
   Text,
   TextInput,
+  Title,
   Tooltip,
   useMantineTheme
 } from '@mantine/core'
 import { ContextModalProps, modals } from '@mantine/modals'
-import { IconTrash, IconUsers } from '@tabler/icons-react'
+import { IconTrash, IconUsers, IconX } from '@tabler/icons-react'
 import dayjs from 'dayjs'
+import { useTranslations } from 'next-intl'
 
 type ShareListProps = {
   listId: string
 }
 
-export default function ShareList({ innerProps }: ContextModalProps<ShareListProps>) {
+export default function ShareList({ context, id, innerProps }: ContextModalProps<ShareListProps>) {
+  const t = useTranslations('ShareList')
   const listId = innerProps?.listId
   const theme = useMantineTheme()
   const [shareWithEmail, setShareWithEmail] = useState('')
@@ -42,30 +47,43 @@ export default function ShareList({ innerProps }: ContextModalProps<ShareListPro
   const { data: listResponse } = useListById(listId)
   const list = listResponse?.data
 
+  const isValidEmail = useMemo(() => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(shareWithEmail)
+  }, [shareWithEmail])
+
   const members = useMemo(() => {
     if (!list) return []
-    return list.members.filter(member => member.role !== 'owner').sort((a, b) => dayjs(a.joinedAt).diff(dayjs(b.joinedAt)))
+    return list.members
+      .filter(member => member.role !== 'owner')
+      .sort((a, b) => dayjs(a.joinedAt).diff(dayjs(b.joinedAt)))
   }, [list])
 
   const handleShare = useCallback(() => {
-    if (!listId || !shareWithEmail) return
+    if (!listId || !isValidEmail) return
 
     shareList.mutate(
       { listId, shareWithEmail, role: role as 'editor' | 'viewer' },
       { onSuccess: () => setShareWithEmail('') }
     )
-  }, [listId, shareWithEmail, role, shareList])
+  }, [listId, isValidEmail, shareList, shareWithEmail, role])
 
   const handleConfirmDeleteMember = useCallback(
     (memberId: string, label: string) => () => {
       modals.openConfirmModal({
-        title: 'Remove member',
+        title: t('confirmDelete.title'),
         children: (
           <Text size="sm">
-            Remove<strong>{' ' + label + ' '}</strong>from this list? They&apos;ll lose access immediately.
+            {t.rich('confirmDelete.message', {
+              label: label,
+              strong: chunks => <strong>{chunks}</strong>
+            })}
           </Text>
         ),
-        labels: { confirm: 'Remove', cancel: 'Cancel' },
+        labels: {
+          confirm: t('confirmDelete.confirm'),
+          cancel: t('confirmDelete.cancel')
+        },
         confirmProps: { color: 'red' },
         onConfirm: () => {
           if (!listId) return
@@ -73,45 +91,54 @@ export default function ShareList({ innerProps }: ContextModalProps<ShareListPro
         }
       })
     },
-    [deleteMember, listId]
+    [deleteMember, listId, t]
   )
 
   if (!listId) {
     return (
       <Container>
-        <Text c="red">Error: No list ID provided.</Text>
+        <Text c="red">{t('errors.noListId')}</Text>
       </Container>
     )
   }
 
   return (
     <Stack gap="lg">
+      {/* Header del Modale */}
+      <Group justify="space-between" align="center">
+        <Title order={3}>{t('title')}</Title>
+        <ActionIcon variant="subtle" color="gray" onClick={() => context.closeModal(id)}>
+          <IconX size={18} />
+        </ActionIcon>
+      </Group>
+
+      {/* Form di Condivisione */}
       <Flex gap="sm" align="flex-end">
         <TextInput
           style={{ flex: 1 }}
-          label="Email"
-          placeholder="name@example.com"
+          label={t('fields.emailLabel')}
+          placeholder={t('fields.emailPlaceholder')}
           value={shareWithEmail}
           onChange={e => setShareWithEmail(e.currentTarget.value)}
           onKeyDown={e => e.key === 'Enter' && handleShare()}
         />
 
         <div>
-          <Text size="sm" fw={500} mb={4}>
-            Role
+          <Text size="sm" fw={600} mb={4}>
+            {t('fields.roleLabel')}
           </Text>
           <SegmentedControl
             value={role ?? 'viewer'}
             onChange={setRole}
             data={[
-              { value: 'editor', label: 'Editor' },
-              { value: 'viewer', label: 'Viewer' }
+              { value: 'editor', label: t('roles.editor') },
+              { value: 'viewer', label: t('roles.viewer') }
             ]}
           />
         </div>
 
-        <Button loading={shareList.isPending} disabled={!shareWithEmail} onClick={handleShare}>
-          Share
+        <Button loading={shareList.isPending} disabled={!isValidEmail} onClick={handleShare}>
+          {t('actions.share')}
         </Button>
       </Flex>
 
@@ -120,7 +147,7 @@ export default function ShareList({ innerProps }: ContextModalProps<ShareListPro
           <Group gap={6}>
             <IconUsers size={14} />
             <Text size="sm" fw={500}>
-              Members
+              {t('members.title')}
             </Text>
             <Badge size="sm" variant="light" circle>
               {members.length}
@@ -130,6 +157,7 @@ export default function ShareList({ innerProps }: ContextModalProps<ShareListPro
         labelPosition="left"
       />
 
+      {/* Lista Membri */}
       <Stack gap={4}>
         {members.length ? (
           members.map(member => {
@@ -179,12 +207,12 @@ export default function ShareList({ innerProps }: ContextModalProps<ShareListPro
                       })
                     }}
                     data={[
-                      { value: 'editor', label: 'Editor' },
-                      { value: 'viewer', label: 'Viewer' }
+                      { value: 'editor', label: t('roles.editor') },
+                      { value: 'viewer', label: t('roles.viewer') }
                     ]}
                   />
 
-                  <Tooltip label="Remove member" withArrow>
+                  <Tooltip label={t('actions.removeMember')} withArrow>
                     <ActionIcon
                       color="red"
                       variant="subtle"
@@ -202,7 +230,7 @@ export default function ShareList({ innerProps }: ContextModalProps<ShareListPro
           <Stack align="center" gap={4} py="md">
             <IconUsers size={28} color={theme.colors.gray[4]} />
             <Text c="dimmed" size="sm" ta="center">
-              This list hasn&apos;t been shared with anyone yet.
+              {t('members.empty')}
             </Text>
           </Stack>
         )}
