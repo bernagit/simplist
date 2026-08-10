@@ -11,8 +11,10 @@ import { useAuth } from '@/providers/AuthProvider'
 import { useQueryClient } from '@tanstack/react-query'
 import { preferencesService } from '@/services/preferences'
 import { getDefaultViewFromString } from '@/utils/misc'
+import { useTranslations } from 'next-intl'
 
 export function LoginForm() {
+  const t = useTranslations('LoginForm')
   const router = useRouter()
   const { login } = useAuth()
   const queryClient = useQueryClient()
@@ -26,9 +28,8 @@ export function LoginForm() {
     },
 
     validate: {
-      identifier: value => (value.length < 5 ? 'Please enter a valid email' : null),
-
-      password: value => (value.length < 6 ? 'Password must be at least 6 characters' : null)
+      identifier: value => (value.length < 5 ? t('validation.emailInvalid') : null),
+      password: value => (value.length < 6 ? t('validation.passwordMinLength') : null)
     }
   })
 
@@ -55,7 +56,7 @@ export function LoginForm() {
       router.push(redirectTo)
     } catch (err) {
       showNotification({
-        title: 'Login failed',
+        title: t('notifications.loginFailed'),
         message: (err as Error).message,
         color: 'red'
       })
@@ -72,26 +73,26 @@ export function LoginForm() {
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <Stack>
         <TextInput
-          label="Email"
-          placeholder="john@example.com"
+          label={t('emailLabel')}
+          placeholder={t('emailPlaceholder')}
           leftSection={<IconMail size={16} />}
           autoComplete="email"
           {...form.getInputProps('identifier')}
         />
 
         <PasswordInput
-          label="Password"
-          placeholder="Your password"
+          label={t('passwordLabel')}
+          placeholder={t('passwordPlaceholder')}
           leftSection={<IconLock size={16} />}
           autoComplete="current-password"
           {...form.getInputProps('password')}
         />
         <Anchor href="/forgot-password" size="sm" ta="right">
-          Forgot password?
+          {t('forgotPassword')}
         </Anchor>
 
         <Button fullWidth type="submit" mt="md">
-          Sign in
+          {t('submitButton')}
         </Button>
       </Stack>
     </form>

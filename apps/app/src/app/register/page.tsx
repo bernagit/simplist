@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 import {
   Alert,
@@ -26,6 +27,7 @@ import { showNotification } from '@mantine/notifications'
 import { inviteService } from '@/services/invite'
 
 export default function RegisterPage() {
+  const t = useTranslations('RegisterPage')
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -42,11 +44,11 @@ export default function RegisterPage() {
       confirmPassword: ''
     },
     validate: {
-      email: value => (/^\S+@\S+\.\S+$/.test(value) ? null : 'Please enter a valid email'),
-      name: value => (value.trim().length < 2 ? 'Please enter your name' : null),
-      password: value => (value.length < 8 ? 'Password must contain at least 8 characters' : null),
+      email: value => (/^\S+@\S+\.\S+$/.test(value) ? null : t('validation.emailInvalid')),
+      name: value => (value.trim().length < 2 ? t('validation.nameMinLength') : null),
+      password: value => (value.length < 8 ? t('validation.passwordMinLength') : null),
       confirmPassword: (value, values) =>
-        value !== values.password ? 'Passwords do not match' : null
+        value !== values.password ? t('validation.passwordsDontMatch') : null
     }
   })
 
@@ -98,13 +100,13 @@ export default function RegisterPage() {
       router.push('/')
 
       showNotification({
-        title: 'Registration successful',
-        message: 'You have successfully registered and logged in.',
+        title: t('notifications.successTitle'),
+        message: t('notifications.successMessage'),
         color: 'green'
       })
     } catch (err) {
       showNotification({
-        title: 'Registration failed',
+        title: t('notifications.errorTitle'),
         message: (err as Error).message,
         color: 'red'
       })
@@ -113,83 +115,83 @@ export default function RegisterPage() {
 
   if (loading) {
     return (
-      <AuthCard title="Checking invitation...">
-        <Text>Loading...</Text>
+      <AuthCard title={t('loading.title')}>
+        <Text>{t('loading.text')}</Text>
       </AuthCard>
     )
   }
 
   if (invalidInvite) {
     return (
-      <AuthCard title="Invitation required" subtitle="This invitation is no longer valid.">
+      <AuthCard title={t('invalid.title')} subtitle={t('invalid.subtitle')}>
         <Alert color="red" icon={<IconAlertCircle size={18} />}>
-          This invitation has expired or has already been used.
+          {t('invalid.message')}
         </Alert>
 
         <Button component="a" href="/login" fullWidth mt="lg">
-          Back to login
+          {t('invalid.backToLogin')}
         </Button>
       </AuthCard>
     )
   }
 
   return (
-    <AuthCard title="You're invited!" subtitle="Complete your account to join Simplist.">
+    <AuthCard title={t('form.title')} subtitle={t('form.subtitle')}>
       <form onSubmit={form.onSubmit(registerWithPassword)}>
         <Stack>
           <TextInput
-            label="Email"
+            label={t('form.emailLabel')}
             {...form.getInputProps('email')}
             required
             leftSection={<IconMail size={16} />}
           />
 
           <TextInput
-            label="Full name"
+            label={t('form.nameLabel')}
             required
-            placeholder="John Doe"
+            placeholder={t('form.namePlaceholder')}
             leftSection={<IconUser size={16} />}
             autoComplete="name"
             {...form.getInputProps('name')}
           />
 
           <PasswordInput
-            label="Password"
+            label={t('form.passwordLabel')}
             required
-            placeholder="Choose a secure password"
+            placeholder={t('form.passwordPlaceholder')}
             leftSection={<IconLock size={16} />}
             autoComplete="new-password"
             {...form.getInputProps('password')}
           />
 
           <PasswordInput
-            label="Confirm password"
+            label={t('form.confirmPasswordLabel')}
             required
-            placeholder="Repeat your password"
+            placeholder={t('form.confirmPasswordPlaceholder')}
             leftSection={<IconLock size={16} />}
             autoComplete="new-password"
             {...form.getInputProps('confirmPassword')}
           />
 
           <Button type="submit" fullWidth mt="md">
-            Create account
+            {t('form.submitButton')}
           </Button>
 
-          <Divider label="OR" labelPosition="center" />
+          <Divider label={t('form.divider')} labelPosition="center" />
 
-          <Tooltip label="Coming soon" openDelay={500}>
+          <Tooltip label={t('form.passkeyTooltip')} openDelay={500}>
             <Button variant="light" fullWidth leftSection={<IconKey size={18} />} disabled>
-              Register with Passkey
+              {t('form.passkeyButton')}
             </Button>
           </Tooltip>
 
           <Group justify="center" mt="xs">
             <Text size="sm" c="dimmed">
-              Already have an account?
+              {t('form.alreadyHaveAccount')}
             </Text>
 
             <Anchor href="/login" size="sm">
-              Sign in
+              {t('form.signIn')}
             </Anchor>
           </Group>
         </Stack>
