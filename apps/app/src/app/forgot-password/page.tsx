@@ -1,11 +1,16 @@
+'use client'
+
 import { AuthCard } from '@/components/auth/AuthCard'
 import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm'
+import { useTranslations } from 'next-intl'
 
 export default function ForgotPasswordPage() {
+  const t = useTranslations('ForgotPasswordPage')
+
   return (
     <AuthCard
-      title="Forgot your password?"
-      subtitle="Enter your email address and we'll send you a link to reset your password."
+      title={t('title')}
+      subtitle={t('subtitle')}
     >
       <ForgotPasswordForm />
     </AuthCard>

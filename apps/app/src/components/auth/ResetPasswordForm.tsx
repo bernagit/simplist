@@ -8,8 +8,10 @@ import { IconLock, IconMail } from '@tabler/icons-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import { LoadingScreen } from './LoadingScreen'
+import { useTranslations } from 'next-intl'
 
 export default function ResetPasswordForm() {
+  const t = useTranslations('ResetPasswordForm')
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -26,18 +28,17 @@ export default function ResetPasswordForm() {
     },
 
     validate: {
-      password: value => (value.length < 8 ? 'Password must be at least 8 characters' : null),
-
+      password: value => (value.length < 8 ? t('validation.passwordMinLength') : null),
       confirmPassword: (value, values) =>
-        value !== values.password ? 'Passwords do not match' : null
+        value !== values.password ? t('validation.passwordsDontMatch') : null
     }
   })
 
   async function handleSubmit(values: typeof form.values) {
     if (!token || !email) {
       showNotification({
-        title: 'Invalid reset link',
-        message: 'The password reset link is invalid or incomplete.',
+        title: t('notifications.invalidLinkTitle'),
+        message: t('notifications.invalidLinkMessage'),
         color: 'red'
       })
       return
@@ -51,13 +52,13 @@ export default function ResetPasswordForm() {
       setSubmitted(true)
 
       showNotification({
-        title: 'Password updated',
-        message: 'Your password has been reset successfully.',
+        title: t('notifications.successTitle'),
+        message: t('notifications.successMessage'),
         color: 'green'
       })
     } catch (err) {
       showNotification({
-        title: 'Reset failed',
+        title: t('notifications.errorTitle'),
         message: (err as Error).message,
         color: 'red'
       })
@@ -73,10 +74,10 @@ export default function ResetPasswordForm() {
   if (submitted) {
     return (
       <Stack>
-        <div>Your password has been updated successfully.</div>
+        <div>{t('successMessage')}</div>
 
         <Button fullWidth onClick={() => router.push('/login')}>
-          Go to login
+          {t('goToLogin')}
         </Button>
       </Stack>
     )
@@ -85,30 +86,30 @@ export default function ResetPasswordForm() {
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <Stack>
-        <TextInput label="Email" value={email} disabled leftSection={<IconMail size={16} />} />
+        <TextInput label={t('emailLabel')} value={email} disabled leftSection={<IconMail size={16} />} />
 
         <PasswordInput
-          label="New password"
-          placeholder="Enter your new password"
+          label={t('passwordLabel')}
+          placeholder={t('passwordPlaceholder')}
           leftSection={<IconLock size={16} />}
           autoComplete="new-password"
           {...form.getInputProps('password')}
         />
 
         <PasswordInput
-          label="Confirm password"
-          placeholder="Confirm your new password"
+          label={t('confirmPasswordLabel')}
+          placeholder={t('confirmPasswordPlaceholder')}
           leftSection={<IconLock size={16} />}
           autoComplete="new-password"
           {...form.getInputProps('confirmPassword')}
         />
 
         <Button fullWidth type="submit" mt="md">
-          Reset password
+          {t('submitButton')}
         </Button>
 
         <Anchor onClick={() => router.push('/login')} size="sm" ta="center">
-          Back to login
+          {t('backToLogin')}
         </Anchor>
       </Stack>
     </form>

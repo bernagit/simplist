@@ -8,8 +8,10 @@ import { IconMail } from '@tabler/icons-react'
 import { useState } from 'react'
 import { LoadingScreen } from './LoadingScreen'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 export default function ForgotPasswordForm() {
+  const t = useTranslations('ForgotPasswordForm')
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -20,7 +22,7 @@ export default function ForgotPasswordForm() {
     },
 
     validate: {
-      email: value => (/^\S+@\S+$/.test(value) ? null : 'Please enter a valid email')
+      email: value => (/^\S+@\S+$/.test(value) ? null : t('validation.emailInvalid'))
     }
   })
 
@@ -33,13 +35,13 @@ export default function ForgotPasswordForm() {
       setSubmitted(true)
 
       showNotification({
-        title: 'Email sent',
-        message: 'If an account exists with this email, you will receive a password reset link.',
+        title: t('notifications.successTitle'),
+        message: t('notifications.successMessage'),
         color: 'green'
       })
     } catch (err) {
       showNotification({
-        title: 'Request failed',
+        title: t('notifications.errorTitle'),
         message: (err as Error).message,
         color: 'red'
       })
@@ -55,10 +57,10 @@ export default function ForgotPasswordForm() {
   if (submitted) {
     return (
       <Stack>
-        <div>Check your email for a password reset link.</div>
+        <div>{t('successMessage')}</div>
 
         <Anchor onClick={() => router.push('/login')} size="sm" ta="center">
-          Back to login
+          {t('backToLogin')}
         </Anchor>
       </Stack>
     )
@@ -68,19 +70,19 @@ export default function ForgotPasswordForm() {
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <Stack>
         <TextInput
-          label="Email"
-          placeholder="john@example.com"
+          label={t('emailLabel')}
+          placeholder={t('emailPlaceholder')}
           leftSection={<IconMail size={16} />}
           autoComplete="email"
           {...form.getInputProps('email')}
         />
 
         <Button fullWidth type="submit" mt="md">
-          Send reset link
+          {t('submitButton')}
         </Button>
 
         <Anchor href="/login" size="sm" ta="center">
-          Remember your password? Sign in
+          {t('rememberPassword')}
         </Anchor>
       </Stack>
     </form>

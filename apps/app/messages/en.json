@@ -494,5 +494,110 @@
     "descriptions": {
       "sectionInList": "Section in list {listName}"
     }
+  },
+  "LoginPage": {
+    "title": "Welcome back",
+    "subtitle": "Sign in to continue using Simplist."
+  },
+  "LoginForm": {
+    "emailLabel": "Email",
+    "emailPlaceholder": "john@example.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Your password",
+    "forgotPassword": "Forgot password?",
+    "submitButton": "Sign in",
+    "validation": {
+      "emailInvalid": "Please enter a valid email",
+      "passwordMinLength": "Password must be at least 6 characters"
+    },
+    "notifications": {
+      "loginFailed": "Login failed"
+    }
+  },
+  "ForgotPasswordPage": {
+    "title": "Forgot your password?",
+    "subtitle": "Enter your email address and we'll send you a link to reset your password."
+  },
+  "ForgotPasswordForm": {
+    "emailLabel": "Email",
+    "emailPlaceholder": "john@example.com",
+    "submitButton": "Send reset link",
+    "rememberPassword": "Remember your password? Sign in",
+    "successMessage": "Check your email for a password reset link.",
+    "backToLogin": "Back to login",
+    "validation": {
+      "emailInvalid": "Please enter a valid email"
+    },
+    "notifications": {
+      "successTitle": "Email sent",
+      "successMessage": "If an account exists with this email, you will receive a password reset link.",
+      "errorTitle": "Request failed"
+    }
+  },
+  "RegisterPage": {
+    "loading": {
+      "title": "Checking invitation...",
+      "text": "Loading..."
+    },
+    "invalid": {
+      "title": "Invitation required",
+      "subtitle": "This invitation is no longer valid.",
+      "message": "This invitation has expired or has already been used.",
+      "backToLogin": "Back to login"
+    },
+    "form": {
+      "title": "You're invited!",
+      "subtitle": "Complete your account to join Simplist.",
+      "emailLabel": "Email",
+      "nameLabel": "Full name",
+      "namePlaceholder": "John Doe",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Choose a secure password",
+      "confirmPasswordLabel": "Confirm password",
+      "confirmPasswordPlaceholder": "Repeat your password",
+      "submitButton": "Create account",
+      "divider": "OR",
+      "passkeyButton": "Register with Passkey",
+      "passkeyTooltip": "Coming soon",
+      "alreadyHaveAccount": "Already have an account?",
+      "signIn": "Sign in"
+    },
+    "validation": {
+      "emailInvalid": "Please enter a valid email",
+      "nameMinLength": "Please enter your name",
+      "passwordMinLength": "Password must contain at least 8 characters",
+      "passwordsDontMatch": "Passwords do not match"
+    },
+    "notifications": {
+      "successTitle": "Registration successful",
+      "successMessage": "You have successfully registered and logged in.",
+      "errorTitle": "Registration failed"
+    }
+  },
+  "ResetPasswordPage": {
+    "title": "Reset your password",
+    "subtitle": "Enter your new password below to reset your account password."
+  },
+  "ResetPasswordForm": {
+    "emailLabel": "Email",
+    "passwordLabel": "New password",
+    "passwordPlaceholder": "Enter your new password",
+    "confirmPasswordLabel": "Confirm password",
+    "confirmPasswordPlaceholder": "Confirm your new password",
+    "submitButton": "Reset password",
+    "backToLogin": "Back to login",
+    "successMessage": "Your password has been updated successfully.",
+    "goToLogin": "Go to login",
+    "validation": {
+      "passwordMinLength": "Password must be at least 8 characters",
+      "passwordsDontMatch": "Passwords do not match"
+    },
+    "notifications": {
+      "invalidLinkTitle": "Invalid reset link",
+      "invalidLinkMessage": "The password reset link is invalid or incomplete.",
+      "successTitle": "Password updated",
+      "successMessage": "Your password has been reset successfully.",
+      "errorTitle": "Reset failed"
+    }
   }
 }

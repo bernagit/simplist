@@ -494,5 +494,110 @@
     "descriptions": {
       "sectionInList": "Sezione nella lista {listName}"
     }
+  },
+  "LoginPage": {
+    "title": "Bentornato",
+    "subtitle": "Accedi per continuare a usare Simplist."
+  },
+  "LoginForm": {
+    "emailLabel": "Email",
+    "emailPlaceholder": "mario@esempio.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "La tua password",
+    "forgotPassword": "Password dimenticata?",
+    "submitButton": "Accedi",
+    "validation": {
+      "emailInvalid": "Inserisci un indirizzo email valido",
+      "passwordMinLength": "La password deve contenere almeno 6 caratteri"
+    },
+    "notifications": {
+      "loginFailed": "Accesso non riuscito"
+    }
+  },
+  "ForgotPasswordPage": {
+    "title": "Password dimenticata?",
+    "subtitle": "Inserisci il tuo indirizzo email e ti invieremo un link per reimpostare la password."
+  },
+  "ForgotPasswordForm": {
+    "emailLabel": "Email",
+    "emailPlaceholder": "mario@esempio.com",
+    "submitButton": "Invia link di ripristino",
+    "rememberPassword": "Ricordi la password? Accedi",
+    "successMessage": "Controlla la tua email per il link di ripristino della password.",
+    "backToLogin": "Torna al login",
+    "validation": {
+      "emailInvalid": "Inserisci un indirizzo email valido"
+    },
+    "notifications": {
+      "successTitle": "Email inviata",
+      "successMessage": "Se esiste un account associato a questa email, riceverai un link per reimpostare la password.",
+      "errorTitle": "Richiesta non riuscita"
+    }
+  },
+  "RegisterPage": {
+    "loading": {
+      "title": "Verifica invito in corso...",
+      "text": "Caricamento..."
+    },
+    "invalid": {
+      "title": "Invito richiesto",
+      "subtitle": "Questo invito non è più valido.",
+      "message": "Questo invito è scaduto oppure è già stato utilizzato.",
+      "backToLogin": "Torna al login"
+    },
+    "form": {
+      "title": "Sei stato invitato!",
+      "subtitle": "Completa il tuo account per unirti a Simplist.",
+      "emailLabel": "Email",
+      "nameLabel": "Nome e cognome",
+      "namePlaceholder": "Mario Rossi",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Scegli una password sicura",
+      "confirmPasswordLabel": "Conferma password",
+      "confirmPasswordPlaceholder": "Ripeti la tua password",
+      "submitButton": "Crea account",
+      "divider": "OPPURE",
+      "passkeyButton": "Registrati con Passkey",
+      "passkeyTooltip": "In arrivo a breve",
+      "alreadyHaveAccount": "Hai già un account?",
+      "signIn": "Accedi"
+    },
+    "validation": {
+      "emailInvalid": "Inserisci un indirizzo email valido",
+      "nameMinLength": "Inserisci il tuo nome",
+      "passwordMinLength": "La password deve contenere almeno 8 caratteri",
+      "passwordsDontMatch": "Le password non corrispondono"
+    },
+    "notifications": {
+      "successTitle": "Registrazione completata",
+      "successMessage": "Ti sei registrato ed effettuato l'accesso con successo.",
+      "errorTitle": "Registrazione non riuscita"
+    }
+  },
+  "ResetPasswordPage": {
+    "title": "Reimposta la tua password",
+    "subtitle": "Inserisci qui sotto la nuova password per reimpostare quella del tuo account."
+  },
+  "ResetPasswordForm": {
+    "emailLabel": "Email",
+    "passwordLabel": "Nuova password",
+    "passwordPlaceholder": "Inserisci la tua nuova password",
+    "confirmPasswordLabel": "Conferma password",
+    "confirmPasswordPlaceholder": "Conferma la tua nuova password",
+    "submitButton": "Reimposta password",
+    "backToLogin": "Torna al login",
+    "successMessage": "La tua password è stata aggiornata con successo.",
+    "goToLogin": "Vai al login",
+    "validation": {
+      "passwordMinLength": "La password deve contenere almeno 8 caratteri",
+      "passwordsDontMatch": "Le password non corrispondono"
+    },
+    "notifications": {
+      "invalidLinkTitle": "Link non valido",
+      "invalidLinkMessage": "Il link di ripristino della password non è valido o è incompleto.",
+      "successTitle": "Password aggiornata",
+      "successMessage": "La tua password è stata reimpostata con successo.",
+      "errorTitle": "Reimpostazione non riuscita"
+    }
   }
 }

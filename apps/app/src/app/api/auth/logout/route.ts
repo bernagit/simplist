@@ -11,8 +11,9 @@ export async function POST() {
       body: JSON.stringify({ refreshToken })
     }).catch(() => {}) // clear cookies even if this fails
   }
-
+  console.log('Deleting cookies')
   cookieStore.delete('accessToken')
+  cookieStore.delete('accessTokenExpiresAt')
   cookieStore.delete('refreshToken')
 
   return Response.json({
