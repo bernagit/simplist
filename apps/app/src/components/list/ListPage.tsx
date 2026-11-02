@@ -30,7 +30,7 @@ import {
   DragOverEvent,
   DragEndEvent,
   DragStartEvent,
-  PointerSensor,
+  MouseSensor,
   KeyboardSensor,
   useSensor,
   useSensors,
@@ -138,8 +138,11 @@ export default function ListPage() {
     [defaultSectionTasks]
   )
 
+  // MouseSensor + TouchSensor instead of PointerSensor: touches also emit pointer
+  // events, so PointerSensor would start a drag after 5px of movement on touch
+  // devices, bypassing the TouchSensor delay.
   const sensors = useSensors(
-    useSensor(PointerSensor, {
+    useSensor(MouseSensor, {
       activationConstraint: { distance: 5 }
     }),
     useSensor(TouchSensor, {

@@ -141,7 +141,8 @@
     "failedReorderTasks": "Impossibile riordinare le attività:"
   },
   "SectionPanel": {
-    "deleteSection": "Elimina sezione"
+    "deleteSection": "Elimina sezione",
+    "dragSection": "Trascina per riordinare la sezione"
   },
   "TaskRow": {
     "edit": "Modifica",
