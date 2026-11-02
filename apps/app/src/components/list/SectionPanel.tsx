@@ -26,6 +26,7 @@ import { getHTMLSectionId } from '@/utils/misc'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useTranslations } from 'next-intl'
+import { useMouseHover } from '@/hooks/useMouseHover'
 import { useSidebar } from '@/providers/SidebarProvider'
 
 type SectionPanelProps = {
@@ -45,7 +46,7 @@ export default function SectionPanel({
 }: SectionPanelProps) {
   const t = useTranslations('SectionPanel')
   const [isExpanded, setIsExpanded] = useState(true)
-  const [hovered, setHovered] = useState(false)
+  const { hovered, hoverProps } = useMouseHover()
   const { isTouch } = useSidebar()
   const theme = useMantineTheme()
 
@@ -88,8 +89,7 @@ export default function SectionPanel({
         align="center"
         id={getHTMLSectionId(section.id)}
         mb={4}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
+        {...hoverProps}
       >
         {canEdit && (
           // Only the grip starts a drag, so swiping on the header still scrolls the page.

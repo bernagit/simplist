@@ -2,6 +2,7 @@
 
 import { forwardRef, ReactNode } from 'react'
 import { Box, BoxProps, useComputedColorScheme } from '@mantine/core'
+import { isMousePointer } from '@/hooks/useMouseHover'
 
 type HoverableBoxProps = BoxProps & {
   active?: boolean
@@ -26,11 +27,11 @@ const HoverableBox = forwardRef<HTMLDivElement, HoverableBoxProps>(
           display: 'flex',
           ...style
         }}
-        onMouseEnter={e => {
-          if (disabled || !active) return
+        onPointerEnter={e => {
+          if (disabled || !active || !isMousePointer(e)) return
           e.currentTarget.style.backgroundColor = hoverColor
         }}
-        onMouseLeave={e => {
+        onPointerLeave={e => {
           if (!active) return
           e.currentTarget.style.backgroundColor = 'transparent'
         }}

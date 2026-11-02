@@ -26,6 +26,7 @@ import { listKeys } from '@/queries/lists'
 import { useRouter } from 'next/navigation'
 import { useMe } from '@/queries/auth'
 import { useTranslations } from 'next-intl'
+import { useMouseHover } from '@/hooks/useMouseHover'
 import { ActionsMenu } from '../common/ActionsMenu'
 
 type TaskRowProps = {
@@ -41,7 +42,7 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
   const toggleTask = useToggleTask()
   const deleteTask = useDeleteTask()
   const { showContextMenu, isContextMenuVisible } = useContextMenu()
-  const [hovered, setHovered] = useState(false)
+  const { hovered, hoverProps } = useMouseHover()
   const [selected, setSelected] = useState(false)
   const queryClient = useQueryClient()
   const { data: me } = useMe()
@@ -190,8 +191,7 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
         opacity: isDragging ? 0.95 : 1,
         zIndex: isDragging ? 100 : 1
       }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      {...hoverProps}
     >
       <Group wrap="nowrap" gap="sm" flex={1} align="center">
         <ActionIcon

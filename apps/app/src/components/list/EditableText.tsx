@@ -2,6 +2,7 @@
 
 import { TextInput, Title, TitleOrder, useComputedColorScheme } from '@mantine/core'
 import { useCallback, useRef, useState } from 'react'
+import { isMousePointer } from '@/hooks/useMouseHover'
 
 type EditableTitleProps = {
   canEdit?: boolean
@@ -103,12 +104,12 @@ export function EditableTitle({ canEdit, order, value, onSave }: EditableTitlePr
         border: '1px solid transparent',
         transition: 'border-color 150ms'
       }}
-      onMouseEnter={e => {
-        if (!canEdit) return
+      onPointerEnter={e => {
+        if (!canEdit || !isMousePointer(e)) return
         e.currentTarget.style.borderColor =
           colorScheme === 'dark' ? 'var(--mantine-color-dark-4)' : 'var(--mantine-color-gray-4)'
       }}
-      onMouseLeave={e => {
+      onPointerLeave={e => {
         if (!canEdit) return
         e.currentTarget.style.borderColor = 'transparent'
       }}
