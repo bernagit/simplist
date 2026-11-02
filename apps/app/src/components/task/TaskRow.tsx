@@ -242,7 +242,10 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
               })(e)
             }}
             style={{
-              cursor: 'pointer'
+              cursor: 'pointer',
+              WebkitTouchCallout: 'none',
+              WebkitUserSelect: 'none',
+              userSelect: 'none'
             }}
           >
             <Text
