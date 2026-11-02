@@ -1,20 +1,36 @@
 'use client'
 
 import { createContext, useContext, useState, useCallback } from 'react'
-import { useMediaQuery } from '@mantine/hooks'
+import { useMediaQuery, useMounted } from '@mantine/hooks'
+
+/** Small screen: drives layout (overlay sidebar, full-screen modals, …). Matches Mantine's `sm` breakpoint. */
+const MOBILE_QUERY = '(max-width: 47.99em)'
+/** No hover / coarse pointer: phones and tablets of any size. Drives hover-only UI. */
+const TOUCH_QUERY = '(hover: none), (pointer: coarse)'
 
 interface SidebarContextType {
   opened: boolean
   toggle: () => void
   open: () => void
   close: () => void
+  /** Screen is smaller than the `sm` breakpoint. Use for layout decisions. */
   isMobile: boolean
+  /** Device can't hover (touch). Use instead of `isMobile` for anything revealed on hover. */
+  isTouch: boolean
+  /**
+   * False during SSR and the first client render, when media queries can't be read yet
+   * and `isMobile`/`isTouch` are always false.
+   */
+  isMediaResolved: boolean
 }
 
 const SidebarContext = createContext<SidebarContextType | null>(null)
 
 export function SidebarProvider({ children }: { children: React.ReactNode }) {
-  const isMobile = useMediaQuery('(max-width: 768px)') ?? false
+  // useMediaQuery reads the query in an effect, so the first render is always `false`.
+  const isMobile = useMediaQuery(MOBILE_QUERY)
+  const isTouch = useMediaQuery(TOUCH_QUERY)
+  const isMediaResolved = useMounted()
 
   // Desktop remembers its state
   const [desktopOpened, setDesktopOpened] = useState(true)
@@ -55,7 +71,9 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
         toggle,
         open,
         close,
-        isMobile
+        isMobile,
+        isTouch,
+        isMediaResolved
       }}
     >
       {children}

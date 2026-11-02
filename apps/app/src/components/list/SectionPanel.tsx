@@ -46,7 +46,7 @@ export default function SectionPanel({
   const t = useTranslations('SectionPanel')
   const [isExpanded, setIsExpanded] = useState(true)
   const [hovered, setHovered] = useState(false)
-  const { isMobile } = useSidebar()
+  const { isTouch } = useSidebar()
   const theme = useMantineTheme()
 
   const updateSection = useUpdateSection()
@@ -101,7 +101,7 @@ export default function SectionPanel({
             size="sm"
             aria-label={t('dragSection')}
             style={{
-              opacity: isMobile || hovered || isDragging ? 1 : 0,
+              opacity: isTouch || hovered || isDragging ? 1 : 0,
               cursor: 'grab',
               transition: 'opacity 120ms',
               touchAction: 'none'
