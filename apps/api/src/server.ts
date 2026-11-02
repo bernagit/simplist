@@ -9,6 +9,11 @@ import { bootstrapFirstInvite } from './bootstrap/first-invite.js'
 const startedAt = performance.now()
 const logger = createModuleLogger('SERVER')
 
+/** Message + stack: JSON.stringify(error) would print `{}`. */
+function describeError(err: unknown) {
+  return err instanceof Error ? (err.stack ?? err.message) : String(err)
+}
+
 async function startServer() {
   const server = app.listen(appConfig.port, '0.0.0.0', () => {
     logger.info(`${appInfo.name} v${appInfo.version} running on port ${appConfig.port}`)
@@ -21,16 +26,15 @@ const registerShutdownHandlers = (server: ReturnType<typeof app.listen>) => {
   process.on('SIGINT', () => shutdown(server, 'SIGINT'))
   process.on('SIGTERM', () => shutdown(server, 'SIGTERM'))
 
+  // The logger uses winston's npm levels: there is no `crit` (its types also declare the
+  // syslog levels, so a wrong level compiles and then crashes at runtime).
   process.on('uncaughtException', err => {
-    logger.crit(`${err instanceof Error ? err.message : String(err)}`, 'Uncaught exception')
+    logger.error(`Uncaught exception: ${describeError(err)}`)
     process.exit(1)
   })
 
   process.on('unhandledRejection', reason => {
-    logger.crit(
-      `${reason instanceof Error ? reason.message : String(reason)}`,
-      'Unhandled promise rejection'
-    )
+    logger.error(`Unhandled promise rejection: ${describeError(reason)}`)
     process.exit(1)
   })
 }
@@ -79,8 +83,6 @@ try {
 
   logger.info(`Application ready in ${Math.round(performance.now() - startedAt)} ms`)
 } catch (err: unknown) {
-  logger.crit('Uncaught exception', {
-    err
-  })
+  logger.error(`Startup failed: ${describeError(err)}`)
   process.exit(1)
 }
