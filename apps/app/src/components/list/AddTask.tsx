@@ -18,6 +18,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import DateSelector from '../task/DateSelector'
 import PrioritySelector from '../task/ProritySelector'
 import { useTranslations } from 'next-intl'
+import { useMouseHover } from '@/hooks/useMouseHover'
 
 type AddTaskProps = {
   ml?: number
@@ -31,7 +32,7 @@ export default function AddTask({ ml, listId, sectionId, onSave }: AddTaskProps)
   const colorScheme = useComputedColorScheme()
   const theme = useMantineTheme()
   const [isClicked, setIsClicked] = useState(false)
-  const [hovered, setHovered] = useState(false)
+  const { hovered, hoverProps } = useMouseHover()
   const titleInputRef = useRef<HTMLInputElement | null>(null)
 
   const [title, setTitle] = useState('')
@@ -116,8 +117,7 @@ export default function AddTask({ ml, listId, sectionId, onSave }: AddTaskProps)
     return (
       <Box
         onClick={() => setIsClicked(true)}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
+        {...hoverProps}
         ml={0}
         my={6}
         style={{

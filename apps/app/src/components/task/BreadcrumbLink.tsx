@@ -2,6 +2,7 @@
 
 import { ReactNode } from 'react'
 import { Box, Text } from '@mantine/core'
+import { isMousePointer } from '@/hooks/useMouseHover'
 
 type Props = {
   children: ReactNode
@@ -13,11 +14,12 @@ export default function BreadcrumbLink({ children, onClick }: Props) {
     <Box
       component="div"
       onClick={onClick}
-      onMouseEnter={e => {
+      onPointerEnter={e => {
+        if (!isMousePointer(e)) return
         e.currentTarget.style.backgroundColor =
           'light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5))'
       }}
-      onMouseLeave={e => {
+      onPointerLeave={e => {
         e.currentTarget.style.backgroundColor = 'transparent'
       }}
       style={{

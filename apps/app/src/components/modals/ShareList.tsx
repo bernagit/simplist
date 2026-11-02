@@ -237,8 +237,10 @@ export default function ShareList({ context, id, innerProps }: ContextModalProps
       </Stack>
 
       <style jsx>{`
-        .share-list-row:hover {
-          background-color: ${theme.colors.gray[0]};
+        @media (hover: hover) {
+          .share-list-row:hover {
+            background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6));
+          }
         }
       `}</style>
     </Stack>

@@ -4,6 +4,7 @@ import { useSidebar } from '@/providers/SidebarProvider'
 import { Button, Divider, Group, Stack, Text, TextInput } from '@mantine/core'
 import { useCallback, useState } from 'react'
 import { useTranslations } from 'next-intl'
+import { useMouseHover } from '@/hooks/useMouseHover'
 
 type AddSectionProps = {
   listId: string
@@ -14,7 +15,7 @@ export default function AddSection({ listId, onSave }: AddSectionProps) {
   const t = useTranslations('AddSection')
   const { isTouch } = useSidebar()
 
-  const [isHovered, setIsHovered] = useState(false)
+  const { hovered: isHovered, hoverProps } = useMouseHover()
   const [isClicked, setIsClicked] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [sectionTitle, setSectionTitle] = useState('')
@@ -42,8 +43,7 @@ export default function AddSection({ listId, onSave }: AddSectionProps) {
   if (!isClicked) {
     return (
       <Divider
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        {...hoverProps}
         label={
           <Text c="dimmed" size="sm">
             {t('addSection')}
