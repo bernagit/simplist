@@ -18,6 +18,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import DateSelector from '../task/DateSelector'
 import PrioritySelector from '../task/ProritySelector'
 import { useTranslations } from 'next-intl'
+import { useSidebar } from '@/providers/SidebarProvider'
 import { useMouseHover } from '@/hooks/useMouseHover'
 
 type AddTaskProps = {
@@ -31,6 +32,7 @@ export default function AddTask({ ml, listId, sectionId, onSave }: AddTaskProps)
   const t = useTranslations('AddTask')
   const colorScheme = useComputedColorScheme()
   const theme = useMantineTheme()
+  const { isTouch } = useSidebar()
   const [isClicked, setIsClicked] = useState(false)
   const { hovered, hoverProps } = useMouseHover()
   const titleInputRef = useRef<HTMLInputElement | null>(null)
@@ -183,7 +185,8 @@ export default function AddTask({ ml, listId, sectionId, onSave }: AddTaskProps)
                 minHeight: 20,
                 lineHeight: '26px',
                 padding: 0,
-                fontSize: 15,
+                // >= 16px on touch devices, otherwise iOS zooms in on focus
+                fontSize: isTouch ? 16 : 15,
                 fontWeight: 600
               }
             }}
@@ -200,7 +203,7 @@ export default function AddTask({ ml, listId, sectionId, onSave }: AddTaskProps)
                 minHeight: 18,
                 lineHeight: '20px',
                 padding: 0,
-                fontSize: 13
+                fontSize: isTouch ? 16 : 13
               }
             }}
           />

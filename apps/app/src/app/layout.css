@@ -7,3 +7,14 @@
 .mantine-ScrollArea-root[data-autosize] {
   height: 100%;
 }
+
+/*
+ * iOS Safari zooms the page when focusing an input whose font-size is < 16px.
+ * On touch devices, raise Mantine inputs to at least 16px (bigger sizes are kept).
+ * Mantine's input reads `--_input-fz` before `--input-fz`, so overriding it here is enough.
+ */
+@media (pointer: coarse) {
+  .mantine-Input-input {
+    --_input-fz: max(16px, var(--input-fz, var(--mantine-font-size-md)));
+  }
+}
