@@ -112,7 +112,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                           title={t('whatsNewTitle', { version: currentVersion })}
                           size="lg"
                         >
-                          <ScrollArea h={350} offsetScrollbars p="xs">
+                          <ScrollArea h="min(350px, 55dvh)" offsetScrollbars p="xs">
                             <ChangelogView rawMarkdown={rawChangelog} />
                           </ScrollArea>
                           <Group justify="right" mt="md">

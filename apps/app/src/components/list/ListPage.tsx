@@ -382,6 +382,10 @@ export default function ListPage() {
         <Group justify="space-between" wrap="nowrap">
           <Box
             style={{
+              // minWidth 0 lets long titles wrap instead of overflowing the nowrap row
+              flex: 1,
+              minWidth: 0,
+              overflowWrap: 'anywhere',
               transition: 'opacity 400ms ease, transform 400ms ease',
               opacity: showTopbarTitle ? 0 : 1,
               transform: showTopbarTitle ? 'translateY(-20px)' : 'translateY(0)',
@@ -400,7 +404,7 @@ export default function ListPage() {
               </Text>
             )}
           </Box>
-          <Group gap="xs" wrap="nowrap">
+          <Group gap="xs" wrap="nowrap" style={{ flexShrink: 0 }}>
             <ListMembers members={list.members} />
 
             {!canEdit && (

@@ -152,13 +152,12 @@ export default function AddTask({ ml, listId, sectionId, onSave }: AddTaskProps)
       radius="md"
       p="xs"
       style={{
-        width: '100%',
         borderColor:
           colorScheme === 'dark' ? 'var(--mantine-color-dark-4)' : 'var(--mantine-color-gray-3)'
       }}
       mt="xs"
-      ml={'lg'}
-      w={'90%'}
+      ml={{ base: 0, sm: 'lg' }}
+      w={{ base: '100%', sm: '90%' }}
     >
       <form
         onSubmit={e => {

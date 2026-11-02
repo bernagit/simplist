@@ -25,6 +25,7 @@ import {
   useMantineTheme
 } from '@mantine/core'
 import { ContextModalProps, modals } from '@mantine/modals'
+import { useMediaQuery } from '@mantine/hooks'
 import { IconTrash, IconUsers, IconX } from '@tabler/icons-react'
 import dayjs from 'dayjs'
 import { useTranslations } from 'next-intl'
@@ -37,6 +38,8 @@ export default function ShareList({ context, id, innerProps }: ContextModalProps
   const t = useTranslations('ShareList')
   const listId = innerProps?.listId
   const theme = useMantineTheme()
+  // Modals render outside SidebarProvider, so read the breakpoint directly.
+  const isMobile = useMediaQuery('(max-width: 47.99em)')
   const [shareWithEmail, setShareWithEmail] = useState('')
   const [role, setRole] = useState<string | null>('viewer')
 
@@ -113,7 +116,12 @@ export default function ShareList({ context, id, innerProps }: ContextModalProps
       </Group>
 
       {/* Form di Condivisione */}
-      <Flex gap="sm" align="flex-end">
+      {/* Stacked on phones: email, role and button don't fit on one row */}
+      <Flex
+        gap="sm"
+        direction={{ base: 'column', sm: 'row' }}
+        align={{ base: 'stretch', sm: 'flex-end' }}
+      >
         <TextInput
           style={{ flex: 1 }}
           label={t('fields.emailLabel')}
@@ -128,6 +136,7 @@ export default function ShareList({ context, id, innerProps }: ContextModalProps
             {t('fields.roleLabel')}
           </Text>
           <SegmentedControl
+            fullWidth={isMobile}
             value={role ?? 'viewer'}
             onChange={setRole}
             data={[
@@ -178,17 +187,18 @@ export default function ShareList({ context, id, innerProps }: ContextModalProps
                   transition: 'background-color 120ms ease, opacity 120ms ease'
                 }}
                 className="share-list-row"
+                wrap="nowrap"
               >
-                <Group gap="sm" wrap="nowrap">
+                <Group gap="sm" wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
                   <Avatar radius="xl" color={theme.primaryColor} src={member.avatar}>
                     {!member.avatar && label.charAt(0).toUpperCase()}
                   </Avatar>
 
-                  <div>
-                    <Text size="sm" fw={500} lineClamp={1}>
+                  <div style={{ minWidth: 0 }}>
+                    <Text size="sm" fw={500} truncate>
                       {label}
                     </Text>
-                    <Text size="xs" c="dimmed" lineClamp={1}>
+                    <Text size="xs" c="dimmed" truncate>
                       {member.email}
                     </Text>
                   </div>

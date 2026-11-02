@@ -117,8 +117,8 @@ export function Topbar() {
         }`
       }}
     >
-      <Group h="100%" px="md" justify="space-between" wrap="nowrap">
-        <Group>
+      <Group h="100%" px="md" justify="space-between" wrap="nowrap" gap="xs">
+        <Group wrap="nowrap" gap="xs" style={{ flexShrink: 0 }}>
           {!opened && (
             <ActionIcon
               mt="sm"
@@ -132,7 +132,8 @@ export function Topbar() {
             </ActionIcon>
           )}
 
-          {breadcrumbs.length > 0 && (
+          {/* On phones the scrolled-in title replaces the breadcrumbs: both don't fit */}
+          {breadcrumbs.length > 0 && !(isMobile && showTitle) && (
             <Breadcrumbs mt="md" separator=">">
               {breadcrumbs.map((item, index) =>
                 item.href ? (
@@ -150,7 +151,7 @@ export function Topbar() {
         </Group>
 
         {showTitle && (
-          <Stack gap={0} align="center">
+          <Stack gap={0} align="center" style={{ flex: isMobile ? 1 : undefined, minWidth: 0 }}>
             <Title
               order={3}
               mt={'sm'}
@@ -160,7 +161,7 @@ export function Topbar() {
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
-                maxWidth: isMobile ? 150 : 300
+                maxWidth: isMobile ? '100%' : 300
               }}
             >
               {title}
@@ -174,7 +175,7 @@ export function Topbar() {
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
-                  maxWidth: isMobile ? 150 : 300
+                  maxWidth: isMobile ? '100%' : 300
                 }}
               >
                 {description}
@@ -182,16 +183,28 @@ export function Topbar() {
             )}
           </Stack>
         )}
-        <Group gap={'xs'}>
+        <Group gap={'xs'} wrap="nowrap" style={{ flexShrink: 0 }}>
           {route.canShare && (
             <>
               <Tooltip label={t('shareList')} openDelay={300}>
-                <Button variant="light" mt="sm" onClick={handleShare}>
-                  <Group>
+                {isMobile ? (
+                  <ActionIcon
+                    variant="light"
+                    mt="sm"
+                    size="lg"
+                    onClick={handleShare}
+                    aria-label={t('shareList')}
+                  >
                     <IconUserShare size={16} />
-                    {isMobile ? null : t('share')}
-                  </Group>
-                </Button>
+                  </ActionIcon>
+                ) : (
+                  <Button variant="light" mt="sm" onClick={handleShare}>
+                    <Group>
+                      <IconUserShare size={16} />
+                      {t('share')}
+                    </Group>
+                  </Button>
+                )}
               </Tooltip>
               <Menu shadow="md" width={MENU_WIDTH} position="bottom-end">
                 <Menu.Target>
