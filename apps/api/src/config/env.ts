@@ -19,7 +19,15 @@ const appConfigSchema = z.object({
   jwtPrivateKey: z.string().default(privkey),
   jwtPublicKey: z.string().default(pubkey),
   jwtExpiresIn: z.string().default(cfg.DEFAULT_JWT_EXPIRES_IN),
-  refreshTokenExpiresIn: z.number().int().positive().default(cfg.REFRESH_TOKEN_EXPIRES_IN_DAYS),
+  // coerce: env values are strings, z.number() rejected REFRESH_TOKEN_EXPIRES_IN_DAYS when set
+  refreshTokenExpiresIn: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(cfg.REFRESH_TOKEN_EXPIRES_IN_DAYS),
+  // Secure cookies need HTTPS. Defaults to on outside development; set COOKIE_SECURE=false
+  // only if production is served over plain HTTP (e.g. on a LAN).
+  cookieSecure: z.boolean(),
   invitePerUser: z.coerce.number().int().positive().optional()
 })
 
@@ -38,7 +46,11 @@ const appConfig = appConfigSchema.parse({
   jwtPublicKey: process.env.JWT_PUBLIC_KEY,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN,
   refreshTokenExpiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN_DAYS,
-  invitePerUser: process.env.INVITE_PER_USER
+  invitePerUser: process.env.INVITE_PER_USER,
+  cookieSecure:
+    process.env.COOKIE_SECURE !== undefined
+      ? process.env.COOKIE_SECURE === 'true'
+      : process.env.NODE_ENV !== 'development'
 })
 
 export default appConfig

@@ -15,6 +15,10 @@ import appConfig from './config/env.js'
 
 const app = express()
 
+// Served behind a reverse proxy (nginx) on the private/Docker network: trust its
+// X-Forwarded-* headers for the client IP and protocol, but not those from anywhere else.
+app.set('trust proxy', 'loopback, linklocal, uniquelocal')
+
 app.use(express.json())
 app.use(correlationIdMiddleware)
 app.use(morganMiddleware)

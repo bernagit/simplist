@@ -13,8 +13,16 @@ if (fs.existsSync(fallbackPath)) {
   rawChangelog = fs.readFileSync(fallbackPath, 'utf8');
 }
 
+// In production nginx routes /api to the Express API (docker/nginx/simplist.conf). In development
+// there is no nginx, so Next.js forwards /api itself to keep the API on the same origin
+// (the auth cookies are scoped to /api). `next build` runs with NODE_ENV=production: no rewrite.
+const devApiUrl = process.env.NODE_ENV === 'development' ? process.env.API_URL : undefined
+
 const nextConfig: NextConfig = {
   output: 'standalone',
+  async rewrites() {
+    return devApiUrl ? [{ source: '/api/:path*', destination: `${devApiUrl}/:path*` }] : []
+  },
   async headers() {
     return [
       {

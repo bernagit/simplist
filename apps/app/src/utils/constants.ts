@@ -12,4 +12,12 @@ export const RECURRENCE_CONFIG = [
   { value: 'FREQ=MONTHLY', labelKey: 'monthly' }
 ] as const
 
-export const REFRESH_MAX_AGE = 60 * 60 * 24 * 30 // 30 days in seconds
+/**
+ * Set by the API next to the httpOnly auth cookies (must match AUTH_COOKIES.session in
+ * apps/api/src/infrastructure/auth/cookies.ts). It holds no secret: it only tells the Next.js
+ * middleware that a session exists, to protect pages. The API checks the real tokens.
+ */
+export const SESSION_COOKIE = 'sl_session'
+
+/** Pages reachable without a session. */
+export const PUBLIC_ROUTES = ['/login', '/register', '/forgot-password', '/reset-password']

@@ -58,10 +58,13 @@ export const passwordResetSchema = z.object({
   })
 })
 
+// The web app sends the refresh token as an httpOnly cookie; the body is for API clients.
 export const refreshTokenSchema = z.object({
-  body: z.object({
-    refreshToken: z.string().min(1)
-  })
+  body: z
+    .object({
+      refreshToken: z.string().min(1).optional()
+    })
+    .optional()
 })
 
 export type RegisterInput = z.infer<typeof registerSchema>['body']

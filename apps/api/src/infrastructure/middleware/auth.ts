@@ -4,20 +4,23 @@ import { Errors } from '../../types/http.js'
 import { jwtService } from '../auth/jwt.js'
 import { UserRepository } from '../../modules/user/user.repository.js'
 import jwt from 'jsonwebtoken'
+import { AUTH_COOKIES, readCookie } from '../auth/cookies.js'
 
 const logger = createModuleLogger('AUTH-MIDDLEWARE')
 const userRepository = new UserRepository()
 
 export const requireAuth = async (req: Request, _res: Response, next: NextFunction) => {
+  // Bearer header for API clients (and future API tokens), httpOnly cookie for the web app
   const authHeader = req.headers.authorization
+  const token = authHeader?.startsWith('Bearer ')
+    ? // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+      authHeader.slice(7)
+    : readCookie(req, AUTH_COOKIES.access)
 
-  if (!authHeader?.startsWith('Bearer ')) {
-    logger.warn('Authentication failed: Missing Authorization header')
+  if (!token) {
+    logger.warn('Authentication failed: Missing access token')
     throw Errors.unauthorized('Authentication required')
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-  const token = authHeader.slice(7)
 
   let payload: { userId: string }
 

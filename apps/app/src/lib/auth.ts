@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers'
+import { SESSION_COOKIE } from '@/utils/constants'
 
 export async function hasSessionCookie() {
   const cookieStore = await cookies()
-  return Boolean(cookieStore.get('accessToken')?.value)
+  return cookieStore.has(SESSION_COOKIE)
 }

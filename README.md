@@ -53,7 +53,7 @@ cp apps/app/.env.example apps/app/.env
 docker compose up -d
 ```
 
-The app will be available at `http://localhost:3000` (frontend) and the API at `http://localhost:4000` (adjust ports as configured in `docker-compose.yaml`).
+The app will be available at `http://localhost:3000`, with the API on the same origin under `http://localhost:3000/api`: nginx (`docker/nginx/simplist.conf`) routes `/api` to the API and everything else to the web app. Serve it over HTTPS in production (auth cookies are `Secure`), or set `COOKIE_SECURE=false` in the API `.env` for plain-HTTP setups.
 
 ### Manual / local development
 
