@@ -7,8 +7,7 @@ export const contextMenuStyles = {
     width: 200,
     borderRadius: 6,
     boxShadow: '0 4px 12px rgba(0,0,0,.15)',
-    padding: 8,
-    marginLeft: -100
+    padding: 8
   }
 }
 
