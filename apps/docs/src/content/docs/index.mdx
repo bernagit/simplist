@@ -1,0 +1,68 @@
+---
+title: Documentazione di Simplist
+description: Documentazione per utenti, amministratori e contributori.
+template: splash
+
+hero:
+  tagline: Un gestore di liste e attività minimale e self-hostable.
+  image:
+    light: ../../assets/logo-light.webp
+    dark: ../../assets/logo-dark.webp
+  actions:
+    - text: Inizia
+      link: /getting-started/installation/
+      icon: right-arrow
+    - text: GitHub
+      link: https://github.com/bernagit/simplist
+      icon: external
+      variant: minimal
+---
+
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+
+
+## Benvenuto
+
+Benvenuto nella documentazione ufficiale di **Simplist**.
+
+Che tu stia provando Simplist per la prima volta, installando un'istanza sul tuo server o contribuendo al progetto, qui troverai tutte le informazioni di cui hai bisogno.
+
+<CardGrid>
+  <LinkCard
+    title="Primi passi"
+    description="Installa Simplist, crea il tuo primo account e scopri le funzionalità essenziali in pochi minuti."
+    href="/getting-started/installation/"
+  />
+
+  <LinkCard
+    title="Guida utente"
+    description="Scopri come organizzare liste e attività, utilizzare il calendario, condividere liste e lavorare più velocemente grazie alle scorciatoie da tastiera."
+    href="/user-guide/"
+  />
+
+  <LinkCard
+    title="Self Hosting"
+    description="Distribuisci Simplist con Docker, configura l'ambiente e mantieni la tua installazione sempre aggiornata."
+    href="/self-hosting/"
+  />
+
+  <LinkCard
+    title="Sviluppo"
+    description="Esplora l'architettura del monorepo, configura l'ambiente di sviluppo locale e contribuisci a Simplist."
+    href="/development/"
+  />
+</CardGrid>
+
+---
+
+## Cos'è Simplist?
+
+Simplist è un gestore di liste e attività leggero, progettato seguendo una filosofia semplice:
+
+- 📋 Organizza le tue liste
+- ✅ Concentrati sulle tue attività
+- 🤝 Condividi le liste con altri utenti
+- ⚡ Lavora più velocemente grazie alle scorciatoie da tastiera
+- 🐳 Mantieni il pieno controllo dei tuoi dati grazie al self-hosting
+
+Nessuna complessità superflua: solo un'applicazione moderna, veloce e progettata per aiutarti a organizzare ciò che conta davvero.
