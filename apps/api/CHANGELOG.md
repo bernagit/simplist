@@ -1,5 +1,18 @@
 # app
 
+## 0.6.0
+
+### Minor Changes
+
+- feat: the app now talks to the API directly through nginx, faster and ready for developer access to the API. Self-hosting: add the nginx service from docker/nginx; everyone needs to log in again once after updating
+- feat: the documentation is now online, open it from "Help & Support" > "Documentation"
+
+### Patch Changes
+
+- fix: the API now logs the real error when it fails to start
+- fix: Docker image builds no longer fail because of the documentation dependencies
+- fix: fewer unexpected logouts: expired sessions are renewed once, also with several tabs open
+
 ## 0.5.0
 
 ### Minor Changes
