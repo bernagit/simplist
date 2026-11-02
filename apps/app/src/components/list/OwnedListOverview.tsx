@@ -83,6 +83,7 @@ export default function OwnedListOverview() {
   const handleDeleteList = (listId: string) => {
     if (preferences?.confirmDelete) {
       modals.openConfirmModal({
+        fullScreen: false,
         title: t('deleteModalTitle'),
         children: (
           <Text size="sm">
@@ -151,6 +152,7 @@ export default function OwnedListOverview() {
           } else {
             if (preferences?.confirmDelete) {
               modals.openConfirmModal({
+                fullScreen: false,
                 title: t('archiveModalTitle'),
                 children: (
                   <Stack gap="xs">

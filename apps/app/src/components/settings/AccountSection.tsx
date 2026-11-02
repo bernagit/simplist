@@ -98,6 +98,7 @@ export function AccountSection() {
 
   const openDeleteAccountModal = () =>
     modals.openConfirmModal({
+      fullScreen: false,
       title: t('dangerZone.modal.title'),
       centered: true,
       children: <Text size="sm">{t('dangerZone.modal.message')}</Text>,

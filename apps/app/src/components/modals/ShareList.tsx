@@ -29,6 +29,7 @@ import { useMediaQuery } from '@mantine/hooks'
 import { IconTrash, IconUsers, IconX } from '@tabler/icons-react'
 import dayjs from 'dayjs'
 import { useTranslations } from 'next-intl'
+import { MOBILE_QUERY } from '@/providers/SidebarProvider'
 
 type ShareListProps = {
   listId: string
@@ -39,7 +40,7 @@ export default function ShareList({ context, id, innerProps }: ContextModalProps
   const listId = innerProps?.listId
   const theme = useMantineTheme()
   // Modals render outside SidebarProvider, so read the breakpoint directly.
-  const isMobile = useMediaQuery('(max-width: 47.99em)')
+  const isMobile = useMediaQuery(MOBILE_QUERY)
   const [shareWithEmail, setShareWithEmail] = useState('')
   const [role, setRole] = useState<string | null>('viewer')
 
@@ -74,6 +75,7 @@ export default function ShareList({ context, id, innerProps }: ContextModalProps
   const handleConfirmDeleteMember = useCallback(
     (memberId: string, label: string) => () => {
       modals.openConfirmModal({
+        fullScreen: false,
         title: t('confirmDelete.title'),
         children: (
           <Text size="sm">

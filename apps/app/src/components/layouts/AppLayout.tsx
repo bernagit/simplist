@@ -8,7 +8,7 @@ import { Sidebar } from './Sidebar'
 import { Topbar } from './Topbar'
 import { MobileOverlay } from './MobileOverlay'
 import { HotkeyProvider } from '@/providers/HotKeysProvider'
-import { SidebarProvider } from '@/providers/SidebarProvider'
+import { MOBILE_QUERY, SidebarProvider } from '@/providers/SidebarProvider'
 import { TopbarProvider } from '@/providers/TopbarProvider'
 import AddList from '../modals/AddList'
 import ShareList from '../modals/ShareList'
@@ -24,6 +24,9 @@ import { ChangelogView } from '../common/ChangelogView'
 import { useState } from 'react'
 import { DatesProvider } from '@mantine/dates'
 import ConfirmArchive from '../modals/ConfirmArchive'
+import { ModalsBackHandler } from '../modals/ModalsBackHandler'
+import { useMediaQuery } from '@mantine/hooks'
+import { useCloseOnBack } from '@/hooks/useCloseOnBack'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -32,6 +35,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { currentVersion, lastSeenVersion, rawChangelog, markAsRead } = useChangelog()
 
   const [manualOpen, setManualOpen] = useState(false)
+  // AppLayout renders the providers, so it can't use useSidebar(): read the breakpoint here.
+  const isMobile = useMediaQuery(MOBILE_QUERY)
 
   // Automatically check if version has changed once client storage is resolved
   const isNewVersion = !!lastSeenVersion && lastSeenVersion !== currentVersion
@@ -42,6 +47,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     setManualOpen(false)
   }
   const isAuthRoute = PUBLIC_ROUTES.some(route => pathname.startsWith(route))
+
+  useCloseOnBack(isModalOpen && !isAuthRoute, handleClose)
 
   if (isAuthRoute) return <AuthLayout>{children}</AuthLayout>
 
@@ -63,9 +70,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         modalProps={{
           withinPortal: true,
           zIndex: 400,
-          closeOnClickOutside: false
+          closeOnClickOutside: false,
+          // Full screen on phones. Short confirmations opt out with `fullScreen: false`.
+          fullScreen: isMobile
         }}
       >
+        <ModalsBackHandler />
         <TopbarProvider>
           <SidebarProvider>
             <HelpProvider>
@@ -111,8 +121,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                           onClose={handleClose}
                           title={t('whatsNewTitle', { version: currentVersion })}
                           size="lg"
+                          fullScreen={isMobile}
                         >
-                          <ScrollArea h="min(350px, 55dvh)" offsetScrollbars p="xs">
+                          <ScrollArea
+                            h={isMobile ? 'calc(100dvh - 150px)' : 'min(350px, 55dvh)'}
+                            offsetScrollbars
+                            p="xs"
+                          >
                             <ChangelogView rawMarkdown={rawChangelog} />
                           </ScrollArea>
                           <Group justify="right" mt="md">

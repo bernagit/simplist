@@ -15,6 +15,9 @@ import {
 } from '@mantine/core'
 import { IconRefresh, IconUpload } from '@tabler/icons-react'
 import { useTranslations } from 'next-intl'
+import { useMediaQuery } from '@mantine/hooks'
+import { useCloseOnBack } from '@/hooks/useCloseOnBack'
+import { MOBILE_QUERY } from '@/providers/SidebarProvider'
 
 const styles = ['sprouts'] as const
 type Style = typeof styles[number]
@@ -72,6 +75,8 @@ export function AvatarPicker({
   onChange: (value: string) => void
 }) {
   const t = useTranslations('AvatarPicker')
+  const isMobile = useMediaQuery(MOBILE_QUERY)
+  useCloseOnBack(opened, onClose)
   const [options, setOptions] = useState<AvatarOption[]>(() => randomBatch(COUNT))
   const [loadingSeed, setLoadingSeed] = useState<string | null>(null)
 
@@ -124,6 +129,7 @@ export function AvatarPicker({
       onClose={onClose}
       title={t('title')}
       centered
+      fullScreen={isMobile}
       radius="md"
     >
       <Stack gap="md">

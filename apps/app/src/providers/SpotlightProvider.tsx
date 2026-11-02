@@ -1,6 +1,11 @@
 'use client'
 
-import { Spotlight, SpotlightActionData, SpotlightActionGroupData } from '@mantine/spotlight'
+import {
+  Spotlight,
+  SpotlightActionData,
+  SpotlightActionGroupData,
+  spotlight
+} from '@mantine/spotlight'
 import { useDebouncedValue } from '@mantine/hooks'
 import {
   IconCalendar,
@@ -16,6 +21,7 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 
 import { useSidebar } from '@/providers/SidebarProvider'
+import { useCloseOnBack } from '@/hooks/useCloseOnBack'
 import { baseService } from '@/services/base'
 import { createListModal } from '@/lib/modals/list'
 import { getHTMLSectionId } from '@/utils/misc'
@@ -28,6 +34,8 @@ export function SpotlightProvider() {
   const { isMobile, toggle } = useSidebar()
 
   const [query, setQuery] = useState('')
+  const [spotlightOpened, setSpotlightOpened] = useState(false)
+  useCloseOnBack(spotlightOpened, spotlight.close)
   const [debouncedQuery] = useDebouncedValue(query, 200)
 
   const goToList = useCallback(
@@ -158,7 +166,11 @@ export function SpotlightProvider() {
     <Spotlight
       actions={actions}
       onQueryChange={setQuery}
-      onSpotlightClose={() => setActions(baseActions)}
+      onSpotlightOpen={() => setSpotlightOpened(true)}
+      onSpotlightClose={() => {
+        setSpotlightOpened(false)
+        setActions(baseActions)
+      }}
       searchProps={{
         leftSection: <IconSearch size={20} />,
         placeholder: t('placeholder')

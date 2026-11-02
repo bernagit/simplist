@@ -8,6 +8,7 @@ import { ActionIcon, Divider, Drawer, Group, ScrollArea, Stack, Text, Title } fr
 import { IconX } from '@tabler/icons-react'
 import { useTranslations } from 'next-intl'
 import { HotkeyBinding } from '../common/KeyBinding'
+import { useCloseOnBack } from '@/hooks/useCloseOnBack'
 
 function ShortcutSection({ title, hotkeys }: { title: string; hotkeys: HotkeyId[] }) {
   const tCategory = useTranslations('HotkeyCategories')
@@ -37,6 +38,7 @@ function ShortcutSection({ title, hotkeys }: { title: string; hotkeys: HotkeyId[
 export default function HelpDrawer() {
   const t = useTranslations('HelpDrawer')
   const { opened, close } = useHelp()
+  useCloseOnBack(opened, close)
 
   const sections = useMemo(() => {
     return Object.entries(HOTKEYS).reduce(

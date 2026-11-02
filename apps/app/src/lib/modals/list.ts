@@ -37,6 +37,7 @@ export const confirmArchiveModal = (onConfirm: () => void) =>
   modals.openContextModal({
     modal: 'confirmArchive',
     withCloseButton: false,
+    fullScreen: false,
     innerProps: { onConfirm }
   }
 )

@@ -22,6 +22,7 @@ import { usePreferences } from '@/queries/preferences'
 import { InvitesSection } from '../settings/InviteSection'
 import { InfoSection } from '../settings/InfoSection'
 import { useTranslations } from 'next-intl'
+import { MOBILE_QUERY } from '@/providers/SidebarProvider'
 
 type Section = 'general' | 'account' | 'appearance' | 'invites' | 'notifications' | 'info'
 
@@ -31,7 +32,7 @@ export default function UserSettings({ context, id }: ContextModalProps) {
   const t = useTranslations('UserSettings')
   const [opened, { toggle }] = useDisclosure(false)
   const [section, setSection] = useState<Section>('general')
-  const isMobile = useMediaQuery('(max-width: 47.99em)')
+  const isMobile = useMediaQuery(MOBILE_QUERY)
   const { data: pref, isLoading: prefLoading } = usePreferences(true)
 
   const handleSectionChange = (next: Section) => {
