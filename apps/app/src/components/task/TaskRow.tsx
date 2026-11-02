@@ -26,6 +26,7 @@ import { listKeys } from '@/queries/lists'
 import { useRouter } from 'next/navigation'
 import { useMe } from '@/queries/auth'
 import { useTranslations } from 'next-intl'
+import { ActionsMenu } from '../common/ActionsMenu'
 
 type TaskRowProps = {
   task: Task
@@ -104,21 +105,8 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
     disabled: !canEdit
   })
 
-  const menuOptions = useMemo(
+  const actionOptions = useMemo(
     () => [
-      {
-        key: 'item',
-        title: task.title.length > 20 ? task.title.slice(0, 20) + '...' : task.title,
-        icon: <IconChecklist size={20} />,
-        disabled: true,
-        onClick: () => {},
-        style: {
-          cursor: 'default'
-        }
-      },
-      {
-        key: 'divider'
-      },
       {
         key: 'edit',
         icon: <IconEdit size={20} />,
@@ -140,6 +128,28 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
       }
     ],
     [canEdit, handleClick, handleDeleteTask, task, t]
+  )
+
+  const taskLabel = task.title.length > 20 ? task.title.slice(0, 20) + '...' : task.title
+
+  const menuOptions = useMemo(
+    () => [
+      {
+        key: 'item',
+        title: taskLabel,
+        icon: <IconChecklist size={20} />,
+        disabled: true,
+        onClick: () => {},
+        style: {
+          cursor: 'default'
+        }
+      },
+      {
+        key: 'divider'
+      },
+      ...actionOptions
+    ],
+    [actionOptions, taskLabel]
   )
 
   useEffect(() => {
@@ -275,6 +285,19 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
               {dayjs(task.dueDate).format('D MMM')}
             </Text>
           </Group>
+        )}
+        {canEdit && (
+          <ActionsMenu
+            items={actionOptions}
+            label={taskLabel}
+            size="md"
+            onOpenChange={setSelected}
+            style={{
+              marginRight: '4px',
+              opacity: isMobile || hovered || selected ? 1 : 0,
+              transition: 'opacity 120ms'
+            }}
+          />
         )}
       </Group>
     </Group>

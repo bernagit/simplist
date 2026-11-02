@@ -5,7 +5,8 @@
   },
   "Common": {
     "welcome": "Welcome to Simplist",
-    "language": "Language"
+    "language": "Language",
+    "moreActions": "More actions"
   },
   "AppLayout": {
     "whatsNewTitle": "What's New in v{version}",

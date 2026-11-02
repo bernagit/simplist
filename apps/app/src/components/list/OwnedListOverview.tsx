@@ -14,6 +14,7 @@ import { useContextMenu } from "mantine-contextmenu"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 import { useTranslations } from "next-intl"
+import { ActionsMenu } from "../common/ActionsMenu"
 
 export default function OwnedListOverview() {
   const t = useTranslations('OwnedListOverview')
@@ -289,7 +290,10 @@ export default function OwnedListOverview() {
               h="100%"
               style={{
                 cursor: 'pointer',
-                transition: '0.15s'
+                transition: '0.15s',
+                WebkitTouchCallout: 'none',
+                WebkitUserSelect: 'none',
+                userSelect: 'none'
               }}
               onClick={() => handleListClick(list.id)}
               onContextMenu={
@@ -309,7 +313,7 @@ export default function OwnedListOverview() {
                     }
                   </ThemeIcon>
 
-                  <Group gap="xs">
+                  <Group gap="xs" wrap="nowrap">
                     {list.archivedAt && (
                       <Badge color="gray" variant="light">
                         {t('archived')}
@@ -317,6 +321,7 @@ export default function OwnedListOverview() {
                     )}
 
                     <Badge variant="outline">{dayjs(list.updatedAt).format('DD MMM')}</Badge>
+                    <ActionsMenu items={getMenuOptions(list)} label={list.title} />
                   </Group>
                 </Group>
 
