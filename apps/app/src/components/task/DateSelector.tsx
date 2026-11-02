@@ -7,6 +7,7 @@ import { IconCalendar, IconX } from '@tabler/icons-react'
 import DueDateDropdown from './DueDateDropdown'
 import { useSidebar } from '@/providers/SidebarProvider'
 import { useTranslations } from 'next-intl'
+import { useCloseOnBack } from '@/hooks/useCloseOnBack'
 
 type DateSelectorProps = {
   dueDate: string | null
@@ -35,6 +36,7 @@ export default function DateSelector({
   const shortDate = formatDate(dueDate)
   const { isMobile } = useSidebar()
   const [drawerOpened, { open: openDrawer, close: closeDrawer }] = useDisclosure(false)
+  useCloseOnBack(drawerOpened, closeDrawer)
 
   const dropdownContent = (
     <DueDateDropdown

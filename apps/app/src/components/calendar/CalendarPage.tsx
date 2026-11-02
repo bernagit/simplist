@@ -59,11 +59,15 @@ function getNavigationHandlers(date: DateStringValue, view: Exclude<ScheduleView
   }
 }
 
-function getHeaderLabel(date: DateStringValue, view: Exclude<ScheduleViewLevel, 'year'>) {
+function getHeaderLabel(
+  date: DateStringValue,
+  view: Exclude<ScheduleViewLevel, 'year'>,
+  compact = false
+) {
   const d = dayjs(date)
   switch (view) {
     case 'day':
-      return d.format('dddd, MMMM D, YYYY')
+      return d.format(compact ? 'ddd D MMM YYYY' : 'dddd, MMMM D, YYYY')
 
     case 'week': {
       const start = dayjs(
@@ -100,7 +104,9 @@ export default function CustomSchedule() {
 
   const [date, setDate] = useState<DateStringValue>(dayjs().format('YYYY-MM-DD') as DateStringValue)
   const { isMobile } = useSidebar()
-  const [view, setView] = useState<Exclude<ScheduleViewLevel, 'year'>>('week')
+  // Until the user picks a view, default to "day" on phones: 7 week columns don't fit.
+  const [selectedView, setView] = useState<Exclude<ScheduleViewLevel, 'year'> | null>(null)
+  const view = selectedView ?? (isMobile ? 'day' : 'week')
   const theme = useMantineTheme()
   const [withAgenda, setWithAgenda] = useState(false)
   const [updatedTasks, setUpdatedTasks] = useState<Record<string, PlannedTask>>({})
@@ -227,7 +233,7 @@ export default function CustomSchedule() {
       >
         <ScheduleHeader mb="md">
           <ScheduleHeader.Previous />
-          <ScheduleHeader.Control interactive={false} miw={220}>
+          <ScheduleHeader.Control interactive={false} {...(isMobile ? { flex: 1 } : { miw: 220 })}>
             {t('loading')}
           </ScheduleHeader.Control>
           <ScheduleHeader.Next />
@@ -256,8 +262,8 @@ export default function CustomSchedule() {
           onClick={() => setDate(nav.previous.format('YYYY-MM-DD') as DateStringValue)}
         />
 
-        <ScheduleHeader.Control interactive={false} miw={220}>
-          {getHeaderLabel(date, view)}
+        <ScheduleHeader.Control interactive={false} {...(isMobile ? { flex: 1 } : { miw: 220 })}>
+          {getHeaderLabel(date, view, isMobile)}
         </ScheduleHeader.Control>
 
         <ScheduleHeader.Next
@@ -278,8 +284,11 @@ export default function CustomSchedule() {
           {t('agenda')}
         </Button>
 
-        <Group ms="auto">
+        {/* On phones the view switch takes its own full-width row */}
+        <Group ms="auto" {...(isMobile ? { w: '100%' } : {})}>
           <SegmentedControl
+            fullWidth={isMobile}
+            flex={isMobile ? 1 : undefined}
             value={view}
             onChange={value => setView(value as Exclude<ScheduleViewLevel, 'year'>)}
             data={[

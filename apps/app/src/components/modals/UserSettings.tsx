@@ -1,6 +1,16 @@
 'use client'
 
-import { ActionIcon, Box, Group, NavLink, ScrollArea, Stack, Text, Title } from '@mantine/core'
+import {
+  ActionIcon,
+  Box,
+  Group,
+  NavLink,
+  Overlay,
+  ScrollArea,
+  Stack,
+  Text,
+  Title
+} from '@mantine/core'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import { ContextModalProps } from '@mantine/modals'
 import { IconMoon, IconSettings, IconUser, IconLayoutSidebar, IconX, IconUsers, IconInfoCircle } from '@tabler/icons-react'
@@ -12,6 +22,7 @@ import { usePreferences } from '@/queries/preferences'
 import { InvitesSection } from '../settings/InviteSection'
 import { InfoSection } from '../settings/InfoSection'
 import { useTranslations } from 'next-intl'
+import { MOBILE_QUERY } from '@/providers/SidebarProvider'
 
 type Section = 'general' | 'account' | 'appearance' | 'invites' | 'notifications' | 'info'
 
@@ -21,7 +32,7 @@ export default function UserSettings({ context, id }: ContextModalProps) {
   const t = useTranslations('UserSettings')
   const [opened, { toggle }] = useDisclosure(false)
   const [section, setSection] = useState<Section>('general')
-  const isMobile = useMediaQuery('(max-width: 47.99em)')
+  const isMobile = useMediaQuery(MOBILE_QUERY)
   const { data: pref, isLoading: prefLoading } = usePreferences(true)
 
   const handleSectionChange = (next: Section) => {
@@ -39,12 +50,23 @@ export default function UserSettings({ context, id }: ContextModalProps) {
   }
 
   return (
-    <Box style={{ display: 'flex', height: '80dvh', position: 'relative', overflow: 'hidden' }}>
+    <Box
+      style={{
+        display: 'flex',
+        // The modal is full screen on phones: use the whole height there
+        height: isMobile ? '100dvh' : '80dvh',
+        position: 'relative',
+        overflow: 'hidden'
+      }}
+    >
+      {isMobile && opened && (
+        <Overlay pos="absolute" zIndex={199} backgroundOpacity={0.4} onClick={toggle} />
+      )}
       {/* Sidebar Navigazione */}
       <Box
         w={NAV_WIDTH}
         p="md"
-        pos={isMobile ? 'fixed' : 'relative'}
+        pos={isMobile ? 'absolute' : 'relative'}
         h={isMobile ? '100%' : undefined}
         style={{
           top: 0,

@@ -61,7 +61,7 @@ export default function AddSection({ listId, onSave }: AddSectionProps) {
   }
 
   return (
-    <Stack gap={0} p={0} mt="md" ml="lg" w="90%">
+    <Stack gap={0} p={0} mt="md" ml={{ base: 0, sm: 'lg' }} w={{ base: '100%', sm: '90%' }}>
       <TextInput
         autoFocus
         placeholder={t('placeholder')}
