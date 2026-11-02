@@ -33,6 +33,22 @@ export default function DueDateDropdown({
   const recurrenceOptions = useRecurrenceOptions()
   const timeInputRef = useRef<HTMLInputElement>(null)
 
+  // showPicker() is missing on older browsers (e.g. iOS Safari < 16.4) and can throw;
+  // focusing the input still opens the native time picker on mobile.
+  const openTimePicker = () => {
+    const input = timeInputRef.current
+    if (!input) return
+    try {
+      if (typeof input.showPicker === 'function') {
+        input.showPicker()
+        return
+      }
+    } catch {
+      // fall back to focus below
+    }
+    input.focus()
+  }
+
   const handleDurationChange = (val: string | number) => {
     const num = typeof val === 'string' ? parseInt(val, 10) : val
     onDurationChange(isNaN(num) || num <= 0 ? null : num)
@@ -72,7 +88,7 @@ export default function DueDateDropdown({
               variant="subtle"
               color="gray"
               disabled={!dueDate}
-              onClick={() => timeInputRef.current?.showPicker()}
+              onClick={openTimePicker}
             >
               <IconClock style={{ width: rem(16), height: rem(16) }} />
             </ActionIcon>

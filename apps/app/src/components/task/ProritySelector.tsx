@@ -6,6 +6,7 @@ import { Box, Button, Group, Popover, Stack, Text } from '@mantine/core'
 import { IconFlag, IconX } from '@tabler/icons-react'
 import { useTranslations } from 'next-intl'
 import { useMemo, useState } from 'react'
+import { useSidebar } from '@/providers/SidebarProvider'
 
 type PrioritySelectorProps = {
   selectedPriority: string | null
@@ -17,6 +18,8 @@ export default function PrioritySelector({
   setSelectedPriority
 }: PrioritySelectorProps) {
   const t = useTranslations('TaskPriorityField')
+  const { isTouch } = useSidebar()
+  const chipHeight = isTouch ? 36 : 30
   const colorMemo = useMemo(() => getPriorityColor(selectedPriority), [selectedPriority])
   const isPrioritySelected = selectedPriority !== null
   const [open, setOpen] = useState(false)
@@ -40,7 +43,7 @@ export default function PrioritySelector({
             color={'gray'}
             c={colorMemo}
             mt="xs"
-            h={30}
+            h={chipHeight}
             px={4}
             radius={4}
             style={{
@@ -95,7 +98,7 @@ export default function PrioritySelector({
           variant="outline"
           color="gray"
           mt="xs"
-          h={30}
+          h={chipHeight}
           px={4}
           radius={4}
           style={{

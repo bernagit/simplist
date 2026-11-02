@@ -142,7 +142,8 @@
   },
   "SectionPanel": {
     "deleteSection": "Elimina sezione",
-    "dragSection": "Trascina per riordinare la sezione"
+    "dragSection": "Trascina per riordinare la sezione",
+    "renameSection": "Rinomina sezione"
   },
   "TaskRow": {
     "edit": "Modifica",
@@ -196,7 +197,8 @@
     "durationPlaceholder": "Min",
     "durationSuffix": " min",
     "recurrence": "Ricorrenza",
-    "recurrencePlaceholder": "Seleziona intervallo"
+    "recurrencePlaceholder": "Seleziona intervallo",
+    "drawerTitle": "Scadenza"
   },
   "TaskDueDateField": {
     "label": "Data di scadenza",

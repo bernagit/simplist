@@ -1,17 +1,32 @@
 'use client'
 
 import { TextInput, Title, TitleOrder, useComputedColorScheme } from '@mantine/core'
-import { useCallback, useRef, useState } from 'react'
+import { Ref, useCallback, useImperativeHandle, useRef, useState } from 'react'
 import { isMousePointer } from '@/hooks/useMouseHover'
+
+export type EditableTitleActions = {
+  startEditing: () => void
+}
 
 type EditableTitleProps = {
   canEdit?: boolean
+  /** Start editing when the title is clicked. Disable it where a tap can easily be accidental. */
+  editOnClick?: boolean
+  /** Lets the parent start editing, e.g. from a "Rename" menu item. */
+  actionsRef?: Ref<EditableTitleActions>
   order: TitleOrder
   value: string
   onSave: (value: string) => Promise<void> | void
 }
 
-export function EditableTitle({ canEdit, order, value, onSave }: EditableTitleProps) {
+export function EditableTitle({
+  canEdit,
+  editOnClick = true,
+  actionsRef,
+  order,
+  value,
+  onSave
+}: EditableTitleProps) {
   const colorScheme = useComputedColorScheme()
 
   const [editing, setEditing] = useState(false)
@@ -28,6 +43,10 @@ export function EditableTitle({ canEdit, order, value, onSave }: EditableTitlePr
       inputRef.current?.focus()
     })
   }, [canEdit, value])
+
+  useImperativeHandle(actionsRef, () => ({ startEditing }), [startEditing])
+
+  const clickToEdit = canEdit && editOnClick
 
   const save = useCallback(async () => {
     const trimmed = draft.trim()
@@ -95,22 +114,22 @@ export function EditableTitle({ canEdit, order, value, onSave }: EditableTitlePr
   return (
     <Title
       order={order}
-      onClick={startEditing}
+      {...(clickToEdit ? { onClick: startEditing } : {})}
       style={{
         display: 'inline-block',
-        cursor: 'text',
+        cursor: clickToEdit ? 'text' : 'default',
         padding: '2px 6px 0px 6px',
         borderRadius: 6,
         border: '1px solid transparent',
         transition: 'border-color 150ms'
       }}
       onPointerEnter={e => {
-        if (!canEdit || !isMousePointer(e)) return
+        if (!clickToEdit || !isMousePointer(e)) return
         e.currentTarget.style.borderColor =
           colorScheme === 'dark' ? 'var(--mantine-color-dark-4)' : 'var(--mantine-color-gray-4)'
       }}
       onPointerLeave={e => {
-        if (!canEdit) return
+        if (!clickToEdit) return
         e.currentTarget.style.borderColor = 'transparent'
       }}
     >

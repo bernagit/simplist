@@ -34,7 +34,8 @@ export default function DateSelector({
 }: DateSelectorProps) {
   const t = useTranslations('DueDateDropdown')
   const shortDate = formatDate(dueDate)
-  const { isMobile } = useSidebar()
+  const { isMobile, isTouch } = useSidebar()
+  const chipHeight = isTouch ? 36 : 30
   const [drawerOpened, { open: openDrawer, close: closeDrawer }] = useDisclosure(false)
   useCloseOnBack(drawerOpened, closeDrawer)
 
@@ -66,7 +67,7 @@ export default function DateSelector({
             variant="outline"
             color="gray"
             mt="xs"
-            h={30}
+            h={chipHeight}
             px={4}
             radius={4}
             disabled={!canEdit}
@@ -77,7 +78,7 @@ export default function DateSelector({
           >
             <IconCalendar size={16} style={{ marginRight: 4 }} />
             <Text mt={4} size={'13px'} fw={500}>
-              {shortDate ? shortDate : 'Date'}
+              {shortDate ? shortDate : t('label')}
             </Text>
           </Button>
 
@@ -87,7 +88,7 @@ export default function DateSelector({
             position="bottom"
             radius="md"
             size="auto"
-            title="Due date"
+            title={t('drawerTitle')}
             padding="md"
           >
             {dropdownContent}
@@ -100,7 +101,7 @@ export default function DateSelector({
               variant="outline"
               color="gray"
               mt="xs"
-              h={30}
+              h={chipHeight}
               px={4}
               radius={4}
               style={dateButtonStyle}
@@ -122,7 +123,7 @@ export default function DateSelector({
           variant="outline"
           color="gray"
           mt="xs"
-          h={30}
+          h={chipHeight}
           px={4}
           radius={4}
           disabled={!canEdit}

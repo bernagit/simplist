@@ -142,7 +142,8 @@
   },
   "SectionPanel": {
     "deleteSection": "Delete Section",
-    "dragSection": "Drag to reorder section"
+    "dragSection": "Drag to reorder section",
+    "renameSection": "Rename Section"
   },
   "TaskRow": {
     "edit": "Edit",
@@ -196,7 +197,8 @@
     "durationPlaceholder": "Min",
     "durationSuffix": " min",
     "recurrence": "Recurrence",
-    "recurrencePlaceholder": "Select interval"
+    "recurrencePlaceholder": "Select interval",
+    "drawerTitle": "Due date"
   },
   "TaskDueDateField": {
     "label": "Due Date",

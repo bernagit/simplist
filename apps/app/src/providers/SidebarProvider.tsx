@@ -6,7 +6,7 @@ import { useMediaQuery, useMounted } from '@mantine/hooks'
 /** Small screen: drives layout (overlay sidebar, full-screen modals, …). Matches Mantine's `sm` breakpoint. */
 export const MOBILE_QUERY = '(max-width: 47.99em)'
 /** No hover / coarse pointer: phones and tablets of any size. Drives hover-only UI. */
-const TOUCH_QUERY = '(hover: none), (pointer: coarse)'
+export const TOUCH_QUERY = '(hover: none), (pointer: coarse)'
 
 interface SidebarContextType {
   opened: boolean
