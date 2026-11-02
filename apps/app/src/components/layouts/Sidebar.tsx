@@ -53,7 +53,10 @@ const DEFAULT_WIDTH = 280
 
 export function Sidebar() {
   const t = useTranslations('Sidebar')
-  const { toggle, opened, isMobile, isMediaResolved } = useSidebar()
+  const { toggle, opened, isMobile, isTouch, isMediaResolved } = useSidebar()
+  // xs (18px) is fine for a mouse, too small to hit reliably with a finger
+  const smallIconSize = isTouch ? 'lg' : 'xs'
+  const smallIconPx = isTouch ? 18 : 14
   const [ownedListsOpen, setOwnedListsOpen] = useState(true)
   const [sharedListsOpen, setSharedListsOpen] = useState(true)
   const router = useRouter()
@@ -286,14 +289,14 @@ export function Sidebar() {
                       <ActionIcon
                         variant="subtle"
                         color="gray"
-                        size="xs"
+                        size={smallIconSize}
                         onClick={e => {
                           createListModal()
                           e.stopPropagation()
                         }}
                         aria-label={t('addList')}
                       >
-                        <IconPlus size={14} />
+                        <IconPlus size={smallIconPx} />
                       </ActionIcon>
                     </Tooltip>
                   </Group>
@@ -303,7 +306,7 @@ export function Sidebar() {
                     <ActionIcon
                       variant="subtle"
                       color="gray"
-                      size="xs"
+                      size={smallIconSize}
                       onClick={e => {
                         e.preventDefault()
                         e.stopPropagation()
@@ -311,7 +314,7 @@ export function Sidebar() {
                       }}
                       aria-label={ownedListsOpen ? t('collapseLists') : t('expandLists')}
                     >
-                      <IconChevronRight size={14} />
+                      <IconChevronRight size={smallIconPx} />
                     </ActionIcon>
                   </Group>
                 }
@@ -367,7 +370,7 @@ export function Sidebar() {
                     <ActionIcon
                       variant="subtle"
                       color="gray"
-                      size="xs"
+                      size={smallIconSize}
                       onClick={e => {
                         e.preventDefault()
                         e.stopPropagation()
@@ -375,7 +378,7 @@ export function Sidebar() {
                       }}
                       aria-label={sharedListsOpen ? t('collapseLists') : t('expandLists')}
                     >
-                      <IconChevronRight size={14} />
+                      <IconChevronRight size={smallIconPx} />
                     </ActionIcon>
                   </Group>
                 }
@@ -425,12 +428,15 @@ export function Sidebar() {
                     onClick={() => window.open('https://docs.simplist.app', '_blank')}
                     style={{ borderRadius: 'var(--mantine-radius-md)' }}
                   />
-                  <NavLink
-                    label={t('keyboardShortcuts')}
-                    leftSection={<IconKeyboard size={18} />}
-                    onClick={() => toggleHelp()}
-                    style={{ borderRadius: 'var(--mantine-radius-md)' }}
-                  />
+                  {/* Shortcuts are only useful with a keyboard */}
+                  {!isTouch && (
+                    <NavLink
+                      label={t('keyboardShortcuts')}
+                      leftSection={<IconKeyboard size={18} />}
+                      onClick={() => toggleHelp()}
+                      style={{ borderRadius: 'var(--mantine-radius-md)' }}
+                    />
+                  )}
                 </Stack>
               </Popover.Dropdown>
             </Popover>

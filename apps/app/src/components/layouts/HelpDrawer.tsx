@@ -28,7 +28,7 @@ function ShortcutSection({ title, hotkeys }: { title: string; hotkeys: HotkeyId[
             {tHotkeys.has(hotkey) ? tHotkeys(hotkey) : HOTKEYS[hotkey].description}
           </Text>
 
-          <HotkeyBinding hotkey={hotkey} />
+          <HotkeyBinding hotkey={hotkey} showOnTouch />
         </Group>
       ))}
     </Stack>

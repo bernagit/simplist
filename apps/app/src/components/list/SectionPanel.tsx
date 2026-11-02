@@ -16,10 +16,11 @@ import {
   IconChevronRight,
   IconDots,
   IconGripVertical,
+  IconPencil,
   IconTrash
 } from '@tabler/icons-react'
-import { EditableTitle } from './EditableText'
-import { useState } from 'react'
+import { EditableTitle, EditableTitleActions } from './EditableText'
+import { useRef, useState } from 'react'
 import { Section } from '@/models/section'
 import { useDeleteSection, useUpdateSection } from '@/queries/section'
 import { getHTMLSectionId } from '@/utils/misc'
@@ -48,6 +49,8 @@ export default function SectionPanel({
   const [isExpanded, setIsExpanded] = useState(true)
   const { hovered, hoverProps } = useMouseHover()
   const { isTouch } = useSidebar()
+  const controlSize = isTouch ? 'lg' : 'sm'
+  const titleRef = useRef<EditableTitleActions>(null)
   const theme = useMantineTheme()
 
   const updateSection = useUpdateSection()
@@ -98,7 +101,7 @@ export default function SectionPanel({
             {...listeners}
             variant="transparent"
             color="gray"
-            size="sm"
+            size={controlSize}
             aria-label={t('dragSection')}
             style={{
               opacity: isTouch || hovered || isDragging ? 1 : 0,
@@ -113,7 +116,7 @@ export default function SectionPanel({
         <ActionIcon
           variant="subtle"
           color="gray"
-          size="sm"
+          size={controlSize}
           onClick={() => setIsExpanded(!isExpanded)}
         >
           {isExpanded ? <IconChevronDown /> : <IconChevronRight />}
@@ -133,17 +136,29 @@ export default function SectionPanel({
         <Group justify="space-between" flex={1} wrap="nowrap">
           <EditableTitle
             canEdit={canEdit}
+            // On touch a tap meant to scroll or collapse would start renaming: use the menu
+            editOnClick={!isTouch}
+            actionsRef={titleRef}
             order={4}
             value={section.title}
             onSave={(newTitle) => handleUpdateSection(section.id, newTitle)}
           />
-          <Menu>
+          {/* returnFocus off: it would steal focus from the rename input */}
+          <Menu returnFocus={false}>
             <Menu.Target>
-              <ActionIcon variant="subtle" color="gray" size="sm">
+              <ActionIcon variant="subtle" color="gray" size={controlSize}>
                 <IconDots />
               </ActionIcon>
             </Menu.Target>
             <Menu.Dropdown>
+              {canEdit && (
+                <Menu.Item
+                  leftSection={<IconPencil size={16} />}
+                  onClick={() => titleRef.current?.startEditing()}
+                >
+                  {t('renameSection')}
+                </Menu.Item>
+              )}
               <Menu.Item
                 leftSection={<IconTrash size={16} />}
                 color="red"

@@ -199,7 +199,7 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
           {...listeners}
           variant="transparent"
           color="gray"
-          size="sm"
+          size={isTouch ? 'md' : 'sm'}
           style={{
             opacity: canEdit && (isTouch || hovered) ? 1 : 0,
             cursor: 'grab',
