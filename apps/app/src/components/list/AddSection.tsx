@@ -12,7 +12,7 @@ type AddSectionProps = {
 
 export default function AddSection({ listId, onSave }: AddSectionProps) {
   const t = useTranslations('AddSection')
-  const { isMobile } = useSidebar()
+  const { isTouch } = useSidebar()
 
   const [isHovered, setIsHovered] = useState(false)
   const [isClicked, setIsClicked] = useState(false)
@@ -50,10 +50,10 @@ export default function AddSection({ listId, onSave }: AddSectionProps) {
           </Text>
         }
         style={{
-          opacity: isMobile || isHovered ? 1 : 0,
+          opacity: isTouch || isHovered ? 1 : 0,
           cursor: 'pointer',
           transition: 'opacity 150ms ease',
-          marginTop: isMobile ? 16 : 8
+          marginTop: isTouch ? 16 : 8
         }}
         onClick={() => setIsClicked(true)}
       />

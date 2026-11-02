@@ -36,7 +36,7 @@ type TaskRowProps = {
 export default function TaskRow({ task, canEdit }: TaskRowProps) {
   const t = useTranslations('TaskRow')
   const router = useRouter()
-  const { isMobile } = useSidebar()
+  const { isMobile, isTouch } = useSidebar()
   const colorMemo = useMemo(() => getPriorityColor(task.priority), [task.priority])
   const toggleTask = useToggleTask()
   const deleteTask = useDeleteTask()
@@ -201,7 +201,7 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
           color="gray"
           size="sm"
           style={{
-            opacity: canEdit && (isMobile || hovered) ? 1 : 0,
+            opacity: canEdit && (isTouch || hovered) ? 1 : 0,
             cursor: 'grab',
             transition: 'opacity 120ms',
             marginTop: 2,
@@ -294,7 +294,7 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
             onOpenChange={setSelected}
             style={{
               marginRight: '4px',
-              opacity: isMobile || hovered || selected ? 1 : 0,
+              opacity: isTouch || hovered || selected ? 1 : 0,
               transition: 'opacity 120ms'
             }}
           />

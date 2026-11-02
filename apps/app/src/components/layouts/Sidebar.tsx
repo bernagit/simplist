@@ -53,7 +53,7 @@ const DEFAULT_WIDTH = 280
 
 export function Sidebar() {
   const t = useTranslations('Sidebar')
-  const { toggle, opened, isMobile } = useSidebar()
+  const { toggle, opened, isMobile, isMediaResolved } = useSidebar()
   const [ownedListsOpen, setOwnedListsOpen] = useState(true)
   const [sharedListsOpen, setSharedListsOpen] = useState(true)
   const router = useRouter()
@@ -160,11 +160,16 @@ export function Sidebar() {
 
   const handleActive = isResizing || isHandleHovered
 
+  // Before media queries resolve (SSR + first render) we render the desktop sidebar,
+  // so hide it with CSS on small screens to avoid a flash of it on phones.
+  const hideUntilResolved = isMediaResolved ? {} : { visibleFrom: 'sm' as const }
+
   if (!opened) return null
 
   return (
     <>
       <Box
+        {...hideUntilResolved}
         w={isMobile ? DEFAULT_WIDTH : sidebarWidth}
         ref={sidebarRef}
         h={isMobile ? '100dvh' : '100%'}
@@ -435,6 +440,7 @@ export function Sidebar() {
 
       {!isMobile && (
         <Box
+          {...hideUntilResolved}
           onMouseDown={startResize}
           onMouseEnter={() => setIsHandleHovered(true)}
           onMouseLeave={() => setIsHandleHovered(false)}
