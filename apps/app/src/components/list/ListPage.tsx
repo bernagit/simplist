@@ -360,8 +360,17 @@ export default function ListPage() {
       }
     }
 
+    // Sync with the current scroll position (e.g. switching list without scrolling back up)
+    onScroll()
     container.addEventListener('scroll', onScroll)
-    return () => container.removeEventListener('scroll', onScroll)
+    return () => {
+      container.removeEventListener('scroll', onScroll)
+      // The topbar title belongs to this page: clear it when leaving, or it stays on other pages
+      lastCrossedRef.current = false
+      setShowTitle(false)
+      setTitle(undefined)
+      setDescription(undefined)
+    }
   }, [list, setTitle, setDescription, setShowTitle])
 
   if (!list && !isLoading) return null
