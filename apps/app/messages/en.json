@@ -141,7 +141,8 @@
     "failedReorderTasks": "Failed to reorder tasks:"
   },
   "SectionPanel": {
-    "deleteSection": "Delete Section"
+    "deleteSection": "Delete Section",
+    "dragSection": "Drag to reorder section"
   },
   "TaskRow": {
     "edit": "Edit",

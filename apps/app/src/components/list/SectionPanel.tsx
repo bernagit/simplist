@@ -11,7 +11,13 @@ import {
   Box,
   Text
 } from '@mantine/core'
-import { IconChevronDown, IconChevronRight, IconDots, IconTrash } from '@tabler/icons-react'
+import {
+  IconChevronDown,
+  IconChevronRight,
+  IconDots,
+  IconGripVertical,
+  IconTrash
+} from '@tabler/icons-react'
 import { EditableTitle } from './EditableText'
 import { useState } from 'react'
 import { Section } from '@/models/section'
@@ -20,6 +26,7 @@ import { getHTMLSectionId } from '@/utils/misc'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useTranslations } from 'next-intl'
+import { useSidebar } from '@/providers/SidebarProvider'
 
 type SectionPanelProps = {
   section: Section
@@ -38,6 +45,8 @@ export default function SectionPanel({
 }: SectionPanelProps) {
   const t = useTranslations('SectionPanel')
   const [isExpanded, setIsExpanded] = useState(true)
+  const [hovered, setHovered] = useState(false)
+  const { isMobile } = useSidebar()
   const theme = useMantineTheme()
 
   const updateSection = useUpdateSection()
@@ -79,22 +88,33 @@ export default function SectionPanel({
         align="center"
         id={getHTMLSectionId(section.id)}
         mb={4}
-        style={{
-          cursor: canEdit ? 'grab' : 'default',
-          userSelect: 'none',
-          touchAction: 'none'
-        }}
-        {...(canEdit ? { ...attributes, ...listeners } : {})}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
       >
+        {canEdit && (
+          // Only the grip starts a drag, so swiping on the header still scrolls the page.
+          <ActionIcon
+            {...attributes}
+            {...listeners}
+            variant="transparent"
+            color="gray"
+            size="sm"
+            aria-label={t('dragSection')}
+            style={{
+              opacity: isMobile || hovered || isDragging ? 1 : 0,
+              cursor: 'grab',
+              transition: 'opacity 120ms',
+              touchAction: 'none'
+            }}
+          >
+            <IconGripVertical size={18} />
+          </ActionIcon>
+        )}
         <ActionIcon
           variant="subtle"
           color="gray"
           size="sm"
-          onClick={(e) => {
-            e.stopPropagation() // Prevents drag activation when toggling collapse
-            setIsExpanded(!isExpanded)
-          }}
-          onPointerDown={(e) => e.stopPropagation()}
+          onClick={() => setIsExpanded(!isExpanded)}
         >
           {isExpanded ? <IconChevronDown /> : <IconChevronRight />}
         </ActionIcon>
@@ -111,26 +131,15 @@ export default function SectionPanel({
           }
         />
         <Group justify="space-between" flex={1} wrap="nowrap">
-          <Box
-            onClick={(e) => e.stopPropagation()}
-            onPointerDown={(e) => e.stopPropagation()}
-          >
-            <EditableTitle
-              canEdit={canEdit}
-              order={4}
-              value={section.title}
-              onSave={(newTitle) => handleUpdateSection(section.id, newTitle)}
-            />
-          </Box>
+          <EditableTitle
+            canEdit={canEdit}
+            order={4}
+            value={section.title}
+            onSave={(newTitle) => handleUpdateSection(section.id, newTitle)}
+          />
           <Menu>
             <Menu.Target>
-              <ActionIcon
-                variant="subtle"
-                color="gray"
-                size="sm"
-                onClick={(e) => e.stopPropagation()}
-                onPointerDown={(e) => e.stopPropagation()}
-              >
+              <ActionIcon variant="subtle" color="gray" size="sm">
                 <IconDots />
               </ActionIcon>
             </Menu.Target>
