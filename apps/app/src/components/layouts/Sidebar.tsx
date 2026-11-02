@@ -45,6 +45,7 @@ import { useAuth } from '@/providers/AuthProvider'
 import { HotkeyBinding } from '../common/KeyBinding'
 import { openSettingsModal } from '@/lib/modals/common'
 import { useHelp } from '@/providers/HelpProvider'
+import { DOCS_URL } from '@/utils/constants'
 
 export const MENU_WIDTH = 290
 const MIN_WIDTH = 240
@@ -425,7 +426,7 @@ export function Sidebar() {
                   <NavLink
                     label={t('documentation')}
                     leftSection={<IconHelp size={18} />}
-                    onClick={() => window.open('https://docs.simplist.app', '_blank')}
+                    onClick={() => window.open(DOCS_URL, '_blank')}
                     style={{ borderRadius: 'var(--mantine-radius-md)' }}
                   />
                   {/* Shortcuts are only useful with a keyboard */}

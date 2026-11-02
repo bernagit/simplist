@@ -21,4 +21,49 @@ export const sidebar = [
       },
     ],
   },
+  {
+    label: 'Guida utente',
+    translations: {
+      'en': 'User Guide'
+    },
+    items: [
+      {
+        label: 'Panoramica',
+        slug: 'user-guide',
+        translations: {
+          'en': 'Overview'
+        }
+      },
+    ],
+  },
+  {
+    label: 'Self Hosting',
+    translations: {
+      'en': 'Self Hosting'
+    },
+    items: [
+      {
+        label: 'Panoramica',
+        slug: 'self-hosting',
+        translations: {
+          'en': 'Overview'
+        }
+      },
+    ],
+  },
+  {
+    label: 'Sviluppo',
+    translations: {
+      'en': 'Development'
+    },
+    items: [
+      {
+        label: 'Panoramica',
+        slug: 'development',
+        translations: {
+          'en': 'Overview'
+        }
+      },
+    ],
+  },
 ];

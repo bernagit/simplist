@@ -4,7 +4,8 @@ import { execSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 
 const REGISTRY = "ghcr.io/bernagit";
-const APPS = ["api", "app"];
+// docs: static documentation site (apps/docs/Dockerfile), tagged with the release version
+const APPS = ["api", "app", "docs"];
 
 const VERSION = JSON.parse(
   readFileSync("apps/api/package.json", "utf8"),
