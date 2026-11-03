@@ -1,3 +1,5 @@
+import { PlannedTask } from './task'
+
 export interface Resp<T> {
   data: T
   message: string
@@ -11,7 +13,7 @@ export type ErrorResponse = {
 export type SearchData = {
   lists: ListResult[]
   sections: SectionResult[]
-  items: ItemResult[]
+  tasks: TaskResult[]
 }
 
 export type ListResult = {
@@ -29,10 +31,8 @@ export type SectionResult = {
   listId: string
 }
 
-export type ItemResult = {
-  id: string
-  title: string
-  description?: string
-  sectionId: string
-  listId: string
+export type TaskResult = PlannedTask & {
+  /** The list belongs to someone else */
+  shared: boolean
+  role: 'owner' | 'editor' | 'viewer'
 }

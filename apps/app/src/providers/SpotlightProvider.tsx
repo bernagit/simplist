@@ -9,6 +9,8 @@ import {
 import { useDebouncedValue } from '@mantine/hooks'
 import {
   IconCalendar,
+  IconCircle,
+  IconCircleCheck,
   IconHome,
   IconList,
   IconPlus,
@@ -27,6 +29,9 @@ import { createListModal } from '@/lib/modals/list'
 import { getHTMLSectionId } from '@/utils/misc'
 import { HotkeyBinding } from '@/components/common/KeyBinding'
 import { ThemeIcon } from '@mantine/core'
+import dayjs from 'dayjs'
+import { TaskResult } from '@/models/base'
+import { TASK_QUERY_PARAM } from '@/utils/constants'
 
 export function SpotlightProvider() {
   const t = useTranslations('SpotlightProvider')
@@ -49,6 +54,19 @@ export function SpotlightProvider() {
   const goToSection = useCallback(
     (listId: string, sectionId: string) => {
       router.push(`/lists/${listId}#${getHTMLSectionId(sectionId)}`)
+      setQuery('')
+    },
+    [router]
+  )
+
+  // The list page opens the task itself (see TASK_QUERY_PARAM in ListPage), so closing it
+  // leaves you in its list and "back" behaves like for any other page.
+  const openTask = useCallback(
+    (task: TaskResult) => {
+      const listUrl = task.shared ? `/lists/shared/${task.listId}` : `/lists/${task.listId}`
+      router.push(
+        `${listUrl}?${TASK_QUERY_PARAM}=${task.id}#${getHTMLSectionId(task.sectionId)}`
+      )
       setQuery('')
     },
     [router]
@@ -156,11 +174,35 @@ export function SpotlightProvider() {
         leftSection: <IconSection size={18} />
       }))
 
-      setActions([...lists, ...sections])
+      const tasks: SpotlightActionData[] = response.data.tasks.map(task => {
+        const place = task.sectionTitle ? `${task.listTitle} › ${task.sectionTitle}` : task.listTitle
+        const date = task.dueDate ? ` · ${dayjs(task.dueDate).format('D MMM')}` : ''
+        return {
+          id: `task-${task.id}`,
+          label: task.title,
+          description: place + date,
+          // The search also matches the description, which the spotlight filter would hide
+          keywords: task.description ? [task.description] : [],
+          onClick: () => openTask(task),
+          leftSection: (
+            <ThemeIcon variant="subtle" color={task.color ?? 'gray'} size="sm">
+              {task.completed ? <IconCircleCheck size={18} /> : <IconCircle size={18} />}
+            </ThemeIcon>
+          ),
+          style: task.completed ? { opacity: 0.6 } : undefined
+        }
+      })
+
+      const groups: SpotlightActionGroupData[] = [
+        { group: t('groups.lists'), actions: lists },
+        { group: t('groups.sections'), actions: sections },
+        { group: t('groups.tasks'), actions: tasks }
+      ]
+      setActions(groups.filter(group => group.actions.length > 0))
     }
 
     search()
-  }, [debouncedQuery, baseActions, goToList, goToSection, t])
+  }, [debouncedQuery, baseActions, goToList, goToSection, openTask, t])
 
   return (
     <Spotlight

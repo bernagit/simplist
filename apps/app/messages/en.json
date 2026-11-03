@@ -487,7 +487,10 @@
     "placeholder": "Search...",
     "groups": {
       "navigation": "Navigation",
-      "actions": "Actions"
+      "actions": "Actions",
+      "lists": "Lists",
+      "sections": "Sections",
+      "tasks": "Tasks"
     },
     "actions": {
       "goHome": "Go to Home",

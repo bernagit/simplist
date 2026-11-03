@@ -19,6 +19,9 @@ export const RECURRENCE_CONFIG = [
  */
 export const SESSION_COOKIE = 'sl_session'
 
+/** Query parameter of a list page that opens one of its tasks: `/lists/<id>?task=<taskId>` */
+export const TASK_QUERY_PARAM = 'task'
+
 /** Pages reachable without a session. */
 export const PUBLIC_ROUTES = ['/login', '/register', '/forgot-password', '/reset-password']
 

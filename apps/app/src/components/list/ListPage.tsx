@@ -1,6 +1,6 @@
 'use client'
 
-import { useParams } from 'next/navigation'
+import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useListById, useUpdateList } from '@/queries/lists'
 import {
   Center,
@@ -51,6 +51,10 @@ import TaskRow from '@/components/task/TaskRow'
 import { Section } from '@/models/section'
 import ListMembers from './ListMembers'
 import { useTranslations } from 'next-intl'
+import { editTaskModal } from '@/lib/modals/task'
+import { useSidebar } from '@/providers/SidebarProvider'
+import { getHTMLSectionId } from '@/utils/misc'
+import { TASK_QUERY_PARAM } from '@/utils/constants'
 
 function DefaultSectionDroppable({
   id,
@@ -70,6 +74,10 @@ function DefaultSectionDroppable({
 export default function ListPage() {
   const t = useTranslations('ListPage')
   const params = useParams()
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const { isMobile } = useSidebar()
   const lastCrossedRef = useRef<boolean>(false)
   const { setTitle, setDescription, setShowTitle, showTitle: showTopbarTitle } = useTopbar()
   const reorderTasksMutation = useReorderTasks()
@@ -332,6 +340,52 @@ export default function ListPage() {
   const handleAddSection = async (listId: string, title: string) => {
     await createSection.mutateAsync({ listId, title })
   }
+
+  // Deep link to a task (`?task=<id>`, e.g. from search): scroll to its section and open it.
+  // The parameter is removed first, so refreshing doesn't reopen it, and so the history entry
+  // the modal pushes for the back gesture comes after this page's entry.
+  const linkedTaskId = searchParams.get(TASK_QUERY_PARAM)
+  // Opened link, so a re-run before the URL update lands (e.g. Strict Mode) doesn't open it twice
+  const openedLinkRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (!linkedTaskId) {
+      openedLinkRef.current = null
+      return
+    }
+    if (!list || openedLinkRef.current === linkedTaskId) return
+    openedLinkRef.current = linkedTaskId
+
+    const remaining = new URLSearchParams(window.location.search)
+    remaining.delete(TASK_QUERY_PARAM)
+    const query = remaining.toString()
+    window.history.replaceState(
+      null,
+      '',
+      `${pathname}${query ? `?${query}` : ''}${window.location.hash}`
+    )
+
+    const task = list.tasks.find(item => item.id === linkedTaskId)
+    if (!task) return
+
+    document
+      .getElementById(getHTMLSectionId(task.sectionId))
+      ?.scrollIntoView({ block: 'start' })
+
+    editTaskModal(
+      {
+        ...task,
+        color: list.color ?? '',
+        listTitle: list.title,
+        sectionTitle: list.sections.find(section => section.id === task.sectionId)?.title ?? null
+      },
+      isMobile,
+      canEdit,
+      {
+        onOpenList: () => router.push(pathname),
+        onOpenSection: () => router.push(`${pathname}#${getHTMLSectionId(task.sectionId)}`)
+      }
+    )
+  }, [linkedTaskId, list, pathname, isMobile, canEdit, router])
 
   useEffect(() => {
     const container = document.getElementById('app-scroll-container')

@@ -1,6 +1,7 @@
 import { format } from 'date-fns'
-import { and, asc, desc, eq, gte, isNotNull, lte, or } from 'drizzle-orm'
+import { and, asc, desc, eq, gte, ilike, isNotNull, isNull, lte, or, sql } from 'drizzle-orm'
 import { LexoRank } from 'lexorank'
+import { listMembers } from '../../db/schema/listMember.js'
 import { lists } from '../../db/schema/lists.js'
 import { sections } from '../../db/schema/sections.js'
 import { tasks } from '../../db/schema/tasks.js'
@@ -151,6 +152,53 @@ export class TaskRepository {
       .orderBy(asc(tasks.dueDate), asc(tasks.order))
 
     const result = await query.execute()
+    return result
+  }
+
+  /**
+   * Tasks whose title or description contains `query`, in the lists the user owns or is a
+   * member of (not deleted). Open tasks first, then by due date.
+   */
+  async search(userId: string, query: string, limit: number) {
+    // Treat % and _ typed by the user as plain characters
+    const pattern = `%${query.replace(/[\\%_]/g, char => `\\${char}`)}%`
+
+    const result = await db
+      .select({
+        id: tasks.id,
+        title: tasks.title,
+        description: tasks.description,
+        dueDate: tasks.dueDate,
+        dueTime: tasks.dueTime,
+        durationMinutes: tasks.durationMinutes,
+        recurrenceRule: tasks.recurrenceRule,
+        completed: tasks.completed,
+        priority: tasks.priority,
+        order: tasks.order,
+        listId: tasks.listId,
+        sectionId: tasks.sectionId,
+        createdAt: tasks.createdAt,
+        updatedAt: tasks.updatedAt,
+        color: lists.color,
+        listTitle: lists.title,
+        sectionTitle: sections.title,
+        shared: sql<boolean>`${lists.ownerId} <> ${userId}`,
+        role: listMembers.role
+      })
+      .from(tasks)
+      .innerJoin(lists, eq(tasks.listId, lists.id))
+      .innerJoin(listMembers, and(eq(listMembers.listId, lists.id), eq(listMembers.userId, userId)))
+      .leftJoin(sections, eq(tasks.sectionId, sections.id))
+      .where(
+        and(
+          isNull(lists.deletedAt),
+          or(ilike(tasks.title, pattern), ilike(tasks.description, pattern))
+        )
+      )
+      .orderBy(asc(tasks.completed), sql`${tasks.dueDate} asc nulls last`, asc(tasks.title))
+      .limit(limit)
+      .execute()
+
     return result
   }
 }

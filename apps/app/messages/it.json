@@ -487,7 +487,10 @@
     "placeholder": "Cerca...",
     "groups": {
       "navigation": "Navigazione",
-      "actions": "Azioni"
+      "actions": "Azioni",
+      "lists": "Liste",
+      "sections": "Sezioni",
+      "tasks": "Attività"
     },
     "actions": {
       "goHome": "Vai alla Home",
