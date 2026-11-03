@@ -1,5 +1,17 @@
 # app
 
+## 0.7.1
+
+### Patch Changes
+
+- fix: less bright top bar border in dark mode and more room at the bottom of the list pages
+- feat: leave a list shared with you, from its menu in Shared with me or from the list page
+- feat: list info shows open and done tasks, sections, members with their role, and opens the list
+- feat: redesigned My lists and Shared with me: New list button (floating on phones), search, sorting, the archived filter always visible, task progress on every list and a compact layout on phones
+- fix: the owner of a list can no longer be removed from it or have their role changed
+- fix: the task window closes when clicking outside it, and a title being edited is saved
+- fix: the whole task row opens the task, a bigger target on phones
+
 ## 0.7.0
 
 ### Minor Changes
