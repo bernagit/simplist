@@ -7,7 +7,7 @@ import starlightLinksValidator from 'starlight-links-validator';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://docs.simplist.bernitec.it',
+	site: 'https://docs.simplist.app.bernitec.it',
 	integrations: [
 		starlight({
 			plugins: [

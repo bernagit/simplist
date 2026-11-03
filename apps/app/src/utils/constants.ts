@@ -23,4 +23,4 @@ export const SESSION_COOKIE = 'sl_session'
 export const PUBLIC_ROUTES = ['/login', '/register', '/forgot-password', '/reset-password']
 
 /** Must match `site` in apps/docs/astro.config.ts */
-export const DOCS_URL = 'https://docs.simplist.bernitec.it'
+export const DOCS_URL = 'https://docs.simplist.app.bernitec.it'
