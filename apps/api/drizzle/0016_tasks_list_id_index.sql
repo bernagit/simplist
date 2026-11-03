@@ -1,0 +1,1 @@
+CREATE INDEX "tasks_list_id_idx" ON "tasks" USING btree ("list_id");

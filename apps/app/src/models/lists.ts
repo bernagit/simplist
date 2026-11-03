@@ -14,17 +14,26 @@ export type List = {
   deletedAt: Date | null
 }
 
-export type OwnedList = List & {
-  shared: boolean
+/** Task counts returned with the lists overview */
+export type ListTaskCounts = {
+  totalTasks: number
+  openTasks: number
 }
 
-export type SharedList = List & {
-  owner: {
-    id: string
-    name: string | null
-    email: string
+export type OwnedList = List &
+  ListTaskCounts & {
+    shared: boolean
   }
-}
+
+export type SharedList = List &
+  ListTaskCounts & {
+    owner: {
+      id: string
+      name: string | null
+      email: string
+      avatar: string | null
+    }
+  }
 
 export type AllList = {
   owned: OwnedList[]

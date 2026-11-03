@@ -83,25 +83,12 @@
   "OwnedListOverview": {
     "title": "Le mie liste",
     "listCount": "{count, plural, =1 {1 lista} other {# liste}}",
-    "searchPlaceholder": "Cerca liste...",
-    "statusLabel": "Stato",
-    "active": "Attive",
-    "all": "Tutte",
-    "archived": "Archiviate",
-    "reset": "Ripristina",
-    "noDescription": "Nessuna descrizione",
     "moreInfo": "Più informazioni",
     "edit": "Modifica",
     "archive": "Archivia",
     "unarchive": "Ripristina",
     "share": "Condividi",
     "delete": "Elimina",
-    "infoModalTitle": "Informazioni lista",
-    "infoTitle": "Titolo",
-    "infoDescription": "Descrizione",
-    "infoCreatedAt": "Creata il",
-    "infoUpdatedAt": "Aggiornata il",
-    "infoArchivedAt": "Archiviata il",
     "deleteModalTitle": "Elimina lista",
     "deleteModalConfirm": "Sei sicuro di voler eliminare questa lista? Questa azione non può essere annullata.",
     "deleteConfirmButton": "Elimina",
@@ -109,7 +96,12 @@
     "archiveModalConfirm": "Sei sicuro di voler archiviare questa lista?",
     "archiveModalWarning": "Se la lista è condivisa, verrà nascosta agli altri utenti finché non la ripristini.",
     "archiveConfirmButton": "Archivia",
-    "cancel": "Annulla"
+    "cancel": "Annulla",
+    "newList": "Nuova lista",
+    "emptyTitle": "Ancora nessuna lista",
+    "emptyDescription": "Le liste tengono in ordine le tue attività: spesa, lavoro, un viaggio. Crea la prima per iniziare.",
+    "emptyAction": "Crea la tua prima lista",
+    "sharedBadge": "Condivisa"
   },
   "SharedListsPage": {
     "title": "Condivise con me - Simplist",
@@ -118,17 +110,54 @@
   "SharedListOverview": {
     "title": "Condivise con me",
     "listCount": "{count, plural, =1 {1 lista} other {# liste}}",
-    "searchPlaceholder": "Cerca liste...",
-    "noDescription": "Nessuna descrizione",
     "moreInfo": "Più informazioni",
-    "infoModalTitle": "Informazioni lista",
-    "infoTitle": "Titolo",
-    "infoDescription": "Descrizione",
-    "infoOwner": "Proprietario",
-    "infoCreatedAt": "Creata il",
-    "infoUpdatedAt": "Aggiornata il",
-    "infoArchivedAt": "Archiviata il",
-    "archived": "Archiviata"
+    "emptyTitle": "Nessuna lista condivisa con te",
+    "emptyDescription": "Quando qualcuno condivide una lista con te, la trovi qui."
+  },
+  "ListsOverview": {
+    "searchPlaceholder": "Cerca liste",
+    "clearSearch": "Cancella ricerca",
+    "sort": {
+      "label": "Ordina per",
+      "updated": "Aggiornate di recente",
+      "name": "Nome",
+      "created": "Più recenti",
+      "open": "Più attività aperte"
+    },
+    "status": {
+      "label": "Mostra",
+      "active": "Attive",
+      "archived": "Archiviate",
+      "all": "Tutte"
+    },
+    "noTasks": "Nessuna attività",
+    "allDone": "{count, plural, one {# attività, completata} other {Tutte le # attività completate}}",
+    "openTasks": "{open} aperte su {total}",
+    "progress": "Attività completate",
+    "archived": "Archiviata",
+    "updated": {
+      "today": "Aggiornata oggi",
+      "yesterday": "Aggiornata ieri",
+      "on": "Aggiornata il {date}"
+    },
+    "noResults": "Nessuna lista corrisponde a “{query}”",
+    "noResultsFilter": "Nessuna lista qui",
+    "noResultsHint": "Prova un'altra ricerca o mostra tutte le liste.",
+    "resetFilters": "Mostra tutte le liste",
+    "info": {
+      "title": "Informazioni lista",
+      "noDescription": "Nessuna descrizione",
+      "createdAt": "Creata",
+      "updatedAt": "Ultimo aggiornamento",
+      "archivedAt": "Archiviata",
+      "open": "Aperte",
+      "done": "Completate",
+      "sections": "Sezioni",
+      "members": "{count, plural, =0 {Membri} one {1 membro} other {# membri}}",
+      "archivedBadge": "Archiviata",
+      "openList": "Apri lista",
+      "close": "Chiudi"
+    }
   },
   "CalendarPage": {
     "title": "Calendario - Simplist",

@@ -440,7 +440,7 @@ export default function ListPage() {
   const activeSection = sections.find(s => s.id === activeId)
 
   return (
-    <Container>
+    <Container pb={{ base: 'calc(5rem + env(safe-area-inset-bottom))', sm: '4rem' }}>
       <Stack>
         <Group justify="space-between" wrap="nowrap">
           <Box

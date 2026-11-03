@@ -16,8 +16,7 @@ import {
   Button,
   Tooltip,
   Menu,
-  Stack,
-  useComputedColorScheme
+  Stack
 } from '@mantine/core'
 import {
   IconArchive,
@@ -52,7 +51,6 @@ export function Topbar() {
   const unarchiveList = useUnarchiveList()
   const { data: pref } = usePreferences(true)
   const preferences = pref?.data
-  const colorScheme = useComputedColorScheme()
 
   const route = useAppRoute()
 
@@ -115,9 +113,7 @@ export function Topbar() {
       pb={'sm'}
       style={{
         flexShrink: 0,
-        borderBottom: `1px solid ${
-          colorScheme === 'dark' ? 'var(--mantine-color-dark-5)' : 'var(--mantine-color-gray-2)'
-        }`
+        borderBottom: '1px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-6))'
       }}
     >
       <Group h="100%" px="md" justify="space-between" wrap="nowrap" gap="xs">

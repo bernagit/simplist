@@ -168,11 +168,28 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
       wrap="nowrap"
       justify="space-between"
       align="center"
-      px={0}
+      px={6}
       py={8}
+      // The whole row opens the task (title, date, icons, empty space): a bigger target on
+      // phones. Its controls (checkbox, drag handle, actions menu) keep their own behaviour.
+      onClick={e => {
+        if ((e.target as HTMLElement).closest('input, button, a, [role="menu"]')) return
+        handleClick(task)
+      }}
+      onContextMenu={e => {
+        if ((e.target as HTMLElement).closest('input, button')) return
+        e.preventDefault()
+        setSelected(true)
+        showContextMenu(menuOptions, {
+          styles: contextMenuStyles
+        })(e)
+      }}
       style={{
         borderRadius: 6,
-        cursor: 'default',
+        cursor: 'pointer',
+        WebkitTouchCallout: 'none',
+        WebkitUserSelect: 'none',
+        userSelect: 'none',
         transform: CSS.Transform.toString(transform),
 
         backgroundColor: selected
@@ -213,14 +230,7 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
         >
           <IconGripVertical size={18} />
         </ActionIcon>
-        <Group
-          style={{ flex: 1, minWidth: 0 }}
-          onClick={e => {
-            if ((e.target as HTMLElement).closest('input[type="checkbox"]')) return
-            if ((e.target as HTMLElement).closest('button')) return
-            handleClick(task)
-          }}
-        >
+        <Group style={{ flex: 1, minWidth: 0 }} wrap="nowrap">
           <Checkbox
             radius="xl"
             size="md"
@@ -242,24 +252,7 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
             }}
           />
 
-          <Stack
-            gap={2}
-            flex={1}
-            onContextMenu={e => {
-              e.stopPropagation()
-              e.preventDefault()
-              setSelected(true)
-              showContextMenu(menuOptions, {
-                styles: contextMenuStyles
-              })(e)
-            }}
-            style={{
-              cursor: 'pointer',
-              WebkitTouchCallout: 'none',
-              WebkitUserSelect: 'none',
-              userSelect: 'none'
-            }}
-          >
+          <Stack gap={2} flex={1} miw={0}>
             <Text
               size="sm"
               fw={500}
@@ -287,7 +280,6 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
             size="md"
             onOpenChange={setSelected}
             style={{
-              marginRight: '4px',
               opacity: isTouch || hovered || selected ? 1 : 0,
               transition: 'opacity 120ms'
             }}

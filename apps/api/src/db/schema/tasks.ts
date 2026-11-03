@@ -74,6 +74,8 @@ export const tasks = pgTable(
       .notNull()
   },
   table => [
+    // Every list read (overview counts, list page) looks tasks up by list
+    index('tasks_list_id_idx').on(table.listId),
     // Reminders look up open tasks that have one by due date
     index('tasks_reminder_due_date_idx')
       .on(table.dueDate)

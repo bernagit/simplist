@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ActionIcon, Box, FocusTrap, Group, Stack, Text } from '@mantine/core'
 import { ContextModalProps } from '@mantine/modals'
 import { IconLock, IconX } from '@tabler/icons-react'
@@ -50,6 +50,14 @@ export default function EditTask({ context, id, innerProps }: ContextModalProps<
   }
 
   const editForm = useTaskEditForm(task, patch)
+
+  // Closing the modal (click outside, Escape, back) while editing the title or description
+  // saves the edit instead of dropping it
+  const pendingEdit = useRef<(() => void) | null>(null)
+  useEffect(() => {
+    pendingEdit.current = editForm.isEditing ? editForm.save : null
+  })
+  useEffect(() => () => pendingEdit.current?.(), [])
 
   const handleToggle = async () => {
     const saved = await toggle()

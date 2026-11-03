@@ -5,7 +5,7 @@ import { tasksService } from '@/services/task'
 import { createTempId } from '@/utils/common'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { LexoRank } from 'lexorank'
-import { listKeys } from './lists'
+import { invalidateListsOverview, listKeys } from './lists'
 import { showNotification } from '@mantine/notifications'
 import dayjs from 'dayjs'
 import { useTranslations } from 'next-intl'
@@ -71,6 +71,10 @@ export function useCreateTask() {
       if (context?.previousList) {
         queryClient.setQueryData(listKeys.detail(variables.listId), context.previousList)
       }
+    },
+
+    onSettled: () => {
+      void invalidateListsOverview(queryClient)
     }
   })
 }
@@ -155,6 +159,7 @@ export function useToggleTask() {
 
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: plannedTaskKeys.all })
+      void invalidateListsOverview(queryClient)
     }
   })
 }
@@ -206,6 +211,11 @@ export function useUpdateTask() {
       if (context?.previousList) {
         queryClient.setQueryData(listKeys.detail(listId), context.previousList)
       }
+    },
+
+    onSettled: (_data, _error, { updates }) => {
+      // Only completion changes the counts
+      if ('completed' in updates) void invalidateListsOverview(queryClient)
     }
   })
 }
@@ -242,6 +252,10 @@ export function useDeleteTask() {
       if (context?.previousList) {
         queryClient.setQueryData(listKeys.detail(listId), context.previousList)
       }
+    },
+
+    onSettled: () => {
+      void invalidateListsOverview(queryClient)
     }
   })
 }

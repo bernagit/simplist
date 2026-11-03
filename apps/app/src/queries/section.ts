@@ -2,7 +2,7 @@ import { Resp } from '@/models/base'
 import { CompleteList } from '@/models/lists'
 import { CreateSectionInput } from '@/models/section'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { listKeys } from './lists'
+import { invalidateListsOverview, listKeys } from './lists'
 import { sectionService } from '@/services/section'
 import { createTempId } from '@/utils/common'
 import { LexoRank } from 'lexorank'
@@ -164,6 +164,8 @@ export function useDeleteSection() {
       queryClient.invalidateQueries({
         queryKey: listKeys.detail(variables.listId)
       })
+      // Its tasks are deleted with it
+      void invalidateListsOverview(queryClient)
     }
   })
 }

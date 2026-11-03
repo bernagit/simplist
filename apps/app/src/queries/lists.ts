@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { listsService } from '@/services/lists'
 import { AllList, CompleteList, CreateListInput, UpdateListInput } from '@/models/lists'
 import { ErrorResponse, Resp } from '@/models/base'
@@ -8,6 +8,15 @@ import { HTTPError } from 'ky'
 export const listKeys = {
   all: ['lists'] as const,
   detail: (id: string) => [...listKeys.all, id] as const
+}
+
+/**
+ * The lists overview (/lists, /lists/shared, sidebar) shows task counts, computed by the API:
+ * task changes made on a list page must refresh it. Only the overview query (exact key), not
+ * every list detail; if no page shows it, it is refetched the next time one does.
+ */
+export function invalidateListsOverview(queryClient: QueryClient) {
+  return queryClient.invalidateQueries({ queryKey: listKeys.all, exact: true })
 }
 
 export function useLists() {

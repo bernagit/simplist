@@ -1,4 +1,4 @@
-import { eq, isNull, SQL, and, or, not, ilike, exists, getTableColumns } from 'drizzle-orm'
+import { eq, isNull, SQL, and, or, not, ilike, exists, getTableColumns, sql } from 'drizzle-orm'
 import { lists } from '../../db/schema/lists.js'
 import db from '../../infrastructure/database/db.js'
 import { ListCreateInput, ListUpdateInput } from './list.schema.js'
@@ -22,6 +22,25 @@ export class ListRepository {
     return eq(lists.ownerId, userId)
   }
 
+  /**
+   * Task counts for the list overview (all sections; one indexed subquery each, by list_id).
+   * References are explicit: in a query without joins drizzle renders `${column}` without its
+   * table, and inside the subquery "id" would then be the task's id, not the list's.
+   */
+  private taskCounts() {
+    const listId = sql`${lists}.${sql.identifier(lists.id.name)}`
+    return {
+      totalTasks:
+        sql<number>`(select count(*) from ${tasks} as t where t.list_id = ${listId})`.mapWith(
+          Number
+        ),
+      openTasks:
+        sql<number>`(select count(*) from ${tasks} as t where t.list_id = ${listId} and not t.completed)`.mapWith(
+          Number
+        )
+    }
+  }
+
   // PUBLIC METHODS
   async create(data: ListCreateInput, ownerId: string) {
     const newList = {
@@ -43,6 +62,7 @@ export class ListRepository {
     const query = db
       .select({
         ...getTableColumns(lists),
+        ...this.taskCounts(),
         shared: exists(
           db
             .select({ id: listMembers.id })
@@ -67,10 +87,12 @@ export class ListRepository {
     const query = db
       .select({
         ...getTableColumns(lists),
+        ...this.taskCounts(),
         owner: {
           id: users.id,
           name: users.name,
-          email: users.email
+          email: users.email,
+          avatar: users.avatar
         }
       })
       .from(lists)

@@ -13,6 +13,9 @@ export function editTaskModal(
     modal: 'editTask',
     fullScreen: isMobile,
     withCloseButton: false,
+    // Changes are saved as they are made (an open title edit is saved on close, see EditTask),
+    // so clicking outside can close it. The app default is off for modals with forms.
+    closeOnClickOutside: true,
     size: 'xl',
     padding: 'lg',
     innerProps: {

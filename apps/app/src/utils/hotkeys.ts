@@ -1,6 +1,6 @@
 export const HOTKEYS = {
   NEW_LIST: {
-    keys: ['mod+l'],
+    keys: ['ctrl+l'],
     description: 'Add a new list',
     category: 'Actions'
   },
@@ -18,7 +18,7 @@ export const HOTKEYS = {
   },
 
   TOGGLE_THEME: {
-    keys: ['mod+j'],
+    keys: ['ctrl+j'],
     description: 'Toggle theme',
     category: 'General'
   },
@@ -36,7 +36,7 @@ export const HOTKEYS = {
   },
   
   OPEN_SETTINGS: {
-    keys: ['mod+,'],
+    keys: ['ctrl+,'],
     description: 'Open settings',
     category: 'General'
   },
