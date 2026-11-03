@@ -39,7 +39,8 @@
     "options": "Opzioni",
     "edit": "Modifica",
     "archive": "Archivia",
-    "unarchive": "Ripristina"
+    "unarchive": "Ripristina",
+    "leave": "Esci dalla lista"
   },
   "Breadcrumbs": {
     "myLists": "Le mie liste",
@@ -112,7 +113,8 @@
     "listCount": "{count, plural, =1 {1 lista} other {# liste}}",
     "moreInfo": "Più informazioni",
     "emptyTitle": "Nessuna lista condivisa con te",
-    "emptyDescription": "Quando qualcuno condivide una lista con te, la trovi qui."
+    "emptyDescription": "Quando qualcuno condivide una lista con te, la trovi qui.",
+    "leave": "Esci dalla lista"
   },
   "ListsOverview": {
     "searchPlaceholder": "Cerca liste",
@@ -158,6 +160,15 @@
       "openList": "Apri lista",
       "close": "Chiudi"
     }
+  },
+  "LeaveList": {
+    "title": "Uscire dalla lista?",
+    "message": "Non vedrai più <b>{list}</b> e le sue attività. Per rientrare, il proprietario dovrà condividerla di nuovo con te.",
+    "confirm": "Esci dalla lista",
+    "cancel": "Annulla",
+    "done": "Hai lasciato “{list}”",
+    "errorTitle": "Impossibile uscire dalla lista",
+    "errorMessage": "Riprova."
   },
   "CalendarPage": {
     "title": "Calendario - Simplist",

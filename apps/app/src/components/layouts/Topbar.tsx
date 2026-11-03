@@ -20,6 +20,7 @@ import {
 } from '@mantine/core'
 import {
   IconArchive,
+  IconDoorExit,
   IconDots,
   IconEdit,
   IconLayoutSidebar,
@@ -34,6 +35,7 @@ import { confirmArchiveModal, shareListModal, updateListModal } from '@/lib/moda
 import { useAppRoute } from '@/hooks/useAppRoute'
 import { usePreferences } from '@/queries/preferences'
 import { HotkeyBinding } from '../common/KeyBinding'
+import { useLeaveListAction } from '@/hooks/useLeaveListAction'
 
 export const TOPBAR_HEIGHT = 60
 
@@ -53,6 +55,13 @@ export function Topbar() {
   const preferences = pref?.data
 
   const route = useAppRoute()
+  const leaveList = useLeaveListAction()
+
+  const handleLeave = useCallback(() => {
+    if (!route.listId) return
+    const list = queryClient.getQueryData<Resp<CompleteList>>(listKeys.detail(route.listId))?.data
+    if (list) leaveList({ id: list.id, title: list.title })
+  }, [route.listId, queryClient, leaveList])
 
   const handleEdit = useCallback(() => {
     if (!route.listId) return
@@ -184,6 +193,23 @@ export function Topbar() {
           </Stack>
         )}
         <Group gap={'xs'} wrap="nowrap" style={{ flexShrink: 0 }}>
+          {/* A list shared with me: its only action is leaving it */}
+          {route.isShared && route.listId && (
+            <Menu shadow="md" width={MENU_WIDTH} position="bottom-end">
+              <Menu.Target>
+                <Tooltip label={t('options')} openDelay={500}>
+                  <ActionIcon variant="light" mt="sm" size="lg" aria-label={t('options')}>
+                    <IconDots size={16} />
+                  </ActionIcon>
+                </Tooltip>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item color="red" leftSection={<IconDoorExit size={20} />} onClick={handleLeave}>
+                  {t('leave')}
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+          )}
           {route.canShare && (
             <>
               {/* Both variants are rendered and CSS picks one (same breakpoint as isMobile):

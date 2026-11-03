@@ -173,6 +173,39 @@ export function useDeleteList() {
   })
 }
 
+export function useLeaveList() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (listId: string) => listsService.leaveList(listId),
+
+    // Gone from the overview and the sidebar at once
+    onMutate: async listId => {
+      await queryClient.cancelQueries({ queryKey: listKeys.all, exact: true })
+      const previous = queryClient.getQueryData<Resp<AllList>>(listKeys.all)
+      queryClient.setQueryData<Resp<AllList>>(listKeys.all, old =>
+        old
+          ? { ...old, data: { ...old.data, shared: old.data.shared.filter(l => l.id !== listId) } }
+          : old
+      )
+      return { previous }
+    },
+
+    onSuccess: (_data, listId) => {
+      // Stale, not removed: removing it while its page is still mounted would refetch it (404)
+      void queryClient.invalidateQueries({ queryKey: listKeys.detail(listId), refetchType: 'none' })
+    },
+
+    onError: (_error, _listId, context) => {
+      if (context?.previous) queryClient.setQueryData(listKeys.all, context.previous)
+    },
+
+    onSettled: () => {
+      void invalidateListsOverview(queryClient)
+    }
+  })
+}
+
 export function useShareList() {
   const queryClient = useQueryClient()
 

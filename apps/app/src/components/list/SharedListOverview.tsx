@@ -1,10 +1,11 @@
 'use client'
 
 import { Avatar, Group, Text } from '@mantine/core'
-import { IconInfoCircle } from '@tabler/icons-react'
+import { IconDoorExit, IconInfoCircle } from '@tabler/icons-react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useLists } from '@/queries/lists'
+import { useLeaveListAction } from '@/hooks/useLeaveListAction'
 import { useUpdatedLabel } from './overview/useListOverviewLabels'
 import { ListOverview } from './overview/ListOverview'
 import { ListCard } from './overview/ListCard'
@@ -16,6 +17,7 @@ export default function SharedListOverview() {
   const { data: lists, isLoading } = useLists()
   const tInfo = useTranslations('ListsOverview.info')
   const updatedLabel = useUpdatedLabel()
+  const leave = useLeaveListAction()
   const shared = lists?.data.shared ?? []
 
   return (
@@ -36,6 +38,14 @@ export default function SharedListOverview() {
               icon: <IconInfoCircle size={20} />,
               title: t('moreInfo'),
               onClick: () => openListInfoModal(list, true, tInfo('title'))
+            },
+            { key: 'divider' },
+            {
+              key: 'leave',
+              icon: <IconDoorExit size={20} />,
+              title: t('leave'),
+              color: 'red',
+              onClick: () => leave(list)
             }
           ]}
           updatedLabel={updatedLabel(list.updatedAt)}

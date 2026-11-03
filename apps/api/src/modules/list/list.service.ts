@@ -134,7 +134,8 @@ export class ListService {
 
     // Prevent the owner from being removed
     const owner = members.find(member => member.role === 'owner')
-    if (owner && owner.userId === memberId) {
+    // memberId is the membership id (list_members.id), not a user id
+    if (owner && owner.id === memberId) {
       throw Errors.badRequest('You cannot remove the owner of the list')
     }
 
@@ -195,10 +196,28 @@ export class ListService {
 
     // Prevent the owner from having their role changed
     const owner = members.find(member => member.role === 'owner')
-    if (owner && owner.userId === memberId) {
+    // memberId is the membership id (list_members.id), not a user id
+    if (owner && owner.id === memberId) {
       throw Errors.badRequest('You cannot change the role of the owner of the list')
     }
 
     return await this.repository.changeMemberRole(listId, memberId, role)
+  }
+
+  /** A member leaves a list shared with them. The owner can't: they delete or keep the list. */
+  async leave(listId: string, userId: string) {
+    const members = await this.repository.getMembers(listId)
+    const membership = members.find(member => member.userId === userId)
+
+    // Same answer whether the list doesn't exist or the user isn't in it
+    if (!membership) {
+      throw Errors.notFound('List not found')
+    }
+
+    if (membership.role === 'owner') {
+      throw Errors.badRequest('The owner cannot leave their own list')
+    }
+
+    await this.repository.removeMember(listId, membership.id)
   }
 }

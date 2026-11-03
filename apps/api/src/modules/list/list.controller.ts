@@ -143,6 +143,21 @@ export class ListController {
     }
   }
 
+  leave = async (req: Request, res: Response, next: NextFunction) => {
+    const { id: userId } = req.user!
+    const params = req.validated!.params as ListIdInput
+
+    try {
+      await this.service.leave(params.id, userId)
+
+      res.status(HTTP_STATUS.OK).json({
+        message: 'You left the list'
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
   archive = async (req: Request, res: Response, next: NextFunction) => {
     const { id: userId } = req.user!
     const params = req.validated!.params as ListIdInput

@@ -37,6 +37,11 @@ async function deleteListMember(listId: string, memberId: string): Promise<Resp<
   return await api.delete(`lists/${listId}/share/`, { json: { memberId } }).json()
 }
 
+/** Leave a list shared with me (removes my membership) */
+async function leaveList(listId: string): Promise<Resp<void>> {
+  return await api.delete(`lists/${listId}/membership`).json()
+}
+
 async function archiveList(listId: string): Promise<Resp<void>> {
   return await api.patch(`lists/${listId}/archive`).json()
 }
@@ -55,6 +60,7 @@ async function changeListMemberRole(
 
 export const listsService = {
   getLists,
+  leaveList,
   getListById,
   createList,
   updateList,

@@ -39,7 +39,8 @@
     "options": "Options",
     "edit": "Edit",
     "archive": "Archive",
-    "unarchive": "Unarchive"
+    "unarchive": "Unarchive",
+    "leave": "Leave list"
   },
   "Breadcrumbs": {
     "myLists": "My Lists",
@@ -112,7 +113,8 @@
     "listCount": "{count, plural, =1 {1 list} other {# lists}}",
     "moreInfo": "More Info",
     "emptyTitle": "Nothing shared with you yet",
-    "emptyDescription": "When someone shares a list with you, it shows up here."
+    "emptyDescription": "When someone shares a list with you, it shows up here.",
+    "leave": "Leave list"
   },
   "ListsOverview": {
     "searchPlaceholder": "Search lists",
@@ -158,6 +160,15 @@
       "openList": "Open list",
       "close": "Close"
     }
+  },
+  "LeaveList": {
+    "title": "Leave this list?",
+    "message": "You will no longer see <b>{list}</b> and its tasks. To get back in, the owner has to share it with you again.",
+    "confirm": "Leave list",
+    "cancel": "Cancel",
+    "done": "You left “{list}”",
+    "errorTitle": "Couldn't leave the list",
+    "errorMessage": "Please try again."
   },
   "CalendarPage": {
     "title": "Calendar - Simplist",
