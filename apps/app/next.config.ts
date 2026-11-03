@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next'
 import fs from 'node:fs';
 import path from 'node:path';
+import { networkInterfaces } from 'node:os';
 import packageJson from './package.json';
 import createNextIntlPlugin from 'next-intl/plugin'
 
@@ -18,8 +19,21 @@ if (fs.existsSync(fallbackPath)) {
 // (the auth cookies are scoped to /api). `next build` runs with NODE_ENV=production: no rewrite.
 const devApiUrl = process.env.NODE_ENV === 'development' ? process.env.API_URL : undefined
 
+// Development only: Next.js blocks dev assets requested from another host, so a phone opening
+// https://<lan-ip>:3000 (yarn dev:https) needs this machine's LAN addresses allowed.
+const VIRTUAL_INTERFACES = /^(docker|br-|veth|virbr|vmnet|vboxnet|tun|tap|wg|tailscale|zt|lo)/
+const lanAddresses =
+  process.env.NODE_ENV === 'development'
+    ? Object.entries(networkInterfaces())
+        .filter(([name]) => !VIRTUAL_INTERFACES.test(name))
+        .flatMap(([, addresses]) => addresses ?? [])
+        .filter(address => address.family === 'IPv4' && !address.internal)
+        .map(address => address.address)
+    : []
+
 const nextConfig: NextConfig = {
   output: 'standalone',
+  allowedDevOrigins: lanAddresses,
   async rewrites() {
     return devApiUrl ? [{ source: '/api/:path*', destination: `${devApiUrl}/:path*` }] : []
   },

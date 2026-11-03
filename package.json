@@ -13,6 +13,8 @@
     "dev": "concurrently -n api,app -c blue,green \"yarn workspace api dev\" \"yarn workspace app dev\"",
     "dev:api": "yarn workspace api run dev",
     "dev:app": "yarn workspace app run dev",
+    "dev:https": "concurrently -n api,app -c blue,green \"yarn workspace api dev\" \"yarn workspace app dev:https\"",
+    "dev:certs": "node scripts/dev-certs.mjs",
     "dev:docs": "yarn --cwd apps/docs dev",
     "clean": "yarn workspaces foreach -A run clean",
     "lint": "yarn workspaces foreach -A -pt run lint",
