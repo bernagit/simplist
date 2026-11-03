@@ -41,8 +41,11 @@ export const TOPBAR_HEIGHT = 60
 export function Topbar() {
   const t = useTranslations('Topbar')
   const router = useRouter()
-  const { toggle, opened } = useSidebar()
-  const { isMobile } = useSidebar()
+  const { toggle, opened, isMobile, isMediaResolved } = useSidebar()
+  // Until media queries resolve `opened` is the desktop state (open): the toggle would appear
+  // only later on phones. Show it there with CSS from the first paint instead.
+  const showToggle = !opened || !isMediaResolved
+  const toggleUntilResolved = !opened ? {} : { hiddenFrom: 'sm' as const }
   const { breadcrumbs, setBreadcrumbs, showTitle, title, description } = useTopbar()
   const queryClient = useQueryClient()
   const archiveList = useArchiveList()
@@ -119,8 +122,9 @@ export function Topbar() {
     >
       <Group h="100%" px="md" justify="space-between" wrap="nowrap" gap="xs">
         <Group wrap="nowrap" gap="xs" style={{ flexShrink: 0 }}>
-          {!opened && (
+          {showToggle && (
             <ActionIcon
+              {...toggleUntilResolved}
               mt="sm"
               variant="subtle"
               color="gray"
@@ -186,25 +190,28 @@ export function Topbar() {
         <Group gap={'xs'} wrap="nowrap" style={{ flexShrink: 0 }}>
           {route.canShare && (
             <>
+              {/* Both variants are rendered and CSS picks one (same breakpoint as isMobile):
+                  isMobile is false until media queries resolve, which flashed the label on phones */}
+              <ActionIcon
+                hiddenFrom="sm"
+                variant="light"
+                mt="sm"
+                size="lg"
+                onClick={handleShare}
+                aria-label={t('shareList')}
+              >
+                <IconUserShare size={16} />
+              </ActionIcon>
               <Tooltip label={t('shareList')} openDelay={300}>
-                {isMobile ? (
-                  <ActionIcon
-                    variant="light"
-                    mt="sm"
-                    size="lg"
-                    onClick={handleShare}
-                    aria-label={t('shareList')}
-                  >
-                    <IconUserShare size={16} />
-                  </ActionIcon>
-                ) : (
-                  <Button variant="light" mt="sm" onClick={handleShare}>
-                    <Group>
-                      <IconUserShare size={16} />
-                      {t('share')}
-                    </Group>
-                  </Button>
-                )}
+                <Button
+                  visibleFrom="sm"
+                  variant="light"
+                  mt="sm"
+                  leftSection={<IconUserShare size={16} />}
+                  onClick={handleShare}
+                >
+                  {t('share')}
+                </Button>
               </Tooltip>
               <Menu shadow="md" width={MENU_WIDTH} position="bottom-end">
                 <Menu.Target>

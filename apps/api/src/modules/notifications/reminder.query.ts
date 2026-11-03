@@ -14,11 +14,12 @@ export type DueReminderRow = {
 }
 
 /**
- * Reminders due now: open tasks with a date, for every list member who turned reminders on
- * and has at least one device, not sent yet for this occurrence.
+ * Reminders due now: open tasks with a date and their reminder on, for every list member who
+ * turned reminders on and has at least one device, not sent yet for this occurrence.
  *
- * The due instant is the task's wall-clock date and time (or the user's time for all-day
- * tasks) in the user's time zone; timed tasks are reminded `lead_minutes` earlier.
+ * The due instant is the task's wall-clock date and time in the user's time zone. All-day
+ * tasks use the task's reminder time, else the user's; timed tasks are reminded the task's
+ * lead time earlier, else the user's.
  * Reminders more than `graceMinutes` late are skipped (e.g. after downtime), so a restart
  * never floods devices with old reminders.
  */
@@ -41,15 +42,16 @@ export function dueRemindersQuery(now: Date, graceMinutes: number, limit: number
   join notification_settings ns on ns.user_id = m.user_id and ns.enabled
   left join sections s on s.id = t.section_id
   cross join lateral (
-    select (t.due_date + coalesce(t.due_time, ns.all_day_time)) at time zone ns.timezone as due_at
+    select (t.due_date + coalesce(t.due_time, t.reminder_time, ns.all_day_time)) at time zone ns.timezone as due_at
   ) d
   cross join lateral (
     select d.due_at - case
       when t.due_time is null then interval '0'
-      else make_interval(mins => ns.lead_minutes)
+      else make_interval(mins => coalesce(t.reminder_lead_minutes, ns.lead_minutes))
     end as remind_at
   ) r
   where t.completed = false
+    and t.reminder_enabled
     and t.due_date is not null
     -- Index-friendly window: time zones are within ±14h and the lead is at most a day
     and t.due_date between (${now}::timestamptz - interval '2 days')::date

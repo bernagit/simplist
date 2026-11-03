@@ -53,7 +53,10 @@ export class TaskRepository {
       durationMinutes: data.durationMinutes,
       recurrenceRule: data.recurrenceRule,
       order: taskOrder,
-      priority: data.priority
+      priority: data.priority,
+      reminderEnabled: data.reminderEnabled,
+      reminderLeadMinutes: data.reminderLeadMinutes,
+      reminderTime: data.reminderTime
     }
 
     const [task] = await db.insert(tasks).values(newTask).returning()
@@ -125,6 +128,9 @@ export class TaskRepository {
         recurrenceRule: tasks.recurrenceRule,
         completed: tasks.completed,
         priority: tasks.priority,
+        reminderEnabled: tasks.reminderEnabled,
+        reminderLeadMinutes: tasks.reminderLeadMinutes,
+        reminderTime: tasks.reminderTime,
         order: tasks.order,
         listId: tasks.listId,
         sectionId: tasks.sectionId,
@@ -174,6 +180,9 @@ export class TaskRepository {
         recurrenceRule: tasks.recurrenceRule,
         completed: tasks.completed,
         priority: tasks.priority,
+        reminderEnabled: tasks.reminderEnabled,
+        reminderLeadMinutes: tasks.reminderLeadMinutes,
+        reminderTime: tasks.reminderTime,
         order: tasks.order,
         listId: tasks.listId,
         sectionId: tasks.sectionId,

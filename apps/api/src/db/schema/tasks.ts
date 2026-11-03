@@ -53,6 +53,12 @@ export const tasks = pgTable(
 
     priority: priorityEnum('priority'),
 
+    reminderEnabled: boolean('reminder_enabled').notNull().default(false),
+
+    reminderLeadMinutes: integer('reminder_lead_minutes'),
+
+    reminderTime: time('reminder_time'),
+
     order: varchar('order', { length: 255 }).notNull().default('0'),
 
     createdAt: timestamp('created_at', {
@@ -68,7 +74,11 @@ export const tasks = pgTable(
       .notNull()
   },
   table => [
-    // Reminders and date views look up open tasks by due date
+    // Reminders look up open tasks that have one by due date
+    index('tasks_reminder_due_date_idx')
+      .on(table.dueDate)
+      .where(sql`${table.completed} = false and ${table.reminderEnabled} = true`),
+    // Date views look up open tasks by due date
     index('tasks_open_due_date_idx')
       .on(table.dueDate)
       .where(sql`${table.completed} = false and ${table.dueDate} is not null`)

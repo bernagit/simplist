@@ -1,0 +1,52 @@
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--mantine-spacing-sm);
+  width: 100%;
+  min-height: 44px;
+  padding: 6px var(--mantine-spacing-xs);
+  border-radius: var(--mantine-radius-md);
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 120ms ease;
+  outline-offset: -2px;
+}
+
+.row[data-disabled] {
+  cursor: default;
+}
+
+@media (hover: hover) {
+  .row:not([data-disabled]):hover {
+    background-color: light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-5));
+  }
+}
+
+.row[data-active] {
+  background-color: light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-5));
+}
+
+.row:focus-visible {
+  outline: 2px solid var(--mantine-primary-color-filled);
+}
+
+.label {
+  width: 92px;
+  flex-shrink: 0;
+}
+
+.value {
+  flex: 1;
+  min-width: 0;
+}
+
+.clear {
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.row:hover .clear,
+.row:focus-within .clear,
+.row[data-touch] .clear {
+  opacity: 1;
+}

@@ -3,15 +3,16 @@
 import { Task } from '@/models/task'
 import { ActionIcon, Checkbox, Group, Stack, Text } from '@mantine/core'
 import {
+  IconBell,
   IconCalendar,
   IconChecklist,
   IconEdit,
   IconGripVertical,
+  IconRepeat,
   IconTrash
 } from '@tabler/icons-react'
 import { CSS } from '@dnd-kit/utilities'
 import { useSortable } from '@dnd-kit/sortable'
-import dayjs from 'dayjs'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { getPriorityColor } from '@/utils/color'
 import { useSidebar } from '@/providers/SidebarProvider'
@@ -28,6 +29,7 @@ import { useMe } from '@/queries/auth'
 import { useTranslations } from 'next-intl'
 import { useMouseHover } from '@/hooks/useMouseHover'
 import { ActionsMenu } from '../common/ActionsMenu'
+import { isOverdue, useDueDateLabel } from '@/hooks/useOptionLabel'
 
 type TaskRowProps = {
   task: Task
@@ -277,15 +279,7 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
       </Group>
 
       <Group gap="xs" wrap="nowrap">
-        {task.dueDate && (
-          <Group gap={4} wrap="nowrap">
-            <IconCalendar size={14} />
-
-            <Text size="xs" c="dimmed">
-              {dayjs(task.dueDate).format('D MMM')}
-            </Text>
-          </Group>
-        )}
+        <TaskMeta task={task} />
         {canEdit && (
           <ActionsMenu
             items={actionOptions}
@@ -299,6 +293,28 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
             }}
           />
         )}
+      </Group>
+    </Group>
+  )
+}
+
+
+/** Date (red when overdue), repeat and reminder at the end of a task row */
+function TaskMeta({ task }: { task: Task }) {
+  const dateLabel = useDueDateLabel()
+  if (!task.dueDate) return null
+  const overdue = !task.completed && isOverdue(task.dueDate, task.dueTime)
+  const color = overdue ? 'var(--mantine-color-red-6)' : 'var(--mantine-color-dimmed)'
+
+  return (
+    <Group gap={6} wrap="nowrap" style={{ color }}>
+      {task.recurrenceRule && <IconRepeat size={14} />}
+      {task.reminderEnabled && <IconBell size={14} />}
+      <Group gap={4} wrap="nowrap">
+        <IconCalendar size={14} />
+        <Text size="xs" c="inherit" style={{ whiteSpace: 'nowrap' }}>
+          {dateLabel(task.dueDate, task.dueTime)}
+        </Text>
       </Group>
     </Group>
   )

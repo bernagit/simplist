@@ -34,14 +34,25 @@ import { NotificationsSection } from '../settings/NotificationsSection'
 import { useTranslations } from 'next-intl'
 import { MOBILE_QUERY } from '@/providers/SidebarProvider'
 
-type Section = 'general' | 'account' | 'appearance' | 'invites' | 'notifications' | 'info'
+export type SettingsSection =
+  | 'general'
+  | 'account'
+  | 'appearance'
+  | 'invites'
+  | 'notifications'
+  | 'info'
+type Section = SettingsSection
 
 const NAV_WIDTH = 240
 
-export default function UserSettings({ context, id }: ContextModalProps) {
+export default function UserSettings({
+  context,
+  id,
+  innerProps
+}: ContextModalProps<{ section?: SettingsSection | undefined }>) {
   const t = useTranslations('UserSettings')
   const [opened, { toggle }] = useDisclosure(false)
-  const [section, setSection] = useState<Section>('general')
+  const [section, setSection] = useState<Section>(innerProps?.section ?? 'general')
   const isMobile = useMediaQuery(MOBILE_QUERY)
   const { data: pref, isLoading: prefLoading } = usePreferences(true)
 

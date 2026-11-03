@@ -29,7 +29,7 @@ import { createListModal } from '@/lib/modals/list'
 import { getHTMLSectionId } from '@/utils/misc'
 import { HotkeyBinding } from '@/components/common/KeyBinding'
 import { ThemeIcon } from '@mantine/core'
-import dayjs from 'dayjs'
+import { useDueDateLabel } from '@/hooks/useOptionLabel'
 import { TaskResult } from '@/models/base'
 import { TASK_QUERY_PARAM } from '@/utils/constants'
 
@@ -42,6 +42,7 @@ export function SpotlightProvider() {
   const [spotlightOpened, setSpotlightOpened] = useState(false)
   useCloseOnBack(spotlightOpened, spotlight.close)
   const [debouncedQuery] = useDebouncedValue(query, 200)
+  const dateLabel = useDueDateLabel()
 
   const goToList = useCallback(
     (listId: string) => {
@@ -176,7 +177,7 @@ export function SpotlightProvider() {
 
       const tasks: SpotlightActionData[] = response.data.tasks.map(task => {
         const place = task.sectionTitle ? `${task.listTitle} › ${task.sectionTitle}` : task.listTitle
-        const date = task.dueDate ? ` · ${dayjs(task.dueDate).format('D MMM')}` : ''
+        const date = task.dueDate ? ` · ${dateLabel(task.dueDate, task.dueTime)}` : ''
         return {
           id: `task-${task.id}`,
           label: task.title,
@@ -202,7 +203,7 @@ export function SpotlightProvider() {
     }
 
     search()
-  }, [debouncedQuery, baseActions, goToList, goToSection, openTask, t])
+  }, [debouncedQuery, baseActions, goToList, goToSection, openTask, dateLabel, t])
 
   return (
     <Spotlight

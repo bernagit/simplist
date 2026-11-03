@@ -6,7 +6,8 @@
   "Common": {
     "welcome": "Benvenuto in Simplist",
     "language": "Lingua",
-    "moreActions": "Altre azioni"
+    "moreActions": "Altre azioni",
+    "clear": "Cancella"
   },
   "AppLayout": {
     "whatsNewTitle": "Cosa c'è di nuovo nella v{version}",
@@ -150,6 +151,98 @@
     "delete": "Elimina",
     "rescheduled": "Fatto · prossima il {date}"
   },
+  "TaskLabels": {
+    "date": {
+      "none": "Nessuna data",
+      "today": "Oggi",
+      "tomorrow": "Domani",
+      "yesterday": "Ieri"
+    },
+    "duration": {
+      "minutes": "{count} min",
+      "hours": "{count} h",
+      "hoursMinutes": "{hours} h {minutes} min"
+    },
+    "lead": {
+      "atTime": "All'orario dell'attività",
+      "minutes": "{count, plural, one {# minuto prima} other {# minuti prima}}",
+      "hours": "{count, plural, one {# ora prima} other {# ore prima}}",
+      "days": "{count, plural, one {# giorno prima} other {# giorni prima}}"
+    },
+    "recurrence": {
+      "none": "Non si ripete",
+      "custom": "Personalizzata",
+      "weekdays": "Ogni giorno feriale (lun–ven)",
+      "everyDays": "{count, plural, one {Ogni giorno} other {Ogni # giorni}}",
+      "everyWeeks": "{count, plural, one {Ogni settimana} other {Ogni # settimane}}",
+      "everyWeeksOn": "{count, plural, one {Ogni settimana} other {Ogni # settimane}} il {days}",
+      "everyMonths": "{count, plural, one {Ogni mese} other {Ogni # mesi}}",
+      "everyMonthsOn": "{count, plural, one {Ogni mese} other {Ogni # mesi}} il giorno {day}",
+      "everyYears": "{count, plural, one {Ogni anno} other {Ogni # anni}}",
+      "everyYearsOn": "{count, plural, one {Ogni anno} other {Ogni # anni}} il {date}",
+      "times": "{count, plural, one {una volta} other {# volte}}",
+      "until": "fino al {date}"
+    },
+    "reminder": {
+      "none": "Nessun promemoria",
+      "on": "Promemoria attivo",
+      "atTime": "Alle {time}"
+    }
+  },
+  "TaskProperties": {
+    "clear": "Rimuovi {property}",
+    "notSet": "Non impostato",
+    "date": {
+      "title": "Scadenza",
+      "label": "Data",
+      "today": "Oggi",
+      "tomorrow": "Domani",
+      "nextWeek": "Settimana prossima",
+      "time": "Orario",
+      "duration": "Durata",
+      "noDuration": "Nessuna",
+      "done": "Fatto"
+    },
+    "recurrence": {
+      "title": "Ripeti",
+      "label": "Ripeti",
+      "none": "Non si ripete",
+      "custom": "Personalizza…",
+      "back": "Indietro",
+      "every": "Ogni",
+      "units": {
+        "DAILY": "{count, plural, one {giorno} other {giorni}}",
+        "WEEKLY": "{count, plural, one {settimana} other {settimane}}",
+        "MONTHLY": "{count, plural, one {mese} other {mesi}}",
+        "YEARLY": "{count, plural, one {anno} other {anni}}"
+      },
+      "ends": "Termina",
+      "endNever": "Mai",
+      "endOn": "In data",
+      "endAfter": "Dopo",
+      "occurrences": "{count, plural, one {volta} other {volte}}",
+      "apply": "Applica"
+    },
+    "reminder": {
+      "title": "Promemoria",
+      "label": "Promemoria",
+      "toggle": "Ricordamelo",
+      "toggleDescTimed": "Una notifica prima dell'orario dell'attività.",
+      "toggleDescAllDay": "Una notifica il giorno della scadenza.",
+      "default": "Predefinito",
+      "custom": "Personalizzato",
+      "defaultIs": "Predefinito: {value}",
+      "atTime": "alle {time}",
+      "timeOnDueDate": "Orario nel giorno della scadenza",
+      "unavailable": "Le notifiche non sono configurate su questo server, quindi i promemoria non possono essere inviati.",
+      "off": "Non lo riceverai ancora: attiva i promemoria e le notifiche su un dispositivo nelle Impostazioni.",
+      "openSettings": "Apri impostazioni"
+    },
+    "priority": {
+      "title": "Priorità",
+      "label": "Priorità"
+    }
+  },
   "AddTask": {
     "addTask": "Aggiungi attività",
     "titlePlaceholder": "Nome attività",
@@ -181,32 +274,7 @@
       "medium": "Media",
       "low": "Bassa",
       "none": "Nessuna"
-    },
-    "Recurrence": {
-      "none": "Non si ripete",
-      "daily": "Ogni giorno",
-      "weekly": "Ogni settimana",
-      "monthly": "Ogni mese"
     }
-  },
-  "DueDateDropdown": {
-    "label": "Data",
-    "timeAndDuration": "Ora e Durata",
-    "dueTimeLabel": "Ora di scadenza",
-    "dueTimePlaceholder": "Imposta ora",
-    "durationLabel": "Durata",
-    "durationPlaceholder": "Min",
-    "durationSuffix": " min",
-    "recurrence": "Ricorrenza",
-    "recurrencePlaceholder": "Seleziona intervallo",
-    "drawerTitle": "Scadenza"
-  },
-  "TaskDueDateField": {
-    "label": "Data di scadenza",
-    "setDueDate": "Imposta data",
-    "at": "alle {time}",
-    "duration": "({minutes}m)",
-    "recurring": "Ricorrente"
   },
   "CustomSchedule": {
     "loading": "Caricamento...",
@@ -221,10 +289,6 @@
       "month": "Mese"
     },
     "allDay": "Tutto il giorno"
-  },
-  "TaskPriorityField": {
-    "label": "Priorità",
-    "defaultPriority": "Priorità"
   },
   "HotkeyBinding": {
     "then": "poi"
@@ -257,7 +321,8 @@
     "titlePlaceholder": "Nome attività",
     "descriptionPlaceholder": "Descrizione",
     "cancel": "Annulla",
-    "save": "Salva"
+    "save": "Salva",
+    "addDescription": "Aggiungi una descrizione"
   },
   "UserSettings": {
     "settingsTitle": "Impostazioni",
@@ -393,22 +458,16 @@
     },
     "reminders": {
       "title": "Promemoria attività",
-      "toggle": "Ricordami le attività in scadenza",
-      "toggleDesc": "Su ogni dispositivo con le notifiche attive.",
-      "allDay": "Attività senza orario",
-      "allDayDesc": "Ricordamelo il giorno della scadenza a quest'ora.",
-      "lead": "Attività con orario",
-      "leadDesc": "Quando ricordarmelo.",
+      "toggle": "Invia i promemoria",
+      "toggleDesc": "I promemoria si impostano su ogni attività (icona campanella nei dettagli). Disattiva per sospenderli tutti.",
+      "allDay": "Predefinito per attività senza orario",
+      "allDayDesc": "Il giorno della scadenza, a quest'ora.",
+      "lead": "Predefinito per attività con orario",
+      "leadDesc": "Quanto prima dell'orario dell'attività.",
       "shared": "Liste condivise",
-      "sharedDesc": "Ricordami anche le attività delle liste condivise con me.",
+      "sharedDesc": "Inviami anche i promemoria delle liste condivise con me.",
       "timezone": "Gli orari dei promemoria usano il fuso orario {timezone}.",
       "useTimezone": "Usa {timezone}"
-    },
-    "lead": {
-      "atTime": "All'orario dell'attività",
-      "minutes": "{count, plural, one {# minuto prima} other {# minuti prima}}",
-      "hours": "{count, plural, one {# ora prima} other {# ore prima}}",
-      "days": "{count, plural, one {# giorno prima} other {# giorni prima}}"
     },
     "devices": {
       "title": "Dispositivi",
@@ -537,7 +596,9 @@
     }
   },
   "EditTask": {
-    "title": "Modifica Attività"
+    "title": "Modifica Attività",
+    "readOnly": "Sola lettura",
+    "close": "Chiudi"
   },
   "SpotlightProvider": {
     "placeholder": "Cerca...",

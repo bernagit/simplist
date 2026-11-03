@@ -1,15 +1,15 @@
 'use client'
 
-import { MouseEvent, KeyboardEvent } from 'react'
-import { Button, Checkbox, Group, Stack, Text, TextInput, Textarea, Title } from '@mantine/core'
+import { KeyboardEvent } from 'react'
+import { Button, Checkbox, Group, Stack, Text, Textarea } from '@mantine/core'
 import { useTranslations } from 'next-intl'
+import { useDevice } from '@/hooks/useDevice'
 
 type TaskContentProps = {
   completed: boolean
   onToggle: () => void
   canEdit?: boolean
   color: string
-  hasDescription: boolean
   isEditing: boolean
   title: string
   description: string
@@ -17,15 +17,15 @@ type TaskContentProps = {
   onDescriptionChange: (value: string) => void
   onStartEditing: () => void
   onSave: () => void
-  onCancel: (e: MouseEvent<HTMLButtonElement>) => void
+  onCancel: () => void
 }
 
+/** Checkbox, title and description of a task, edited in place. */
 export default function TaskContent({
   completed,
   onToggle,
   canEdit,
   color,
-  hasDescription,
   isEditing,
   title,
   description,
@@ -36,88 +36,105 @@ export default function TaskContent({
   onCancel
 }: TaskContentProps) {
   const t = useTranslations('TaskContent')
+  const { isTouch } = useDevice()
+  const editable = Boolean(canEdit) && !completed
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    // Impedisce la propagazione per evitare il drag-and-drop o listener di tasti di scelta rapida padri
-    e.stopPropagation()
-
-    // Salva con Ctrl + Invio o Cmd + Invio
-    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-      e.preventDefault()
+  const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>, isTitle: boolean) => {
+    // Keep keys away from drag and drop and the app's shortcuts
+    event.stopPropagation()
+    if (event.key === 'Escape') {
+      event.preventDefault()
+      onCancel()
+    } else if (event.key === 'Enter' && (event.ctrlKey || event.metaKey || isTitle)) {
+      // Enter in the title saves (a title has one line); Ctrl/Cmd+Enter saves anywhere
+      event.preventDefault()
       onSave()
-    } else if (e.key === 'Escape') {
-      e.preventDefault()
-      // Esegue il cast dell'evento da tastiera a MouseEvent per rispettare la firma dell'handler
-      onCancel(e as unknown as MouseEvent<HTMLButtonElement>)
     }
   }
 
   return (
-    <Group align="start">
+    <Group align="flex-start" wrap="nowrap" gap="sm">
       <Checkbox
-        size="lg"
+        size="md"
         radius="xl"
+        mt={6}
         checked={completed}
-        mt={hasDescription ? 10 : 0}
         onChange={onToggle}
         disabled={!canEdit}
         color={color}
+        aria-label={title}
         styles={{
-          root: { opacity: completed ? 0.6 : 1, transition: 'opacity 150ms ease' },
-          input: { border: `1px solid ${color}`, backgroundColor: completed ? color : undefined }
+          input: {
+            borderColor: color,
+            borderWidth: 2,
+            cursor: canEdit ? 'pointer' : 'default'
+          }
         }}
       />
 
-      <Stack
-        flex={1}
-        gap={4}
-        style={{
-          opacity: !isEditing && completed ? 0.6 : 1,
-          transition: 'opacity 150ms ease',
-          border: isEditing ? '1px solid var(--mantine-color-gray-4)' : undefined,
-          borderRadius: 6,
-          padding: isEditing ? 8 : 0
-        }}
-        onClick={() => canEdit && !completed && onStartEditing()}
-      >
+      <Stack gap={6} flex={1} miw={0}>
         {isEditing ? (
           <>
-            <TextInput
-              variant="unstyled"
-              value={title}
-              onChange={e => onTitleChange(e.currentTarget.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={t('titlePlaceholder')}
-              styles={{ input: { fontSize: 24, fontWeight: 700 } }}
-              autoFocus
-            />
-
             <Textarea
               variant="unstyled"
-              value={description}
-              onChange={e => onDescriptionChange(e.currentTarget.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={t('descriptionPlaceholder')}
+              autosize
+              minRows={1}
+              autoFocus
+              value={title}
+              placeholder={t('titlePlaceholder')}
+              onChange={event => onTitleChange(event.currentTarget.value.replace(/\n/g, ' '))}
+              onKeyDown={event => handleKeyDown(event, true)}
+              styles={{
+                input: { fontSize: 22, fontWeight: 700, lineHeight: 1.3, padding: 0 }
+              }}
+            />
+            <Textarea
+              variant="unstyled"
               autosize
               minRows={2}
+              value={description}
+              placeholder={t('descriptionPlaceholder')}
+              onChange={event => onDescriptionChange(event.currentTarget.value)}
+              onKeyDown={event => handleKeyDown(event, false)}
+              styles={{ input: { fontSize: isTouch ? 16 : 14, padding: 0 } }}
             />
-
-            <Group justify="flex-end">
-              <Button variant="subtle" color="gray" onClick={onCancel}>
+            <Group justify="flex-end" gap="xs">
+              <Button variant="default" size="xs" onClick={onCancel}>
                 {t('cancel')}
               </Button>
-              <Button onClick={onSave}>{t('save')}</Button>
+              <Button size="xs" disabled={!title.trim()} onClick={onSave}>
+                {t('save')}
+              </Button>
             </Group>
           </>
         ) : (
-          <>
-            <Title order={3}>{title}</Title>
-            {description && (
-              <Text size="sm" c="dimmed">
+          <div
+            role={editable ? 'button' : undefined}
+            tabIndex={editable ? 0 : undefined}
+            onClick={() => editable && onStartEditing()}
+            onKeyDown={event => editable && event.key === 'Enter' && onStartEditing()}
+            style={{ cursor: editable ? 'text' : 'default', overflowWrap: 'anywhere' }}
+          >
+            <Text
+              fz={22}
+              fw={700}
+              lh={1.3}
+              {...(completed ? { td: 'line-through', c: 'dimmed' } : {})}
+            >
+              {title}
+            </Text>
+            {description ? (
+              <Text size="sm" c="dimmed" mt={6} style={{ whiteSpace: 'pre-wrap' }}>
                 {description}
               </Text>
+            ) : (
+              editable && (
+                <Text size="sm" c="dimmed" mt={6} opacity={0.7}>
+                  {t('addDescription')}
+                </Text>
+              )
             )}
-          </>
+          </div>
         )}
       </Stack>
     </Group>

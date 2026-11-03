@@ -5,13 +5,6 @@ export const PRIORITY_CONFIG = [
   { value: null, labelKey: 'none', color: 'dimmed' }
 ] as const
 
-export const RECURRENCE_CONFIG = [
-  { value: 'NONE', labelKey: 'none' },
-  { value: 'FREQ=DAILY', labelKey: 'daily' },
-  { value: 'FREQ=WEEKLY', labelKey: 'weekly' },
-  { value: 'FREQ=MONTHLY', labelKey: 'monthly' }
-] as const
-
 /**
  * Set by the API next to the httpOnly auth cookies (must match AUTH_COOKIES.session in
  * apps/api/src/infrastructure/auth/cookies.ts). It holds no secret: it only tells the Next.js

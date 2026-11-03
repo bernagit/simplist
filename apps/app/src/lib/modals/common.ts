@@ -1,11 +1,13 @@
 import { modals } from "@mantine/modals";
 
-export function openSettingsModal(isMobile: boolean) {
+import type { SettingsSection } from '@/components/modals/UserSettings'
+
+export function openSettingsModal(isMobile: boolean, section?: SettingsSection) {
   const width = isMobile ? '100%' : '80rem'
   modals.openContextModal({
     modal: 'userSettings',
     size: width,
-    innerProps: undefined,
+    innerProps: { section },
     fullScreen: isMobile,
     withCloseButton: false,
     padding: 0,

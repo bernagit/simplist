@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import rrule from 'rrule'
 import z from 'zod'
+import { LEAD_MINUTES } from '../notifications/notification.schema.js'
 
 const { RRule } = rrule
 
@@ -17,6 +18,22 @@ export const recurrenceRuleSchema = z
   .optional()
   .nullable()
 
+/** Per-task reminder; null lead/time = the user's defaults (notification settings) */
+const reminderFields = {
+  reminderEnabled: z.boolean().optional(),
+  reminderLeadMinutes: z
+    .number()
+    .int()
+    .refine(value => (LEAD_MINUTES as readonly number[]).includes(value), 'Unsupported lead time')
+    .optional()
+    .nullable(),
+  reminderTime: z
+    .string()
+    .regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Expected HH:MM')
+    .optional()
+    .nullable()
+}
+
 export const createTaskSchema = z.object({
   body: z.object({
     title: z.string().max(200),
@@ -25,7 +42,8 @@ export const createTaskSchema = z.object({
     dueTime: z.iso.time({ precision: -1 }).optional().nullable(),
     durationMinutes: z.number().int().positive().optional().nullable(),
     recurrenceRule: recurrenceRuleSchema,
-    priority: z.enum(['high', 'medium', 'low']).optional().nullable()
+    priority: z.enum(['high', 'medium', 'low']).optional().nullable(),
+    ...reminderFields
   }),
   params: z.object({
     listId: z.uuid(),
@@ -61,6 +79,7 @@ export const updateTaskSchema = z.object({
     durationMinutes: z.number().int().positive().optional().nullable(),
     recurrenceRule: recurrenceRuleSchema,
     priority: z.enum(['high', 'medium', 'low']).optional().nullable(),
+    ...reminderFields,
     completed: z.boolean().optional()
   }),
   params: z.object({

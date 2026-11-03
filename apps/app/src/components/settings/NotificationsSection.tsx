@@ -29,7 +29,8 @@ import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 import { usePushDevice } from '@/hooks/usePushDevice'
 import { getTimezone } from '@/lib/push'
-import { LEAD_MINUTES, NotificationDevice } from '@/models/notification'
+import { NotificationDevice } from '@/models/notification'
+import { useLeadTimeOptions } from '@/hooks/useOptionLabel'
 import {
   useNotificationConfig,
   useNotificationDevices,
@@ -40,8 +41,6 @@ import {
 } from '@/queries/notifications'
 
 const comboboxProps = { withinPortal: true, zIndex: 9999 }
-const MINUTES_PER_HOUR = 60
-const MINUTES_PER_DAY = 1440
 
 /** "Chrome on Android", from the user agent stored with the device */
 function describeDevice(userAgent: string | null) {
@@ -108,6 +107,7 @@ export function NotificationsSection() {
   const { data: settingsResp } = useNotificationSettings(pushEnabledOnServer)
   const { data: devicesResp } = useNotificationDevices(pushEnabledOnServer)
   const updateSettings = useUpdateNotificationSettings()
+  const leadOptions = useLeadTimeOptions()
   const removeDevice = useRemoveDevice()
   const sendTest = useSendTestNotification()
   const device = usePushDevice(config?.data.publicKey)
@@ -139,17 +139,6 @@ export function NotificationsSection() {
     )
   }
 
-  const leadOptions = LEAD_MINUTES.map(minutes => ({
-    value: String(minutes),
-    label:
-      minutes === 0
-        ? t('lead.atTime')
-        : minutes >= MINUTES_PER_DAY
-          ? t('lead.days', { count: minutes / MINUTES_PER_DAY })
-          : minutes >= MINUTES_PER_HOUR
-            ? t('lead.hours', { count: minutes / MINUTES_PER_HOUR })
-            : t('lead.minutes', { count: minutes })
-  }))
 
   const handleDeviceToggle = async (checked: boolean) => {
     if (!checked) {

@@ -1,18 +1,19 @@
 'use client'
 
-import { useMemo, useState } from 'react'
-import { ActionIcon, FocusTrap, Group, Stack } from '@mantine/core'
+import { useState } from 'react'
+import { ActionIcon, Box, FocusTrap, Group, Stack, Text } from '@mantine/core'
 import { ContextModalProps } from '@mantine/modals'
-import { PlannedTask } from '@/models/task'
+import { IconLock, IconX } from '@tabler/icons-react'
+import { useTranslations } from 'next-intl'
+import { PlannedTask, TaskProperties } from '@/models/task'
 import { getPriorityColor } from '@/utils/color'
 import { useTaskFieldUpdate } from '@/hooks/useTaskFieldUpdate'
 import { useTaskCompletion } from '@/hooks/useTaskCompletion'
 import { useTaskEditForm } from '@/hooks/useTaskEditorForm'
+import { useDevice } from '@/hooks/useDevice'
 import TaskBreadcrumb from '../task/TaskBreadcrumb'
 import TaskContent from '../task/TaskContent'
-import TaskDueDateField from '../task/TaskDueDateField'
-import TaskPriorityField from '../task/TaskPriorityField'
-import { IconX } from '@tabler/icons-react'
+import { TaskPropertiesEditor } from '../task/properties/TaskPropertiesEditor'
 
 export type NavigationCallbacks = {
   onOpenList: () => void
@@ -26,154 +27,114 @@ type EditTaskProps = {
   onUpdate?: (updatedTask: PlannedTask) => void
 }
 
-export default function EditTask({ context, id, innerProps }: ContextModalProps<EditTaskProps>) {
-  const { task, canEdit, navigation, onUpdate } = innerProps
+const PANEL_WIDTH = 300
 
+export default function EditTask({ context, id, innerProps }: ContextModalProps<EditTaskProps>) {
+  const { task, canEdit = false, navigation, onUpdate } = innerProps
+  const t = useTranslations('EditTask')
+  const { isMobile } = useDevice()
+
+  // One draft for the whole modal: every change is saved and reported with all previous ones
+  const [draft, setDraft] = useState<PlannedTask>(task)
   const { updateField } = useTaskFieldUpdate(task)
   const { completed, toggle } = useTaskCompletion(task)
-  const editForm = useTaskEditForm(task)
 
-  const [selectedDate, setSelectedDate] = useState<string | null>(task.dueDate)
-  const [selectedTime, setSelectedTime] = useState<string | null>(task.dueTime)
-  const [selectedDuration, setSelectedDuration] = useState<number | null>(task.durationMinutes)
-  const [selectedRecurrence, setSelectedRecurrence] = useState<string | null>(task.recurrenceRule)
-
-  const [selectedPriority, setSelectedPriority] = useState<string | null>(task.priority)
-
-  const color = useMemo(() => getPriorityColor(task.priority), [task.priority])
-
-  const handleDateChange = (date: string | null) => {
-    setSelectedDate(date)
-    updateField({ dueDate: date })
-    onUpdate?.({
-      ...task,
-      dueDate: date
-    })
+  const commit = (next: PlannedTask) => {
+    setDraft(next)
+    onUpdate?.(next)
   }
 
-  const handleTimeChange = (time: string | null) => {
-    setSelectedTime(time)
-    updateField({ dueTime: time })
-    onUpdate?.({
-      ...task,
-      dueTime: time
-    })
+  const patch = (updates: Partial<PlannedTask>) => {
+    commit({ ...draft, ...updates })
+    void updateField(updates)
   }
 
-  const handleDurationChange = (minutes: number | null) => {
-    setSelectedDuration(minutes)
-    updateField({ durationMinutes: minutes })
-    onUpdate?.({
-      ...task,
-      durationMinutes: minutes
-    })
+  const editForm = useTaskEditForm(task, patch)
+
+  const handleToggle = async () => {
+    const saved = await toggle()
+    if (!saved) return
+    // A recurring task comes back open, with its next date
+    commit({ ...draft, ...saved })
   }
 
-  const handleRecurrenceChange = (rrule: string | null) => {
-    setSelectedRecurrence(rrule)
-    updateField({ recurrenceRule: rrule })
-    onUpdate?.({
-      ...task,
-      recurrenceRule: rrule
-    })
-  }
-
-  const handlePriorityChange = (priority: string | null) => {
-    setSelectedPriority(priority)
-    updateField({ priority: priority ?? null })
-    onUpdate?.({
-      ...task,
-      priority: priority ?? null
-    })
-  }
-
-  const handleNavigateToList = () => {
-    navigation.onOpenList()
-    context.closeModal(id)
-  }
-
-  const handleNavigateToSection = () => {
-    navigation.onOpenSection()
-    context.closeModal(id)
-  }
+  const close = () => context.closeModal(id)
 
   return (
-    <Stack h="100%">
+    <Stack h="100%" gap="md">
       <FocusTrap.InitialFocus />
-      <Group
-        justify="space-between"
-        align="center"
-        style={{
-          borderBottom:
-            '2px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5))'
-        }}
-        pb={'sm'}
-      >
-        <TaskBreadcrumb
-          listTitle={task.listTitle}
-          sectionTitle={task.sectionTitle ?? ''}
-          onOpenList={handleNavigateToList}
-          onOpenSection={handleNavigateToSection}
-        />
-        <ActionIcon variant="subtle" onClick={() => context.closeModal(id)}>
-          <IconX />
-        </ActionIcon>
+
+      <Group justify="space-between" wrap="nowrap" gap="xs">
+        <Box miw={0}>
+          <TaskBreadcrumb
+            listTitle={draft.listTitle}
+            sectionTitle={draft.sectionTitle ?? ''}
+            onOpenList={() => {
+              navigation.onOpenList()
+              close()
+            }}
+            onOpenSection={() => {
+              navigation.onOpenSection()
+              close()
+            }}
+          />
+        </Box>
+        <Group gap={4} wrap="nowrap">
+          {!canEdit && (
+            <Group gap={4} c="dimmed" wrap="nowrap">
+              <IconLock size={14} />
+              <Text size="xs">{t('readOnly')}</Text>
+            </Group>
+          )}
+          <ActionIcon variant="subtle" color="gray" aria-label={t('close')} onClick={close}>
+            <IconX size={18} />
+          </ActionIcon>
+        </Group>
       </Group>
 
-      <TaskContent
-        completed={completed}
-        onToggle={async () => {
-          const saved = await toggle()
-          if (!saved) return
-          // A recurring task comes back with its next date
-          setSelectedDate(saved.dueDate)
-          setSelectedRecurrence(saved.recurrenceRule)
-          onUpdate?.(saved)
+      <Box
+        style={{
+          display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          gap: 'var(--mantine-spacing-lg)',
+          alignItems: 'stretch'
         }}
-        canEdit={canEdit ?? false}
-        color={color}
-        hasDescription={Boolean(task.description)}
-        isEditing={editForm.isEditing}
-        title={editForm.title}
-        description={editForm.description}
-        onTitleChange={editForm.setTitle}
-        onDescriptionChange={editForm.setDescription}
-        onStartEditing={editForm.startEditing}
-        onSave={() => {
-          editForm.save()
-          onUpdate?.({
-            ...task,
-            title: editForm.title,
-            description: editForm.description
-          })
-        }}
-        onCancel={() => {
-          editForm.cancel()
-          onUpdate?.({
-            ...task
-          })
-        }}
-      />
+      >
+        <Box flex={1} miw={0} py={isMobile ? 0 : 'xs'}>
+          <TaskContent
+            completed={completed}
+            onToggle={handleToggle}
+            canEdit={canEdit}
+            color={getPriorityColor(draft.priority)}
+            isEditing={editForm.isEditing}
+            title={editForm.title}
+            description={editForm.description}
+            onTitleChange={editForm.setTitle}
+            onDescriptionChange={editForm.setDescription}
+            onStartEditing={editForm.startEditing}
+            onSave={editForm.save}
+            onCancel={editForm.cancel}
+          />
+        </Box>
 
-      <TaskDueDateField
-        dueDate={selectedDate}
-        dueTime={selectedTime}
-        durationMinutes={selectedDuration}
-        recurrenceRule={selectedRecurrence}
-        canEdit={canEdit ?? false}
-        onDateChange={handleDateChange}
-        onTimeChange={handleTimeChange}
-        onDurationChange={handleDurationChange}
-        onRecurrenceChange={handleRecurrenceChange}
-      />
-
-      <TaskPriorityField
-        priority={selectedPriority}
-        canEdit={canEdit ?? false}
-        onChange={handlePriorityChange}
-      />
-
-      {/* Future: <TaskAssigneeField />, <TaskTimeRangeField />, <TaskRecurrenceField /> — same shape */}
+        <Box
+          w={isMobile ? '100%' : PANEL_WIDTH}
+          p="xs"
+          style={{
+            flexShrink: 0,
+            borderRadius: 'var(--mantine-radius-md)',
+            backgroundColor: 'light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))',
+            border: '1px solid var(--mantine-color-default-border)'
+          }}
+        >
+          <TaskPropertiesEditor
+            variant="row"
+            value={draft}
+            canEdit={canEdit}
+            onChange={(updates: Partial<TaskProperties>) => patch(updates)}
+          />
+        </Box>
+      </Box>
     </Stack>
   )
 }

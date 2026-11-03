@@ -1,18 +1,22 @@
 import { useState } from 'react'
-import { PlannedTask } from '@/models/task'
-import { useTaskFieldUpdate } from './useTaskFieldUpdate'
+import { Task } from '@/models/task'
 
-export function useTaskEditForm(task: PlannedTask) {
-  const { updateField } = useTaskFieldUpdate(task)
-
+/** Title and description edited together, saved or cancelled at once. */
+export function useTaskEditForm(
+  task: Pick<Task, 'title' | 'description'>,
+  onSave: (updates: { title: string; description: string | null }) => void
+) {
   const [isEditing, setIsEditing] = useState(false)
   const [title, setTitle] = useState(task.title)
   const [description, setDescription] = useState(task.description ?? '')
 
   const startEditing = () => setIsEditing(true)
 
-  const save = async () => {
-    await updateField({ title, description })
+  const save = () => {
+    const trimmed = title.trim()
+    if (!trimmed) return
+    onSave({ title: trimmed, description: description.trim() || null })
+    setTitle(trimmed)
     setIsEditing(false)
   }
 

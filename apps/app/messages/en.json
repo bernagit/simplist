@@ -6,7 +6,8 @@
   "Common": {
     "welcome": "Welcome to Simplist",
     "language": "Language",
-    "moreActions": "More actions"
+    "moreActions": "More actions",
+    "clear": "Clear"
   },
   "AppLayout": {
     "whatsNewTitle": "What's New in v{version}",
@@ -150,6 +151,98 @@
     "delete": "Delete",
     "rescheduled": "Done · next on {date}"
   },
+  "TaskLabels": {
+    "date": {
+      "none": "No date",
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "yesterday": "Yesterday"
+    },
+    "duration": {
+      "minutes": "{count} min",
+      "hours": "{count} h",
+      "hoursMinutes": "{hours} h {minutes} min"
+    },
+    "lead": {
+      "atTime": "At the time of the task",
+      "minutes": "{count, plural, one {# minute before} other {# minutes before}}",
+      "hours": "{count, plural, one {# hour before} other {# hours before}}",
+      "days": "{count, plural, one {# day before} other {# days before}}"
+    },
+    "recurrence": {
+      "none": "Does not repeat",
+      "custom": "Custom",
+      "weekdays": "Every weekday (Mon–Fri)",
+      "everyDays": "{count, plural, one {Every day} other {Every # days}}",
+      "everyWeeks": "{count, plural, one {Every week} other {Every # weeks}}",
+      "everyWeeksOn": "{count, plural, one {Every week} other {Every # weeks}} on {days}",
+      "everyMonths": "{count, plural, one {Every month} other {Every # months}}",
+      "everyMonthsOn": "{count, plural, one {Every month} other {Every # months}} on day {day}",
+      "everyYears": "{count, plural, one {Every year} other {Every # years}}",
+      "everyYearsOn": "{count, plural, one {Every year} other {Every # years}} on {date}",
+      "times": "{count, plural, one {once} other {# times}}",
+      "until": "until {date}"
+    },
+    "reminder": {
+      "none": "No reminder",
+      "on": "Reminder on",
+      "atTime": "At {time}"
+    }
+  },
+  "TaskProperties": {
+    "clear": "Remove {property}",
+    "notSet": "Not set",
+    "date": {
+      "title": "Due date",
+      "label": "Date",
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "nextWeek": "Next week",
+      "time": "Time",
+      "duration": "Duration",
+      "noDuration": "None",
+      "done": "Done"
+    },
+    "recurrence": {
+      "title": "Repeat",
+      "label": "Repeat",
+      "none": "Does not repeat",
+      "custom": "Custom…",
+      "back": "Back",
+      "every": "Every",
+      "units": {
+        "DAILY": "{count, plural, one {day} other {days}}",
+        "WEEKLY": "{count, plural, one {week} other {weeks}}",
+        "MONTHLY": "{count, plural, one {month} other {months}}",
+        "YEARLY": "{count, plural, one {year} other {years}}"
+      },
+      "ends": "Ends",
+      "endNever": "Never",
+      "endOn": "On date",
+      "endAfter": "After",
+      "occurrences": "{count, plural, one {time} other {times}}",
+      "apply": "Apply"
+    },
+    "reminder": {
+      "title": "Reminder",
+      "label": "Reminder",
+      "toggle": "Remind me",
+      "toggleDescTimed": "A notification before the task's time.",
+      "toggleDescAllDay": "A notification on the due date.",
+      "default": "Default",
+      "custom": "Custom",
+      "defaultIs": "Default: {value}",
+      "atTime": "at {time}",
+      "timeOnDueDate": "Time on the due date",
+      "unavailable": "Notifications aren't set up on this server, so reminders can't be sent.",
+      "off": "You won't receive it yet: turn on task reminders and notifications on a device in Settings.",
+      "openSettings": "Open settings"
+    },
+    "priority": {
+      "title": "Priority",
+      "label": "Priority"
+    }
+  },
   "AddTask": {
     "addTask": "Add Task",
     "titlePlaceholder": "Task name",
@@ -181,32 +274,7 @@
       "medium": "Medium",
       "low": "Low",
       "none": "None"
-    },
-    "Recurrence": {
-      "none": "Does not repeat",
-      "daily": "Daily",
-      "weekly": "Weekly",
-      "monthly": "Monthly"
     }
-  },
-  "DueDateDropdown": {
-    "label": "Date",
-    "timeAndDuration": "Time & Duration",
-    "dueTimeLabel": "Due Time",
-    "dueTimePlaceholder": "Set time",
-    "durationLabel": "Duration",
-    "durationPlaceholder": "Min",
-    "durationSuffix": " min",
-    "recurrence": "Recurrence",
-    "recurrencePlaceholder": "Select interval",
-    "drawerTitle": "Due date"
-  },
-  "TaskDueDateField": {
-    "label": "Due Date",
-    "setDueDate": "Set due date",
-    "at": "at {time}",
-    "duration": "({minutes}m)",
-    "recurring": "Recurring"
   },
   "CustomSchedule": {
     "loading": "Loading...",
@@ -221,10 +289,6 @@
       "month": "Month"
     },
     "allDay": "All day"
-  },
-  "TaskPriorityField": {
-    "label": "Priority",
-    "defaultPriority": "Priority"
   },
   "HotkeyBinding": {
     "then": "then"
@@ -257,7 +321,8 @@
     "titlePlaceholder": "Task name",
     "descriptionPlaceholder": "Description",
     "cancel": "Cancel",
-    "save": "Save"
+    "save": "Save",
+    "addDescription": "Add a description"
   },
   "UserSettings": {
     "settingsTitle": "Settings",
@@ -393,22 +458,16 @@
     },
     "reminders": {
       "title": "Task reminders",
-      "toggle": "Remind me about due tasks",
-      "toggleDesc": "On every device where notifications are on.",
-      "allDay": "Tasks without a time",
-      "allDayDesc": "Remind me on the due date at this time.",
-      "lead": "Tasks with a time",
-      "leadDesc": "When to remind me.",
+      "toggle": "Send task reminders",
+      "toggleDesc": "Reminders are set on each task (bell icon in its details). Turn this off to pause them all.",
+      "allDay": "Default for tasks without a time",
+      "allDayDesc": "On the due date, at this time.",
+      "lead": "Default for tasks with a time",
+      "leadDesc": "How long before the task's time.",
       "shared": "Shared lists",
-      "sharedDesc": "Also remind me about tasks in lists shared with me.",
+      "sharedDesc": "Also send me the reminders of lists shared with me.",
       "timezone": "Reminder times use the {timezone} time zone.",
       "useTimezone": "Use {timezone}"
-    },
-    "lead": {
-      "atTime": "At the time of the task",
-      "minutes": "{count, plural, one {# minute before} other {# minutes before}}",
-      "hours": "{count, plural, one {# hour before} other {# hours before}}",
-      "days": "{count, plural, one {# day before} other {# days before}}"
     },
     "devices": {
       "title": "Devices",
@@ -537,7 +596,9 @@
     }
   },
   "EditTask": {
-    "title": "Edit Task"
+    "title": "Edit Task",
+    "readOnly": "View only",
+    "close": "Close"
   },
   "SpotlightProvider": {
     "placeholder": "Search...",

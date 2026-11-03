@@ -1,6 +1,6 @@
 'use client'
 
-import { CreateTaskInput } from '@/models/task'
+import { CreateTaskInput, EMPTY_TASK_PROPERTIES, TaskProperties } from '@/models/task'
 import {
   Box,
   Button,
@@ -15,8 +15,7 @@ import {
 import { useHotkeys } from '@mantine/hooks'
 import { IconCirclePlus, IconPlus } from '@tabler/icons-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import DateSelector from '../task/DateSelector'
-import PrioritySelector from '../task/ProritySelector'
+import { TaskPropertiesEditor } from '../task/properties/TaskPropertiesEditor'
 import { useTranslations } from 'next-intl'
 import { useSidebar } from '@/providers/SidebarProvider'
 import { useMouseHover } from '@/hooks/useMouseHover'
@@ -39,20 +38,12 @@ export default function AddTask({ ml, listId, sectionId, onSave }: AddTaskProps)
 
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [dueDate, setDueDate] = useState<string | null>(null)
-  const [dueTime, setDueTime] = useState<string | null>(null)
-  const [durationMinutes, setDurationMinutes] = useState<number | null>(null)
-  const [recurrenceRule, setRecurrenceRule] = useState<string | null>(null)
-  const [selectedPriority, setSelectedPriority] = useState<string | null>(null)
+  const [properties, setProperties] = useState<TaskProperties>(EMPTY_TASK_PROPERTIES)
 
   const clearInputs = () => {
     setTitle('')
     setDescription('')
-    setDueDate(null)
-    setDueTime(null)
-    setDurationMinutes(null)
-    setRecurrenceRule(null)
-    setSelectedPriority(null)
+    setProperties(EMPTY_TASK_PROPERTIES)
   }
 
   const handleSave = useCallback(async () => {
@@ -63,11 +54,7 @@ export default function AddTask({ ml, listId, sectionId, onSave }: AddTaskProps)
       sectionId: sectionId,
       title: title.trim(),
       description: description.trim() || null,
-      dueDate: dueDate,
-      dueTime: dueTime,
-      durationMinutes: durationMinutes,
-      recurrenceRule: recurrenceRule,
-      priority: selectedPriority
+      ...properties
     }
 
     if (onSave) {
@@ -80,18 +67,7 @@ export default function AddTask({ ml, listId, sectionId, onSave }: AddTaskProps)
     requestAnimationFrame(() => {
       titleInputRef.current?.focus()
     })
-  }, [
-    title,
-    listId,
-    sectionId,
-    description,
-    dueDate,
-    dueTime,
-    durationMinutes,
-    recurrenceRule,
-    selectedPriority,
-    onSave
-  ])
+  }, [title, listId, sectionId, description, properties, onSave])
 
   useHotkeys(
     [
@@ -206,22 +182,13 @@ export default function AddTask({ ml, listId, sectionId, onSave }: AddTaskProps)
               }
             }}
           />
-          <Group gap={'xs'} m={0}>
-            <DateSelector
-              dueDate={dueDate}
-              dueTime={dueTime}
-              durationMinutes={durationMinutes}
-              recurrenceRule={recurrenceRule}
-              onDateChange={setDueDate}
-              onTimeChange={setDueTime}
-              onDurationChange={setDurationMinutes}
-              onRecurrenceChange={setRecurrenceRule}
+          <Box mt="sm">
+            <TaskPropertiesEditor
+              variant="chip"
+              value={properties}
+              onChange={patch => setProperties(current => ({ ...current, ...patch }))}
             />
-            <PrioritySelector
-              selectedPriority={selectedPriority}
-              setSelectedPriority={setSelectedPriority}
-            />
-          </Group>
+          </Box>
 
           <Group
             justify="flex-end"
