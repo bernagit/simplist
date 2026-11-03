@@ -143,31 +143,32 @@ export default function SectionPanel({
             value={section.title}
             onSave={(newTitle) => handleUpdateSection(section.id, newTitle)}
           />
-          {/* returnFocus off: it would steal focus from the rename input */}
-          <Menu returnFocus={false}>
-            <Menu.Target>
-              <ActionIcon variant="subtle" color="gray" size={controlSize}>
-                <IconDots />
-              </ActionIcon>
-            </Menu.Target>
-            <Menu.Dropdown>
-              {canEdit && (
+          {/* Rename and delete are the only actions: read-only members get no menu */}
+          {canEdit && (
+            // returnFocus off: it would steal focus from the rename input
+            <Menu returnFocus={false}>
+              <Menu.Target>
+                <ActionIcon variant="subtle" color="gray" size={controlSize}>
+                  <IconDots />
+                </ActionIcon>
+              </Menu.Target>
+              <Menu.Dropdown>
                 <Menu.Item
                   leftSection={<IconPencil size={16} />}
                   onClick={() => titleRef.current?.startEditing()}
                 >
                   {t('renameSection')}
                 </Menu.Item>
-              )}
-              <Menu.Item
-                leftSection={<IconTrash size={16} />}
-                color="red"
-                onClick={() => handleDeleteSection(section.id)}
-              >
-                {t('deleteSection')}
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
+                <Menu.Item
+                  leftSection={<IconTrash size={16} />}
+                  color="red"
+                  onClick={() => handleDeleteSection(section.id)}
+                >
+                  {t('deleteSection')}
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+          )}
         </Group>
       </Group>
       <Collapse expanded={isExpanded}>{children}</Collapse>
