@@ -1,5 +1,22 @@
 # app
 
+## 0.7.0
+
+### Minor Changes
+
+- feat: new repeat options based on the due date (every weekday, every week on Tuesday, every month on day 3...) and custom repeats: every N days, weeks, months or years, on chosen weekdays, until a date or for a number of times
+- feat: search now finds tasks too, also in shared lists, and opens them directly in their list
+- feat: redesigned task details and add task: date with quick picks (today, tomorrow, next week), time and duration, repeat, reminder and priority, with the same pickers on desktop and phones
+- feat: task reminders with push notifications: turn them on for each device in Settings > Notifications, then set a reminder on a task (bell). Default times are in the settings, each task can use its own. Self-hosting: set VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY (generate them once with `yarn workspace api push:keys`)
+- feat: task rows show Today, Tomorrow or the weekday, overdue dates in red, and icons for repeating tasks and reminders
+
+### Patch Changes
+
+- fix: recurring tasks show in the calendar in every month, not only in the one they start in, and every occurrence opens its task
+- fix: completing a recurring task moves it to its next date instead of closing it
+- fix: members who can only view a list no longer see the section menu (rename, delete)
+- fix: the top bar no longer flashes the desktop buttons on phones while the page loads
+
 ## 0.6.0
 
 ### Minor Changes
