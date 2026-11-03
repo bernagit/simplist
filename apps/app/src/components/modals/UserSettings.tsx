@@ -13,7 +13,16 @@ import {
 } from '@mantine/core'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import { ContextModalProps } from '@mantine/modals'
-import { IconMoon, IconSettings, IconUser, IconLayoutSidebar, IconX, IconUsers, IconInfoCircle } from '@tabler/icons-react'
+import {
+  IconBell,
+  IconMoon,
+  IconSettings,
+  IconUser,
+  IconLayoutSidebar,
+  IconX,
+  IconUsers,
+  IconInfoCircle
+} from '@tabler/icons-react'
 import { useState } from 'react'
 import { AppearanceSection } from '../settings/AppearanceSection'
 import { GeneralSection } from '../settings/GeneralSection'
@@ -21,6 +30,7 @@ import { AccountSection } from '../settings/AccountSection'
 import { usePreferences } from '@/queries/preferences'
 import { InvitesSection } from '../settings/InviteSection'
 import { InfoSection } from '../settings/InfoSection'
+import { NotificationsSection } from '../settings/NotificationsSection'
 import { useTranslations } from 'next-intl'
 import { MOBILE_QUERY } from '@/providers/SidebarProvider'
 
@@ -107,6 +117,14 @@ export default function UserSettings({ context, id }: ContextModalProps) {
             />
 
             <NavLink
+              active={section === 'notifications'}
+              label={navLabels.notifications}
+              leftSection={<IconBell size={18} />}
+              onClick={() => handleSectionChange('notifications')}
+              style={{ borderRadius: 'var(--mantine-radius-md)' }}
+            />
+
+            <NavLink
               active={section === 'invites'}
               label={navLabels.invites}
               leftSection={<IconUsers size={18} />}
@@ -175,6 +193,13 @@ export default function UserSettings({ context, id }: ContextModalProps) {
             <Stack>
               <Text c="dimmed">{t('appearance.subtitle')}</Text>
               <AppearanceSection />
+            </Stack>
+          )}
+
+          {section === 'notifications' && (
+            <Stack>
+              <Text c="dimmed">{t('notifications.subtitle')}</Text>
+              <NotificationsSection />
             </Stack>
           )}
 

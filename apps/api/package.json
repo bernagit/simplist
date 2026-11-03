@@ -13,6 +13,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
+    "push:keys": "web-push generate-vapid-keys",
     "docker:build": "docker build -t simplist-api ."
   },
   "dependencies": {
@@ -29,6 +30,7 @@
     "nodemailer": "^9.0.3",
     "pg": "^8.21.0",
     "rrule": "^2.8.1",
+    "web-push": "^3.6.7",
     "winston": "^3.19.0",
     "zod": "^4.4.3"
   },
@@ -41,6 +43,7 @@
     "@types/node": "^25.9.1",
     "@types/nodemailer": "^8.0.1",
     "@types/pg": "^8.20.0",
+    "@types/web-push": "^3.6.4",
     "drizzle-kit": "^0.31.10",
     "eslint": "^10.8.0",
     "eslint-plugin-drizzle": "^0.2.3",

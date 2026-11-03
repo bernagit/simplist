@@ -285,6 +285,10 @@
       "title": "Inviti",
       "subtitle": "Gestisci i tuoi inviti e invita nuovi utenti."
     },
+    "notifications": {
+      "title": "Notifiche",
+      "subtitle": "Promemoria delle tue attività su telefono e computer."
+    },
     "aria": {
       "toggleNav": "Alterna navigazione impostazioni"
     }
@@ -366,6 +370,58 @@
       "title": "Storico Rilasci & Changelog",
       "latest": "Ultima: v{version}",
       "empty": "Nessuna voce di changelog trovata."
+    }
+  },
+  "NotificationsSection": {
+    "server": {
+      "disabled": "Le notifiche non sono configurate su questo server. L'amministratore deve impostare le chiavi push (VAPID_PUBLIC_KEY e VAPID_PRIVATE_KEY)."
+    },
+    "device": {
+      "title": "Questo dispositivo",
+      "toggle": "Notifiche su questo dispositivo",
+      "toggleDesc": "Permetti a Simplist di inviare notifiche a questo browser.",
+      "needsInstall": "Su iPhone e iPad le notifiche funzionano solo nell'app installata: tocca Condividi, poi \"Aggiungi alla schermata Home\", e apri Simplist da lì.",
+      "unsupported": "Questo browser non supporta le notifiche.",
+      "blocked": "Le notifiche di Simplist sono bloccate in questo browser. Consentile nelle impostazioni del sito, poi torna qui."
+    },
+    "test": {
+      "button": "Invia una notifica di prova",
+      "notificationTitle": "Le notifiche funzionano",
+      "notificationBody": "Qui riceverai i promemoria delle tue attività.",
+      "sent": "{count, plural, one {Inviata a # dispositivo} other {Inviata a # dispositivi}}",
+      "failed": "Non è stato possibile consegnare la notifica di prova."
+    },
+    "reminders": {
+      "title": "Promemoria attività",
+      "toggle": "Ricordami le attività in scadenza",
+      "toggleDesc": "Su ogni dispositivo con le notifiche attive.",
+      "allDay": "Attività senza orario",
+      "allDayDesc": "Ricordamelo il giorno della scadenza a quest'ora.",
+      "lead": "Attività con orario",
+      "leadDesc": "Quando ricordarmelo.",
+      "shared": "Liste condivise",
+      "sharedDesc": "Ricordami anche le attività delle liste condivise con me.",
+      "timezone": "Gli orari dei promemoria usano il fuso orario {timezone}.",
+      "useTimezone": "Usa {timezone}"
+    },
+    "lead": {
+      "atTime": "All'orario dell'attività",
+      "minutes": "{count, plural, one {# minuto prima} other {# minuti prima}}",
+      "hours": "{count, plural, one {# ora prima} other {# ore prima}}",
+      "days": "{count, plural, one {# giorno prima} other {# giorni prima}}"
+    },
+    "devices": {
+      "title": "Dispositivi",
+      "empty": "Nessun dispositivo riceve ancora notifiche.",
+      "unknown": "Dispositivo sconosciuto",
+      "thisDevice": "Questo dispositivo",
+      "lastNotified": "Ultima notifica {date}",
+      "added": "Aggiunto {date}",
+      "remove": "Rimuovi dispositivo"
+    },
+    "errors": {
+      "title": "Notifiche non attivate",
+      "enable": "Qualcosa è andato storto durante l'attivazione delle notifiche. Riprova."
     }
   },
   "InvitesSection": {

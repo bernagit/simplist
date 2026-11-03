@@ -285,6 +285,10 @@
       "title": "Invites",
       "subtitle": "Manage your invites and invite new users."
     },
+    "notifications": {
+      "title": "Notifications",
+      "subtitle": "Reminders for your tasks on your phone and computer."
+    },
     "aria": {
       "toggleNav": "Toggle settings navigation"
     }
@@ -366,6 +370,58 @@
       "title": "Release History & Changelog",
       "latest": "Latest: v{version}",
       "empty": "No changelog entry found."
+    }
+  },
+  "NotificationsSection": {
+    "server": {
+      "disabled": "Notifications aren't set up on this server. The administrator needs to configure the push keys (VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY)."
+    },
+    "device": {
+      "title": "This device",
+      "toggle": "Notifications on this device",
+      "toggleDesc": "Allow Simplist to send notifications to this browser.",
+      "needsInstall": "On iPhone and iPad, notifications only work in the installed app: tap Share, then \"Add to Home Screen\", and open Simplist from there.",
+      "unsupported": "This browser doesn't support notifications.",
+      "blocked": "Notifications are blocked for Simplist in this browser. Allow them in the site settings, then come back here."
+    },
+    "test": {
+      "button": "Send a test notification",
+      "notificationTitle": "Notifications are working",
+      "notificationBody": "You'll get your task reminders here.",
+      "sent": "{count, plural, one {Sent to # device} other {Sent to # devices}}",
+      "failed": "The test notification couldn't be delivered."
+    },
+    "reminders": {
+      "title": "Task reminders",
+      "toggle": "Remind me about due tasks",
+      "toggleDesc": "On every device where notifications are on.",
+      "allDay": "Tasks without a time",
+      "allDayDesc": "Remind me on the due date at this time.",
+      "lead": "Tasks with a time",
+      "leadDesc": "When to remind me.",
+      "shared": "Shared lists",
+      "sharedDesc": "Also remind me about tasks in lists shared with me.",
+      "timezone": "Reminder times use the {timezone} time zone.",
+      "useTimezone": "Use {timezone}"
+    },
+    "lead": {
+      "atTime": "At the time of the task",
+      "minutes": "{count, plural, one {# minute before} other {# minutes before}}",
+      "hours": "{count, plural, one {# hour before} other {# hours before}}",
+      "days": "{count, plural, one {# day before} other {# days before}}"
+    },
+    "devices": {
+      "title": "Devices",
+      "empty": "No device receives notifications yet.",
+      "unknown": "Unknown device",
+      "thisDevice": "This device",
+      "lastNotified": "Last notified {date}",
+      "added": "Added {date}",
+      "remove": "Remove device"
+    },
+    "errors": {
+      "title": "Notifications not enabled",
+      "enable": "Something went wrong while enabling notifications. Please try again."
     }
   },
   "InvitesSection": {

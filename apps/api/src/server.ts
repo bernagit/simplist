@@ -5,6 +5,7 @@ import { createModuleLogger } from './infrastructure/logging/logger.js'
 import { appInfo } from './config/appInfo.js'
 import { transporter } from './infrastructure/mail/mail.client.js'
 import { bootstrapFirstInvite } from './bootstrap/first-invite.js'
+import { reminderScheduler } from './modules/notifications/reminder.scheduler.js'
 
 const startedAt = performance.now()
 const logger = createModuleLogger('SERVER')
@@ -41,6 +42,9 @@ const registerShutdownHandlers = (server: ReturnType<typeof app.listen>) => {
 
 async function shutdown(server: ReturnType<typeof app.listen>, signal: string) {
   logger.info(`${signal} received. Starting graceful shutdown...`)
+
+  // Let a reminder pass in progress finish, so its claimed reminders are delivered
+  await reminderScheduler.stop()
 
   server.close(async err => {
     if (err) {
@@ -80,6 +84,8 @@ try {
   const server = await startServer()
 
   registerShutdownHandlers(server)
+
+  reminderScheduler.start()
 
   logger.info(`Application ready in ${Math.round(performance.now() - startedAt)} ms`)
 } catch (err: unknown) {

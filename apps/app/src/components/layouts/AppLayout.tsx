@@ -27,6 +27,7 @@ import ConfirmArchive from '../modals/ConfirmArchive'
 import { ModalsBackHandler } from '../modals/ModalsBackHandler'
 import { useMediaQuery } from '@mantine/hooks'
 import { useCloseOnBack } from '@/hooks/useCloseOnBack'
+import { PushSync } from '../PushSync'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -76,6 +77,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         }}
       >
         <ModalsBackHandler />
+        <PushSync />
         <TopbarProvider>
           <SidebarProvider>
             <HelpProvider>

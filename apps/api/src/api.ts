@@ -11,6 +11,7 @@ import taskRouter from './modules/task/task.route.js'
 import baseRouter from './modules/base/base.route.js'
 import invitesRouter from './modules/invites/invite.route.js'
 import preferenceRouter from './modules/preferences/preference.route.js'
+import notificationRouter from './modules/notifications/notification.route.js'
 import appConfig from './config/env.js'
 
 const app = express()
@@ -42,6 +43,7 @@ app.use('/api/sections', sectionRouter)
 app.use('/api/tasks', taskRouter)
 app.use('/api/base', baseRouter)
 app.use('/api/preferences', preferenceRouter)
+app.use('/api/notifications', notificationRouter)
 
 // this should be the last middleware to ensure it catches all errors
 app.use(errorHandler)

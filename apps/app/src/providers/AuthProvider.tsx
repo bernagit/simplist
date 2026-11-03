@@ -4,6 +4,7 @@ import { createContext, useContext, ReactNode, useState, useEffect } from 'react
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { User } from '@/models/user'
 import { authService } from '@/services/auth'
+import { disablePushOnThisDevice } from '@/hooks/usePushDevice'
 
 type AuthContextValue = {
   user: User | undefined
@@ -51,9 +52,10 @@ export function AuthProvider({
   }
 
   async function logout() {
+    // While still signed in: the API call needs the session
+    await disablePushOnThisDevice()
     await authService.logout()
     setSessionActive(false)
-    
   }
 
   return (
