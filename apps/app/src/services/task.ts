@@ -11,7 +11,8 @@ async function createTask(data: CreateTaskInput): Promise<Resp<Task>> {
   return await api.post(url, { json: rest }).json()
 }
 
-async function toggleCompleteTask(taskId: string): Promise<null> {
+/** Returns the task as saved: a recurring task moves to its next occurrence and stays open. */
+async function toggleCompleteTask(taskId: string): Promise<Resp<Task>> {
   return await api.patch(`tasks/${taskId}/toggle`).json()
 }
 

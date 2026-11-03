@@ -147,7 +147,8 @@
   },
   "TaskRow": {
     "edit": "Modifica",
-    "delete": "Elimina"
+    "delete": "Elimina",
+    "rescheduled": "Fatto · prossima il {date}"
   },
   "AddTask": {
     "addTask": "Aggiungi attività",

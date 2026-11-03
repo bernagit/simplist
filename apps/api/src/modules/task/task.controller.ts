@@ -69,10 +69,11 @@ export class TaskController {
     const { id: taskId } = req.validated!.params as TaskIdInput
 
     try {
-      await this.service.toggleComplete(taskId, userId)
+      const task = await this.service.toggleComplete(taskId, userId)
 
       res.status(HTTP_STATUS.OK).json({
-        message: 'Task completion toggled successfully'
+        message: 'Task completion toggled successfully',
+        data: task
       })
     } catch (error) {
       next(error)

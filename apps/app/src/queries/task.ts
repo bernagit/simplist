@@ -1,11 +1,14 @@
 import { Resp } from '@/models/base'
 import { CompleteList } from '@/models/lists'
-import { CreateTaskInput, UpdateTaskInput } from '@/models/task'
+import { CreateTaskInput, Task, UpdateTaskInput } from '@/models/task'
 import { tasksService } from '@/services/task'
 import { createTempId } from '@/utils/common'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { LexoRank } from 'lexorank'
 import { listKeys } from './lists'
+import { showNotification } from '@mantine/notifications'
+import dayjs from 'dayjs'
+import { useTranslations } from 'next-intl'
 
 export function useCreateTask() {
   const queryClient = useQueryClient()
@@ -77,8 +80,18 @@ type ToggleTaskInput = {
   taskId: string
 }
 
+export const plannedTaskKeys = {
+  all: ['plannedTasks'] as const
+}
+
+/** Completing an open recurring task with a date reschedules it instead of closing it. */
+export function isRecurringOccurrence(task: Pick<Task, 'completed' | 'recurrenceRule' | 'dueDate'>) {
+  return !task.completed && Boolean(task.recurrenceRule) && Boolean(task.dueDate)
+}
+
 export function useToggleTask() {
   const queryClient = useQueryClient()
+  const t = useTranslations('TaskRow')
 
   return useMutation({
     mutationFn: ({ taskId }: ToggleTaskInput) => tasksService.toggleCompleteTask(taskId),
@@ -90,6 +103,7 @@ export function useToggleTask() {
 
       const previousList = queryClient.getQueryData<Resp<CompleteList>>(listKeys.detail(listId))
 
+      // Recurring tasks get their next date from the server: no optimistic tick for them
       queryClient.setQueryData<Resp<CompleteList>>(listKeys.detail(listId), old => {
         if (!old) return old
 
@@ -98,7 +112,9 @@ export function useToggleTask() {
           data: {
             ...old.data,
             tasks: old.data.tasks.map(task =>
-              task.id === taskId ? { ...task, completed: !task.completed } : task
+              task.id === taskId && !isRecurringOccurrence(task)
+                ? { ...task, completed: !task.completed }
+                : task
             )
           }
         }
@@ -107,10 +123,38 @@ export function useToggleTask() {
       return { previousList }
     },
 
+    onSuccess: (response, { listId, taskId }, context) => {
+      const updated = response.data
+      const before = context?.previousList?.data.tasks.find(task => task.id === taskId)
+
+      queryClient.setQueryData<Resp<CompleteList>>(listKeys.detail(listId), old => {
+        if (!old) return old
+
+        return {
+          ...old,
+          data: {
+            ...old.data,
+            tasks: old.data.tasks.map(task => (task.id === taskId ? { ...task, ...updated } : task))
+          }
+        }
+      })
+
+      if (updated.dueDate && before?.dueDate !== updated.dueDate && !updated.completed) {
+        showNotification({
+          message: t('rescheduled', { date: dayjs(updated.dueDate).format('ddd D MMM') }),
+          color: 'teal'
+        })
+      }
+    },
+
     onError: (_error, { listId }, context) => {
       if (context?.previousList) {
         queryClient.setQueryData(listKeys.detail(listId), context.previousList)
       }
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: plannedTaskKeys.all })
     }
   })
 }
@@ -278,7 +322,7 @@ export function useReorderTasks() {
 
 export function usePlannedTasks(startDate: Date, endDate: Date, listId?: string) {
   return useQuery({
-    queryKey: ['plannedTasks', startDate.toISOString(), endDate.toISOString(), listId],
+    queryKey: [...plannedTaskKeys.all, startDate.toISOString(), endDate.toISOString(), listId],
     queryFn: () => tasksService.getPlannedTasks(startDate, endDate, listId)
   })
 }

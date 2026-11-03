@@ -1,5 +1,5 @@
 import { format } from 'date-fns'
-import { and, asc, desc, eq, gte, isNotNull, lte } from 'drizzle-orm'
+import { and, asc, desc, eq, gte, isNotNull, lte, or } from 'drizzle-orm'
 import { LexoRank } from 'lexorank'
 import { lists } from '../../db/schema/lists.js'
 import { sections } from '../../db/schema/sections.js'
@@ -138,8 +138,13 @@ export class TaskRepository {
         and(
           eq(lists.ownerId, userId),
           isNotNull(tasks.dueDate),
-          gte(tasks.dueDate, start),
           lte(tasks.dueDate, end),
+          // A recurring series that started before the range still has occurrences in it:
+          // the app expands the rule from dueDate. Completed ones are ended series.
+          or(
+            gte(tasks.dueDate, start),
+            and(isNotNull(tasks.recurrenceRule), eq(tasks.completed, false))
+          ),
           filters.listId ? eq(tasks.listId, filters.listId) : undefined
         )
       )

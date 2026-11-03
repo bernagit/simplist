@@ -147,7 +147,8 @@
   },
   "TaskRow": {
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "rescheduled": "Done · next on {date}"
   },
   "AddTask": {
     "addTask": "Add Task",

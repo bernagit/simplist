@@ -122,9 +122,13 @@ export default function EditTask({ context, id, innerProps }: ContextModalProps<
 
       <TaskContent
         completed={completed}
-        onToggle={() => {
-          toggle()
-          onUpdate?.(task)
+        onToggle={async () => {
+          const saved = await toggle()
+          if (!saved) return
+          // A recurring task comes back with its next date
+          setSelectedDate(saved.dueDate)
+          setSelectedRecurrence(saved.recurrenceRule)
+          onUpdate?.(saved)
         }}
         canEdit={canEdit ?? false}
         color={color}

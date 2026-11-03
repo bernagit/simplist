@@ -3,6 +3,7 @@ import { ListMemberRole } from '../../db/schema/listMember.js'
 import { Errors } from '../../types/http.js'
 import { ListRepository } from '../list/list.repository.js'
 import { SectionRepository } from '../section/section.repository.js'
+import { getNextOccurrence } from './task.recurrence.js'
 import { TaskRepository } from './task.repository.js'
 import { CreateTaskInput, UpdateTaskInput } from './task.schema.js'
 
@@ -100,8 +101,19 @@ export class TaskService {
       throw Errors.notFound('Task not found')
     }
 
-    const completed = task.completed ? false : true
-    await this.repository.update(taskId, { completed })
+    // Completing an open recurring task moves it to its next occurrence and keeps it open.
+    // It is marked completed only when the series has ended.
+    if (!task.completed && task.recurrenceRule && task.dueDate) {
+      const next = getNextOccurrence(task.recurrenceRule, task.dueDate)
+      if (next) {
+        return this.repository.update(taskId, {
+          dueDate: next.dueDate,
+          recurrenceRule: next.recurrenceRule
+        })
+      }
+    }
+
+    return this.repository.update(taskId, { completed: !task.completed })
   }
 
   async reorder(params: ReorderTaskType) {

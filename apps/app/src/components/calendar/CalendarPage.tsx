@@ -186,14 +186,19 @@ export default function CustomSchedule() {
           end,
           color: task.color,
           data: task,
-          ...(task.recurrenceRule ? { recurrence: { rrule: task.recurrenceRule } } : {})
+          // A completed recurring task is an ended series: show only its last occurrence
+          ...(task.recurrenceRule && !task.completed
+            ? { recurrence: { rrule: task.recurrenceRule } }
+            : {})
         }
       })
   }, [tasks])
 
   const handleEventClick = useCallback(
     (event: ScheduleEventData) => {
-      const task = events.find(e => e.id === event.id)?.data
+      // Occurrences generated from a recurrence get the id `${taskId}::${date}`
+      const taskId = event.recurringEventId ?? event.id
+      const task = events.find(e => e.id === taskId)?.data
       if (!task) return
       const navigation = {
         onOpenList: () => {
