@@ -1,4 +1,6 @@
+import { useCallback, useSyncExternalStore } from 'react'
 import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { pendingDeletes } from '@/lib/pendingDeletes'
 import { listsService } from '@/services/lists'
 import { AllList, CompleteList, CreateListInput, UpdateListInput } from '@/models/lists'
 import { ErrorResponse, Resp } from '@/models/base'
@@ -28,10 +30,31 @@ export function useLists() {
 }
 
 export function useListById(id: string) {
+  // Tasks deleted but still undoable stay hidden, even if the list is refetched meanwhile
+  const pending = useSyncExternalStore(
+    pendingDeletes.subscribe,
+    pendingDeletes.getSnapshot,
+    pendingDeletes.getSnapshot
+  )
+  const select = useCallback(
+    (response: Resp<CompleteList>) =>
+      pending.size === 0
+        ? response
+        : {
+            ...response,
+            data: {
+              ...response.data,
+              tasks: response.data.tasks.filter(task => !pending.has(task.id))
+            }
+          },
+    [pending]
+  )
+
   return useQuery({
     queryKey: listKeys.detail(id),
     queryFn: () => listsService.getListById(id),
-    staleTime: 5 * 60 * 1000
+    staleTime: 5 * 60 * 1000,
+    select
   })
 }
 

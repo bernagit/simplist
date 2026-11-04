@@ -66,7 +66,7 @@ export default async function RootLayout({
             <AuthProvider hasSessionCookie={sessionCookiePresent}>
               <ThemeColorProvider>
                 <AppMantineProvider>
-                  <Notifications zIndex={1000} />
+                  <Notifications withAutoCloseProgress zIndex={1000} />
                   <ContextMenuProvider>
                     <DayjsProvider>
                       <AppLayout>

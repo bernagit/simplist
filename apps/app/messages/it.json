@@ -240,7 +240,10 @@
   "TaskRow": {
     "edit": "Modifica",
     "delete": "Elimina",
-    "rescheduled": "Fatto · prossima il {date}"
+    "rescheduled": "Fatto · prossima il {date}",
+    "deleted": "“{title}” eliminata",
+    "completed": "“{title}” completata",
+    "undo": "Annulla"
   },
   "TaskLabels": {
     "date": {

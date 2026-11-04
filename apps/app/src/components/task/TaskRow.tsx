@@ -16,7 +16,7 @@ import { useSortable } from '@dnd-kit/sortable'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { getPriorityColor } from '@/utils/color'
 import { useSidebar } from '@/providers/SidebarProvider'
-import { useDeleteTask, useToggleTask } from '@/queries/task'
+import { useUndoableDelete, useUndoableToggle } from '@/hooks/useTaskUndo'
 import { useContextMenu } from 'mantine-contextmenu'
 import { contextMenuStyles, getHTMLSectionId } from '@/utils/misc'
 import { editTaskModal } from '@/lib/modals/task'
@@ -41,8 +41,8 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
   const router = useRouter()
   const { isMobile, isTouch } = useSidebar()
   const colorMemo = useMemo(() => getPriorityColor(task.priority), [task.priority])
-  const toggleTask = useToggleTask()
-  const deleteTask = useDeleteTask()
+  const toggleTask = useUndoableToggle()
+  const deleteTask = useUndoableDelete()
   const { showContextMenu, isContextMenuVisible } = useContextMenu()
   const { hovered, hoverProps } = useMouseHover()
   const [selected, setSelected] = useState(false)
@@ -65,7 +65,7 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
 
   const handleToggleTask = async (task: Task) => {
     if (!task.listId) return
-    await toggleTask.mutateAsync({ listId: task.listId, taskId: task.id })
+    await toggleTask(task)
   }
 
   const handleClick = useCallback(
@@ -98,7 +98,7 @@ export default function TaskRow({ task, canEdit }: TaskRowProps) {
     async (task: Task) => {
       if (!canEdit) return
       if (!task.listId) return
-      await deleteTask.mutateAsync({ listId: task.listId, taskId: task.id })
+      await deleteTask(task)
     },
     [canEdit, deleteTask]
   )

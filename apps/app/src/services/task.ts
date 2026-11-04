@@ -20,8 +20,8 @@ async function updateTask(taskId: string, input: Partial<CreateTaskInput>): Prom
   return await api.put(`tasks/${taskId}`, { json: input }).json()
 }
 
-async function deleteTask(taskId: string): Promise<null> {
-  return await api.delete(`tasks/${taskId}`).json()
+async function deleteTask(taskId: string, options: { keepalive?: boolean } = {}): Promise<null> {
+  return await api.delete(`tasks/${taskId}`, { keepalive: options.keepalive ?? false }).json()
 }
 
 async function reorderTasks(input: {

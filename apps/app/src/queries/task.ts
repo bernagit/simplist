@@ -82,6 +82,8 @@ export function useCreateTask() {
 type ToggleTaskInput = {
   listId: string
   taskId: string
+  /** The caller shows its own feedback (task rows, with undo) */
+  quiet?: boolean
 }
 
 export const plannedTaskKeys = {
@@ -89,7 +91,9 @@ export const plannedTaskKeys = {
 }
 
 /** Completing an open recurring task with a date reschedules it instead of closing it. */
-export function isRecurringOccurrence(task: Pick<Task, 'completed' | 'recurrenceRule' | 'dueDate'>) {
+export function isRecurringOccurrence(
+  task: Pick<Task, 'completed' | 'recurrenceRule' | 'dueDate'>
+) {
   return !task.completed && Boolean(task.recurrenceRule) && Boolean(task.dueDate)
 }
 
@@ -127,7 +131,7 @@ export function useToggleTask() {
       return { previousList }
     },
 
-    onSuccess: (response, { listId, taskId }, context) => {
+    onSuccess: (response, { listId, taskId, quiet }, context) => {
       const updated = response.data
       const before = context?.previousList?.data.tasks.find(task => task.id === taskId)
 
@@ -143,7 +147,7 @@ export function useToggleTask() {
         }
       })
 
-      if (updated.dueDate && before?.dueDate !== updated.dueDate && !updated.completed) {
+      if (!quiet && updated.dueDate && before?.dueDate !== updated.dueDate && !updated.completed) {
         showNotification({
           message: t('rescheduled', { date: dayjs(updated.dueDate).format('ddd D MMM') }),
           color: 'teal'
@@ -216,46 +220,9 @@ export function useUpdateTask() {
     onSettled: (_data, _error, { updates }) => {
       // Only completion changes the counts
       if ('completed' in updates) void invalidateListsOverview(queryClient)
-    }
-  })
-}
-
-export function useDeleteTask() {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: ({ taskId }: { listId: string; taskId: string }) => tasksService.deleteTask(taskId),
-
-    onMutate: async ({ listId, taskId }) => {
-      await queryClient.cancelQueries({
-        queryKey: listKeys.detail(listId)
-      })
-
-      const previousList = queryClient.getQueryData<Resp<CompleteList>>(listKeys.detail(listId))
-
-      queryClient.setQueryData<Resp<CompleteList>>(listKeys.detail(listId), old => {
-        if (!old) return old
-
-        return {
-          ...old,
-          data: {
-            ...old.data,
-            tasks: old.data.tasks.filter(task => task.id !== taskId)
-          }
-        }
-      })
-
-      return { previousList }
-    },
-
-    onError: (_error, { listId }, context) => {
-      if (context?.previousList) {
-        queryClient.setQueryData(listKeys.detail(listId), context.previousList)
+      if ('dueDate' in updates || 'completed' in updates) {
+        void queryClient.invalidateQueries({ queryKey: plannedTaskKeys.all })
       }
-    },
-
-    onSettled: () => {
-      void invalidateListsOverview(queryClient)
     }
   })
 }
