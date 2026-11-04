@@ -1,5 +1,11 @@
 # app
 
+## 0.7.3
+
+### Patch Changes
+
+- feat: guided tour of the app, shown once on first access and available any time from "Help & Support" > "Guided tour", with steps adapted to desktop and phones
+
 ## 0.7.2
 
 ### Patch Changes
