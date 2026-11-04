@@ -1,0 +1,210 @@
+---
+title: Deploy con Docker
+description: Installa Simplist sul tuo server con Docker Compose, passo passo.
+---
+
+import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+
+Questa guida porta da un server vuoto a un'istanza di Simplist raggiungibile in HTTPS. Servono circa 15 minuti.
+
+Negli esempi l'istanza risponde su `https://simplist.esempio.it`: sostituiscilo con il tuo dominio.
+
+<Steps>
+
+1. ## Scarica i file di deploy
+
+   Sul server ti servono la cartella `docker/` del repository (compose, configurazione di nginx, esempio di `.env`) e una cartella `keys/` accanto a essa. Il modo più semplice è clonare il repository:
+
+   ```bash
+   git clone --depth 1 https://github.com/bernagit/simplist.git
+   cd simplist
+   ```
+
+   Tutti i comandi seguenti partono da questa cartella.
+
+2. ## Genera le chiavi di sessione
+
+   L'API firma le sessioni con una coppia di chiavi **EC P-384** (algoritmo ES384), letta dai file `keys/private.key` e `keys/public.pem`. Generale una volta sola:
+
+   <Tabs>
+   <TabItem label="Con Docker">
+
+   ```bash
+   mkdir -p keys
+   docker run --rm -v "$PWD/keys:/keys" alpine/openssl \
+     ecparam -name secp384r1 -genkey -noout -out /keys/private.key
+   docker run --rm -v "$PWD/keys:/keys" alpine/openssl \
+     ec -in /keys/private.key -pubout -out /keys/public.pem
+   ```
+
+   </TabItem>
+   <TabItem label="Con openssl">
+
+   ```bash
+   mkdir -p keys
+   openssl ecparam -name secp384r1 -genkey -noout -out keys/private.key
+   openssl ec -in keys/private.key -pubout -out keys/public.pem
+   ```
+
+   </TabItem>
+   </Tabs>
+
+   <Aside type="caution">
+   Conserva `keys/private.key` insieme ai backup e non condividerla. Se la cambi, tutti gli utenti dovranno rifare l'accesso.
+   </Aside>
+
+3. ## Crea il file di configurazione
+
+   ```bash
+   cp docker/.env.example docker/.env
+   ```
+
+   Apri `docker/.env` e imposta almeno questi valori:
+
+   ```ini
+   # Versione da installare: fissala (per esempio 0.7.1) invece di "latest",
+   # così aggiorni quando lo decidi tu
+   VERSION=0.7.1
+
+   # Indirizzo pubblico dell'istanza: usato nei link delle email e nel link del primo utente
+   APP_URL=https://simplist.esempio.it
+   CORS_ORIGIN=https://simplist.esempio.it
+
+   # Password del database: scegline una lunga e casuale
+   POSTGRES_PASSWORD=una-password-lunga-e-casuale
+   ```
+
+   <Aside type="caution" title="Email">
+   Se le variabili `SMTP_*` sono tutte impostate, l'API verifica la connessione al server di posta all'avvio e **non parte** se la verifica fallisce. I valori di esempio non funzionano:
+   - inserisci i dati del tuo server SMTP;
+   - oppure, se non ti serve l'email, cancella o commenta le righe `SMTP_*` e `MAIL_FROM_*`.
+
+   Senza email Simplist funziona normalmente. Non ci sono solo l'email di benvenuto, gli inviti via email e il recupero della password: gli inviti si condividono comunque con un link.
+   </Aside>
+
+   Tutte le altre opzioni sono descritte in [Configurazione](/self-hosting/configuration/).
+
+4. ## Attiva le notifiche push (consigliato)
+
+   I promemoria delle attività usano le notifiche push, che richiedono una coppia di chiavi **VAPID**. Generala una volta sola:
+
+   ```bash
+   docker run --rm node:24-alpine npx -y web-push@3.6.7 generate-vapid-keys
+   ```
+
+   e copia i due valori in `docker/.env`:
+
+   ```ini
+   VAPID_PUBLIC_KEY=BNc...
+   VAPID_PRIVATE_KEY=x7f...
+   ```
+
+   <Aside>
+   Senza queste chiavi Simplist funziona lo stesso, ma i promemoria sono disattivati. Conservale: se le cambi, ogni dispositivo dovrà riattivare le notifiche.
+   </Aside>
+
+5. ## Non esporre il database
+
+   Il file `docker/docker-compose.yml` pubblica PostgreSQL sulla porta `5432` del server, che è utile in sviluppo. In produzione chiudila creando `docker/docker-compose.server.yml`:
+
+   ```yaml title="docker/docker-compose.server.yml"
+   services:
+     db:
+       ports: !reset []
+   ```
+
+   (`!reset` richiede Docker Compose 2.24 o successivo.)
+
+6. ## Avvia Simplist
+
+   ```bash
+   docker compose --env-file docker/.env \
+     -f docker/docker-compose.yml \
+     -f docker/docker-compose.prod.yml \
+     -f docker/docker-compose.server.yml \
+     up -d
+   ```
+
+   Al primo avvio l'API crea le tabelle del database. Controlla che sia tutto a posto:
+
+   ```bash
+   docker compose --env-file docker/.env -f docker/docker-compose.yml -f docker/docker-compose.prod.yml ps
+   curl http://localhost:3000/api/health
+   ```
+
+   La risposta deve essere `{"status":"ok"}`.
+
+7. ## Crea il primo utente
+
+   La registrazione su Simplist avviene solo su invito. Quando il database è vuoto, l'API crea un invito per il primo utente e stampa il link nei log:
+
+   ```bash
+   docker logs simplist-api 2>&1 | grep "Register at"
+   ```
+
+   ```text
+   Register at: https://simplist.esempio.it/register?token=...
+   ```
+
+   Apri il link e crea il tuo account. Gli utenti successivi li inviti dall'app, in **Impostazioni → Inviti**.
+
+   <Aside type="tip">
+   Il link vale un'ora. Se scade prima che tu lo usi, riavvia l'API con `docker restart simplist-api`: finché non esiste nessun utente, a ogni avvio viene creato un nuovo invito.
+   </Aside>
+
+8. ## Pubblica in HTTPS
+
+   Il container nginx risponde in HTTP sulla porta `3000`. Davanti serve un reverse proxy che gestisca il certificato e inoltri le richieste **mantenendo l'header `Host`**. Quell'header serve anche a riconoscere il sottodominio `docs.` della documentazione.
+
+   <Tabs>
+   <TabItem label="Caddy">
+
+   Caddy ottiene e rinnova il certificato da solo:
+
+   ```text title="/etc/caddy/Caddyfile"
+   simplist.esempio.it, docs.simplist.esempio.it {
+     reverse_proxy localhost:3000
+   }
+   ```
+
+   </TabItem>
+   <TabItem label="nginx">
+
+   ```nginx title="/etc/nginx/sites-available/simplist"
+   server {
+     listen 443 ssl http2;
+     server_name simplist.esempio.it docs.simplist.esempio.it;
+
+     ssl_certificate     /etc/letsencrypt/live/simplist.esempio.it/fullchain.pem;
+     ssl_certificate_key /etc/letsencrypt/live/simplist.esempio.it/privkey.pem;
+
+     client_max_body_size 5m;
+
+     location / {
+       proxy_pass http://127.0.0.1:3000;
+       proxy_set_header Host $host;
+       proxy_set_header X-Real-IP $remote_addr;
+       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+       proxy_set_header X-Forwarded-Proto $scheme;
+     }
+   }
+   ```
+
+   </TabItem>
+   </Tabs>
+
+   Il sottodominio `docs.` è facoltativo: se non ti serve la documentazione sulla tua istanza, non creare il record DNS.
+
+</Steps>
+
+## Verifica finale
+
+- Apri `https://simplist.esempio.it` e accedi.
+- Nei log dell'API (`docker logs simplist-api`) devono comparire `Application ready` e, se hai impostato le chiavi VAPID, `Task reminders started.`.
+- Da un telefono, installa l'app e attiva le notifiche in **Impostazioni → Notifiche**, poi invia una notifica di prova.
+
+<Aside type="note" title="Senza HTTPS">
+Su una rete locale senza HTTPS puoi impostare `COOKIE_SECURE=false` in `docker/.env` per poter accedere. Installazione come app e notifiche push però richiedono HTTPS, tranne che su `localhost`.
+</Aside>
+
+Prossimo passo: [aggiornamenti e backup](/self-hosting/maintenance/).

@@ -1,0 +1,84 @@
+---
+title: Configurazione
+description: Variabili d'ambiente dell'API di Simplist, con i valori predefiniti.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Nel deploy Docker tutta la configurazione sta in `docker/.env`. Il file lo leggono sia Docker Compose (per il database) sia l'API (`env_file`). Dopo una modifica, ricrea i container con lo stesso comando `docker compose … up -d` usato per l'avvio.
+
+La web app non ha configurazione: in produzione parla con l'API sullo stesso dominio, tramite nginx.
+
+## Generale
+
+| Variabile | Predefinito | Descrizione |
+|---|---|---|
+| `VERSION` | `latest` | Versione delle immagini da usare (per esempio `0.7.1`). Usata solo da Docker Compose. |
+| `REGISTRY` | `ghcr.io/bernagit` | Registry delle immagini. Usata solo da Docker Compose. |
+| `APP_URL` | `http://localhost:3000` | Indirizzo pubblico dell'istanza. Serve per i link nelle email, per il link del primo utente e per gli inviti. |
+| `CORS_ORIGIN` | `http://localhost:3000` | Origine consentita per le chiamate all'API. Impostala uguale ad `APP_URL`. |
+| `PORT` | `2000` | Porta dell'API dentro il container. Non cambiarla nel deploy Docker: nginx la cerca lì. |
+| `LOG_LEVEL` | `info` | `error`, `warn`, `info` o `debug`. |
+
+## Database
+
+| Variabile | Predefinito | Descrizione |
+|---|---|---|
+| `POSTGRES_USER` | — | Utente PostgreSQL. Lo usa anche il container `db` per inizializzare il database. |
+| `POSTGRES_PASSWORD` | — | Password PostgreSQL. |
+| `POSTGRES_DB` | — | Nome del database. |
+| `POSTGRES_HOST` | — | Host del database: `simplist-db` nel deploy Docker. |
+| `POSTGRES_PORT` | — | Porta del database: `5432`. |
+| `DATABASE_URL` | — | In alternativa alle variabili sopra: URL completo (`postgresql://utente:password@host:5432/db`). Se è impostata, ha la precedenza. |
+
+<Aside type="caution">
+`POSTGRES_PASSWORD` viene usata per creare il database **solo al primo avvio**. Se la cambi in seguito, devi cambiarla anche dentro PostgreSQL (`ALTER USER … PASSWORD …`), altrimenti l'API non riesce più a connettersi.
+</Aside>
+
+All'avvio l'API applica da sola le migrazioni del database: non serve nessun comando per creare le tabelle o aggiornarle.
+
+## Sessioni
+
+| Variabile | Predefinito | Descrizione |
+|---|---|---|
+| `JWT_EXPIRES_IN` | `6h` | Durata del token di accesso. Viene rinnovato in automatico finché la sessione è valida. |
+| `REFRESH_TOKEN_EXPIRES_IN_DAYS` | `30` | Giorni dopo i quali, senza usare l'app, bisogna rifare l'accesso. |
+| `COOKIE_SECURE` | `true` | Cookie solo su HTTPS. Mettila a `false` solo per un'istanza servita in HTTP, per esempio su una rete locale. |
+
+Le chiavi di firma delle sessioni si leggono dai file `keys/private.key` e `keys/public.pem` (montati in `/app/keys`): vedi [Deploy con Docker](/self-hosting/docker/#genera-le-chiavi-di-sessione).
+
+## Registrazione e inviti
+
+| Variabile | Predefinito | Descrizione |
+|---|---|---|
+| `INVITE_PER_USER` | illimitati | Numero massimo di inviti che ogni utente può creare. |
+
+La registrazione è solo su invito. Un invito vale **7 giorni** e si usa una volta sola. L'invito per il primo utente è un'eccezione: vale un'ora.
+
+## Email
+
+Tutte facoltative. L'email si attiva solo se ci sono **tutte** le prime cinque variabili. In quel caso l'API verifica la connessione all'avvio e non parte se la verifica fallisce.
+
+| Variabile | Predefinito | Descrizione |
+|---|---|---|
+| `SMTP_HOST` | — | Server SMTP. |
+| `SMTP_PORT` | — | Porta, di solito `587` (STARTTLS) o `465` (TLS). |
+| `SMTP_USER` | — | Utente SMTP. |
+| `SMTP_PASS` | — | Password SMTP. |
+| `MAIL_FROM_EMAIL` | — | Mittente delle email (per esempio `no-reply@esempio.it`). |
+| `SMTP_SECURE` | `false` | `true` per una connessione TLS diretta (porta `465`). |
+| `MAIL_FROM_NAME` | `Simplist` | Nome del mittente. |
+
+Senza email non vengono inviati l'email di benvenuto, gli inviti via email e il recupero della password. Tutto il resto funziona.
+
+## Notifiche push
+
+| Variabile | Predefinito | Descrizione |
+|---|---|---|
+| `VAPID_PUBLIC_KEY` | — | Chiave pubblica VAPID. |
+| `VAPID_PRIVATE_KEY` | — | Chiave privata VAPID. |
+| `VAPID_SUBJECT` | `mailto:` + `MAIL_FROM_EMAIL` | Contatto inviato ai servizi push: `mailto:` oppure un URL `https://`. Obbligatoria se non c'è `MAIL_FROM_EMAIL` e `APP_URL` non è in HTTPS. |
+
+Senza le chiavi VAPID i promemoria sono disattivati, e nelle impostazioni dell'app lo si vede. Per generarle: [Deploy con Docker](/self-hosting/docker/#attiva-le-notifiche-push-consigliato).
+
+I promemoria partono dall'API, che ogni minuto controlla quelli in scadenza. Anche con più istanze dell'API ogni promemoria viene inviato una sola volta.

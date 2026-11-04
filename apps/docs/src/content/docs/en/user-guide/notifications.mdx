@@ -1,0 +1,51 @@
+---
+title: Notifications
+description: Get task reminders on your phone and computer.
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+Simplist can let you know when a task is about to be due, even with the app closed. Notifications are turned on **per device**, while reminder times apply to the whole account.
+
+<Aside type="note">
+Notifications have to be enabled by the instance administrator. If **Settings → Notifications** says they aren't set up, ask whoever runs the server (see [Deploy with Docker](/en/self-hosting/docker/#turn-on-push-notifications-recommended)).
+</Aside>
+
+## Turning them on for a device
+
+<Steps>
+
+1. On iPhone and iPad, first [install the app](/en/getting-started/installation/) with **Share → Add to Home Screen** and open it from there: in the Safari browser notifications don't work.
+
+2. Open **Settings → Notifications** and turn on **Notifications on this device**.
+
+3. When the browser asks, allow notifications.
+
+4. Tap **Send a test notification** to check it arrives.
+
+</Steps>
+
+Repeat on every device you want reminders on. The **Devices** list shows the active ones and when they last got a notification, and lets you remove them.
+
+When you sign out, notifications are turned off on that device, so whoever uses it after you doesn't get your reminders.
+
+<Aside type="caution" title="Blocked notifications">
+If you denied permission before, Simplist can't ask again. Allow notifications in the browser's site settings (the icon next to the address), or in the phone's settings for the installed app, then come back to this page.
+</Aside>
+
+## Reminder settings
+
+On the same page, under **Task reminders**:
+
+| Option | Meaning |
+|---|---|
+| **Send task reminders** | Turns on or pauses all reminders for the account |
+| **Default for tasks without a time** | At what time on the due date to get the reminder (for example 9:00) |
+| **Default for tasks with a time** | How long before the time: at the time, 5, 10, 15, 30 minutes, 1 or 2 hours, 1 day |
+| **Shared lists** | Also get the reminders of lists shared with you |
+
+These are the **defaults**. Each task has its own reminder, off until you turn it on, and it can use the defaults or its own times: see [Reminders](/en/user-guide/tasks/#reminders).
+
+Times use the **time zone** shown at the bottom of the section, taken from your device. If you travel, Simplist offers to update it.
+
+Tapping a notification opens the task in its list.

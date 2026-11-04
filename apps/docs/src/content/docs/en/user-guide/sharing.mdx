@@ -1,0 +1,49 @@
+---
+title: Sharing and invites
+description: Share a list with other people, manage roles and invite new users.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Sharing a list
+
+Only the owner can share a list. Open the list and use **Share** at the top (or <kbd>Shift</kbd> + <kbd>S</kbd>), or **Share** in the card's menu.
+
+Enter the email of someone who already has an account on this Simplist instance and pick a role:
+
+| Role | What they can do |
+|---|---|
+| **Editor** | Add, edit, complete and delete tasks and sections |
+| **Viewer** | See the list and its tasks, without changing them |
+| **Owner** | Everything, including editing, sharing, archiving and deleting the list |
+
+In the same window you see the members, and can **change each one's role** or **remove** them. At the top of the list, avatars show who is in it.
+
+<Aside>
+If the person doesn't have an account yet, invite them to Simplist first: see [Invites](#invites) below.
+</Aside>
+
+## Lists shared with you
+
+Lists other people shared with you are in **Shared With Me**, with the owner's name and the task progress. The role they gave you decides what you can do.
+
+If the owner archives a shared list, you no longer see it until they restore it.
+
+## Leaving a shared list
+
+To stop seeing a list shared with you, use **Leave list**:
+
+- from the card's **…** menu in **Shared With Me**;
+- or from the **…** menu at the top, inside the list.
+
+After you confirm, the list disappears and you stop getting its reminders. To get back in, the owner has to share it with you again.
+
+## Invites
+
+You can only sign up to Simplist with an invite. To invite someone, go to **Settings → Invites** and create a **New invite**:
+
+- you can enter the person's email, if you like;
+- you get a **link** to copy and a **QR code** to scan;
+- the invite is valid for **7 days** and can be used once.
+
+The list shows each invite's status (pending, used, expired) and lets you **revoke** the unused ones. The instance administrator can limit how many invites each user can create.

@@ -1,0 +1,88 @@
+---
+title: Tasks
+description: Add tasks with a date, time, repeat, reminder and priority, and work through them every day.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Adding a task
+
+In a list, tap **Add Task** under the section you want, or at the top of the list for tasks without a section. Type the title and, if you like, a description, then press <kbd>Enter</kbd> or **Add task**. The box stays open so you can add the next one right away; <kbd>Esc</kbd> closes it.
+
+Under the title are the properties, all optional:
+
+| Property | What it does |
+|---|---|
+| **Date** | Due date, with quick picks (Today, Tomorrow, Next week), the calendar, a time and a duration |
+| **Repeat** | Shows up once a date is set: the task repeats |
+| **Reminder** | Shows up once a date is set: a notification before the task is due |
+| **Priority** | High, medium, low: colors the task's checkbox |
+
+On a computer the properties open in a panel next to their button, on a phone in a sheet from the bottom. Each property that is set has a **×** to remove it.
+
+## Tasks in the list
+
+Each row shows the title, the first line of the description and, on the right:
+
+- the **date**, as "Today", "Tomorrow", the weekday or the date, with the time if there is one. It is **red** when the task is overdue;
+- the **repeat** and **reminder** icons, when they are on.
+
+To work on tasks:
+
+- **Complete**: tap the checkbox on the left.
+- **Open the details**: tap anywhere on the row.
+- **Move**: drag the handle (⋮⋮), also into another section.
+- **Edit or delete**: the **…** menu on the right, or a right-click or long press on the row.
+
+## Task details
+
+The details window shows the title and description on the left and, on the right (below, on a phone), the properties: date, repeat, reminder and priority.
+
+- Tap the title or the description to edit them. In the title <kbd>Enter</kbd> saves; in the description use <kbd>Ctrl</kbd> + <kbd>Enter</kbd>. <kbd>Esc</kbd> cancels.
+- Properties are saved as soon as you change them.
+- Close it with the **×**, with <kbd>Esc</kbd>, with the back gesture or by clicking outside the window. A title edit that is still open is saved.
+- At the top, the **list / section** path takes you to the list.
+
+## Date, time and duration
+
+Pick the day with the quick picks or the calendar, then a **time** if you need one:
+
+- a task **without a time** counts for the whole day;
+- with a time you can add a **duration** (15 minutes, half an hour, an hour…), which the calendar uses to draw it.
+
+Removing the date also removes the time, duration, repeat and reminder, which mean nothing without a date.
+
+## Repeat
+
+The most common repeats are based on the task's date. For example, with a due date of Tuesday the 3rd:
+
+- Every day
+- Every weekday (Mon–Fri)
+- Every week on Tuesday
+- Every month on day 3
+- Every year on 3 November
+
+With **Custom…** you choose:
+
+- every how many days, weeks, months or years;
+- for weeks, on which days (for example Monday and Thursday);
+- when it ends: **never**, **on a date** or **after** a number of times.
+
+When you complete a recurring task it isn't closed: it **moves to its next date** and stays open, and a message tells you when it comes back. It is closed for good only when the repeat has ended. In the calendar it appears on every future date.
+
+## Reminders
+
+The reminder is **off** for every new task: turn it on only where you need it, from the **Reminder** property.
+
+- **Default** uses the times chosen in **Settings → Notifications**: for example 15 minutes before for tasks with a time, at 9:00 on the due date for tasks without one.
+- **Custom** sets the times for this task only: how long before, for tasks with a time, or at what time on the due date, for tasks without one.
+
+<Aside>
+To get reminders, notifications must be on for at least one device. If they aren't, the Reminder property tells you so, with a link to the settings. See [Notifications](/en/user-guide/notifications/).
+</Aside>
+
+In a shared list the reminder belongs to the task: every member with notifications on gets it.
+
+## Priority
+
+Three levels (**high**, **medium**, **low**) plus no priority. The priority color shows on the task's checkbox, in the list and in the details.

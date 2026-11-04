@@ -1,0 +1,88 @@
+---
+title: Attività
+description: Aggiungere attività con data, orario, ripetizione, promemoria e priorità, e lavorarci ogni giorno.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Aggiungere un'attività
+
+In una lista, tocca **Aggiungi attività** sotto la sezione che ti interessa, oppure in cima alla lista per le attività senza sezione. Scrivi il titolo e, se vuoi, una descrizione, poi premi <kbd>Invio</kbd> o **Aggiungi attività**. Il riquadro resta aperto per inserire subito la successiva; <kbd>Esc</kbd> lo chiude.
+
+Sotto il titolo ci sono le proprietà, tutte facoltative:
+
+| Proprietà | Cosa fa |
+|---|---|
+| **Data** | Scadenza, con scelte rapide (Oggi, Domani, Settimana prossima), il calendario, un orario e una durata |
+| **Ripeti** | Appare dopo aver scelto una data: l'attività si ripete |
+| **Promemoria** | Appare dopo aver scelto una data: una notifica prima della scadenza |
+| **Priorità** | Alta, media, bassa: colora la casella dell'attività |
+
+Su computer le proprietà si aprono in un riquadro accanto al pulsante, su telefono in un pannello dal basso. Ogni proprietà impostata ha una **×** per toglierla.
+
+## Le attività nella lista
+
+Ogni riga mostra il titolo, la prima riga della descrizione e, a destra:
+
+- la **data**, come "Oggi", "Domani", il giorno della settimana o la data, con l'orario se c'è. È **rossa** se l'attività è scaduta;
+- l'icona di **ripetizione** e quella del **promemoria**, se attivi.
+
+Per lavorare sulle attività:
+
+- **Completare**: tocca la casella a sinistra.
+- **Aprire i dettagli**: tocca un punto qualsiasi della riga.
+- **Spostare**: trascina dalla maniglia (⋮⋮), anche in un'altra sezione.
+- **Modificare o eliminare**: menu **…** a destra, oppure tasto destro o pressione prolungata sulla riga.
+
+## Dettagli di un'attività
+
+La finestra dei dettagli mostra a sinistra titolo e descrizione, e a destra (sotto, su telefono) le proprietà: data, ripetizione, promemoria e priorità.
+
+- Tocca il titolo o la descrizione per modificarli. Nel titolo <kbd>Invio</kbd> salva; nella descrizione usa <kbd>Ctrl</kbd> + <kbd>Invio</kbd>. <kbd>Esc</kbd> annulla.
+- Le proprietà si salvano appena le cambi.
+- Chiudi con la **×**, con <kbd>Esc</kbd>, con il gesto indietro o facendo clic fuori dalla finestra. Una modifica del titolo ancora aperta viene salvata.
+- In alto, il percorso **lista / sezione** porta alla lista.
+
+## Data, orario e durata
+
+Scegli il giorno con le scelte rapide o dal calendario, poi, se serve, un **orario**:
+
+- un'attività **senza orario** vale per tutto il giorno;
+- con un orario puoi aggiungere una **durata** (15 minuti, mezz'ora, un'ora…), che il calendario usa per disegnarla.
+
+Togliere la data toglie anche orario, durata, ripetizione e promemoria, che senza una data non hanno senso.
+
+## Ripetizione
+
+Le ripetizioni più comuni si basano sulla data dell'attività. Per esempio, con scadenza martedì 3:
+
+- Ogni giorno
+- Ogni giorno feriale (lun–ven)
+- Ogni settimana il martedì
+- Ogni mese il giorno 3
+- Ogni anno il 3 novembre
+
+Con **Personalizza…** scegli:
+
+- ogni quanti giorni, settimane, mesi o anni;
+- per le settimane, in quali giorni (per esempio lunedì e giovedì);
+- quando finisce: **mai**, **in una data** oppure **dopo** un certo numero di volte.
+
+Quando completi un'attività ricorrente, non viene chiusa: **passa alla data successiva** e resta aperta, e un messaggio ti dice quando tornerà. Si chiude definitivamente solo quando la ripetizione è finita. Nel calendario compare in tutte le date future.
+
+## Promemoria
+
+Il promemoria è **disattivato** per ogni nuova attività: lo attivi solo dove serve, dalla proprietà **Promemoria**.
+
+- **Predefinito** usa i tempi scelti in **Impostazioni → Notifiche**: per esempio 15 minuti prima per le attività con orario, alle 9:00 del giorno di scadenza per quelle senza.
+- **Personalizzato** sceglie i tempi solo per questa attività: quanto prima, per le attività con orario, oppure a che ora del giorno di scadenza, per quelle senza.
+
+<Aside>
+Per ricevere i promemoria le notifiche devono essere attive su almeno un dispositivo. Se non lo sono, la proprietà Promemoria te lo segnala con un collegamento alle impostazioni. Vedi [Notifiche](/user-guide/notifications/).
+</Aside>
+
+In una lista condivisa il promemoria è dell'attività: arriva a ogni membro che ha le notifiche attive.
+
+## Priorità
+
+Tre livelli (**alta**, **media**, **bassa**) più nessuna priorità. Il colore della priorità si vede sulla casella dell'attività, nella lista e nei dettagli.

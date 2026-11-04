@@ -1,0 +1,84 @@
+---
+title: Configuration
+description: Simplist API environment variables, with their defaults.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+In the Docker deploy the whole configuration lives in `docker/.env`. Both Docker Compose (for the database) and the API (`env_file`) read it. After a change, recreate the containers with the same `docker compose … up -d` command you started them with.
+
+The web app has no configuration: in production it talks to the API on the same domain, through nginx.
+
+## General
+
+| Variable | Default | Description |
+|---|---|---|
+| `VERSION` | `latest` | Image version to run (for example `0.7.1`). Docker Compose only. |
+| `REGISTRY` | `ghcr.io/bernagit` | Image registry. Docker Compose only. |
+| `APP_URL` | `http://localhost:3000` | Public address of the instance. Used for links in emails, for the first user link and for invites. |
+| `CORS_ORIGIN` | `http://localhost:3000` | Origin allowed to call the API. Set it to the same value as `APP_URL`. |
+| `PORT` | `2000` | API port inside the container. Don't change it in the Docker deploy: nginx expects it there. |
+| `LOG_LEVEL` | `info` | `error`, `warn`, `info` or `debug`. |
+
+## Database
+
+| Variable | Default | Description |
+|---|---|---|
+| `POSTGRES_USER` | — | PostgreSQL user. The `db` container also uses it to create the database. |
+| `POSTGRES_PASSWORD` | — | PostgreSQL password. |
+| `POSTGRES_DB` | — | Database name. |
+| `POSTGRES_HOST` | — | Database host: `simplist-db` in the Docker deploy. |
+| `POSTGRES_PORT` | — | Database port: `5432`. |
+| `DATABASE_URL` | — | Instead of the variables above: a full URL (`postgresql://user:password@host:5432/db`). When set, it takes precedence. |
+
+<Aside type="caution">
+`POSTGRES_PASSWORD` is used to create the database **on the first start only**. If you change it later, change it inside PostgreSQL too (`ALTER USER … PASSWORD …`), or the API can no longer connect.
+</Aside>
+
+On startup the API applies database migrations by itself: you never need a command to create or update the tables.
+
+## Sessions
+
+| Variable | Default | Description |
+|---|---|---|
+| `JWT_EXPIRES_IN` | `6h` | Access token lifetime. It is renewed automatically while the session is valid. |
+| `REFRESH_TOKEN_EXPIRES_IN_DAYS` | `30` | Days without using the app after which you have to sign in again. |
+| `COOKIE_SECURE` | `true` | Cookies over HTTPS only. Set it to `false` only for an instance served over HTTP, for example on a local network. |
+
+The session signing keys are read from `keys/private.key` and `keys/public.pem` (mounted in `/app/keys`): see [Deploy with Docker](/en/self-hosting/docker/#generate-the-session-keys).
+
+## Registration and invites
+
+| Variable | Default | Description |
+|---|---|---|
+| `INVITE_PER_USER` | unlimited | Maximum number of invites each user can create. |
+
+Registration is by invitation only. An invite is valid for **7 days** and can be used once. The first user's invite is the exception: it is valid for one hour.
+
+## Email
+
+All optional. Email is on only when **all** of the first five variables are set. Then the API checks the connection at startup and does not start if the check fails.
+
+| Variable | Default | Description |
+|---|---|---|
+| `SMTP_HOST` | — | SMTP server. |
+| `SMTP_PORT` | — | Port, usually `587` (STARTTLS) or `465` (TLS). |
+| `SMTP_USER` | — | SMTP user. |
+| `SMTP_PASS` | — | SMTP password. |
+| `MAIL_FROM_EMAIL` | — | Sender address (for example `no-reply@example.com`). |
+| `SMTP_SECURE` | `false` | `true` for a direct TLS connection (port `465`). |
+| `MAIL_FROM_NAME` | `Simplist` | Sender name. |
+
+Without email, the welcome email, email invites and password reset are not sent. Everything else works.
+
+## Push notifications
+
+| Variable | Default | Description |
+|---|---|---|
+| `VAPID_PUBLIC_KEY` | — | VAPID public key. |
+| `VAPID_PRIVATE_KEY` | — | VAPID private key. |
+| `VAPID_SUBJECT` | `mailto:` + `MAIL_FROM_EMAIL` | Contact sent to push services: `mailto:` or an `https://` URL. Required when there is no `MAIL_FROM_EMAIL` and `APP_URL` isn't HTTPS. |
+
+Without the VAPID keys reminders are off, and the app's settings say so. To generate them: [Deploy with Docker](/en/self-hosting/docker/#turn-on-push-notifications-recommended).
+
+Reminders are sent by the API, which checks every minute for the ones that are due. Each reminder is sent once, even with several API instances.

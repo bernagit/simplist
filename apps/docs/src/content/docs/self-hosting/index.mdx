@@ -1,20 +1,63 @@
 ---
-title: "Self Hosting"
-description: "Come installare, configurare e mantenere Simplist sul tuo server."
+title: Panoramica
+description: Come è fatta un'installazione di Simplist e cosa serve per ospitarla sul tuo server.
 ---
 
-import { Aside } from '@astrojs/starlight/components';
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
-<Aside type="note" title="In arrivo">
-Questa sezione è in fase di scrittura. Nel frattempo parti da [Primi passi](/getting-started/first-steps/).
-</Aside>
+Simplist si installa con **Docker Compose**. Le immagini sono pubblicate su GitHub Container Registry (`ghcr.io/bernagit`), quindi sul server non serve compilare nulla.
 
-## Argomenti previsti
+## Come è fatta un'installazione
 
-- Docker
-- Variabili d'ambiente
-- PostgreSQL
-- Reverse proxy
-- Aggiornamenti
-- Backup
-- Risoluzione dei problemi
+| Servizio | Immagine | Ruolo |
+|---|---|---|
+| `db` | `postgres:17` | Database PostgreSQL con tutti i dati |
+| `api` | `ghcr.io/bernagit/simplist-api` | API Express: autenticazione, liste, attività, promemoria |
+| `app` | `ghcr.io/bernagit/simplist-app` | Web app Next.js (installabile come PWA) |
+| `docs` | `ghcr.io/bernagit/simplist-docs` | Questa documentazione (facoltativa) |
+| `nginx` | `nginx:1.27-alpine` | Unico punto d'ingresso: instrada le richieste agli altri servizi |
+
+Il traffico entra solo da **nginx**, sulla porta `3000` dell'host:
+
+- `/api/*` va all'API;
+- tutto il resto va alla web app;
+- le richieste a un host che inizia con `docs.` (per esempio `docs.esempio.it`) vanno alla documentazione.
+
+App e API stanno quindi sullo **stesso dominio**: i cookie di sessione funzionano senza configurazioni CORS.
+
+```text
+Browser ──HTTPS──▶ reverse proxy (Caddy, nginx, Traefik…) ──HTTP──▶ simplist-nginx :3000
+                                                                    ├── /api  ─▶ api :2000 ─▶ db :5432
+                                                                    ├── /     ─▶ app :3000
+                                                                    └── docs.* ─▶ docs :80
+```
+
+## Requisiti
+
+- Un server Linux con **Docker** e il plugin **Docker Compose** (v2).
+- Circa **1 GB di RAM** libera e qualche GB di disco per il database.
+- Un **dominio** e un **certificato HTTPS**. L'HTTPS è necessario per:
+  - i cookie di sessione, che sono `Secure`;
+  - l'installazione come app (PWA);
+  - le notifiche push.
+- Facoltativo: un server **SMTP**, per l'email di benvenuto, gli inviti via email e il recupero della password.
+
+## Da dove iniziare
+
+<CardGrid>
+  <LinkCard
+    title="Deploy con Docker"
+    description="Installazione passo passo: chiavi, configurazione, avvio, primo utente e HTTPS."
+    href="/self-hosting/docker/"
+  />
+  <LinkCard
+    title="Configurazione"
+    description="Tutte le variabili d'ambiente dell'API, con i valori predefiniti."
+    href="/self-hosting/configuration/"
+  />
+  <LinkCard
+    title="Aggiornamenti e backup"
+    description="Aggiornare a una nuova versione, fare backup e ripristino, risolvere i problemi comuni."
+    href="/self-hosting/maintenance/"
+  />
+</CardGrid>

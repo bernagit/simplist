@@ -1,20 +1,25 @@
 ---
-title: "User Guide"
-description: "How to use Simplist every day: lists, tasks, calendar and sharing."
+title: Overview
+description: How to use Simplist every day, from lists to reminders.
 ---
 
-import { Aside } from '@astrojs/starlight/components';
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
 
-<Aside type="note" title="Coming soon">
-This section is being written. In the meantime, start from [First Steps](/en/getting-started/first-steps/).
-</Aside>
+Simplist is built on three things:
 
-## Planned topics
+- **lists**, which collect the tasks of one area (home, work, groceries…);
+- **sections**, which split a list into groups (for example "To do", "Waiting");
+- **tasks**, with a date, time, repeat, reminder and priority.
 
-- Lists
-- Tasks
-- Calendar
-- Sharing
-- Keyboard shortcuts
-- Appearance
-- Account
+Around them are the **calendar**, **search**, **sharing** with other people and **notifications** on your phone and computer.
+
+If you haven't yet, [install the app](/en/getting-started/installation/) on your device: it works better, especially on a phone.
+
+<CardGrid>
+  <LinkCard title="Lists and sections" description="Create, edit, archive and organize your lists." href="/en/user-guide/lists/" />
+  <LinkCard title="Tasks" description="Dates, times, repeats, reminders and priorities." href="/en/user-guide/tasks/" />
+  <LinkCard title="Calendar and search" description="See every due date and find anything." href="/en/user-guide/calendar/" />
+  <LinkCard title="Sharing and invites" description="Work on a list together and invite new people." href="/en/user-guide/sharing/" />
+  <LinkCard title="Notifications" description="Get task reminders." href="/en/user-guide/notifications/" />
+  <LinkCard title="Settings and shortcuts" description="Language, appearance, account and keyboard shortcuts." href="/en/user-guide/settings/" />
+</CardGrid>

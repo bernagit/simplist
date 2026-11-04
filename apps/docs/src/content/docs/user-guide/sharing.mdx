@@ -1,0 +1,49 @@
+---
+title: Condivisione e inviti
+description: Condividere una lista con altre persone, gestire i ruoli e invitare nuovi utenti.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Condividere una lista
+
+Solo il proprietario può condividere una lista. Apri la lista e usa **Condividi** in alto (oppure <kbd>Shift</kbd> + <kbd>S</kbd>), o la voce **Condividi** nel menu della card.
+
+Inserisci l'email di una persona che ha già un account su questa istanza di Simplist e scegli il ruolo:
+
+| Ruolo | Cosa può fare |
+|---|---|
+| **Editor** | Aggiungere, modificare, completare ed eliminare attività e sezioni |
+| **Visualizzatore** | Vedere la lista e le sue attività, senza modificarle |
+| **Proprietario** | Tutto, compresi modificare, condividere, archiviare ed eliminare la lista |
+
+Nella stessa finestra vedi i membri, puoi **cambiare il ruolo** di ciascuno o **rimuoverlo**. In cima alla lista gli avatar mostrano chi ne fa parte.
+
+<Aside>
+Se la persona non ha ancora un account, prima invitala su Simplist: vedi [Inviti](#inviti) più sotto.
+</Aside>
+
+## Liste condivise con te
+
+Le liste che altre persone hanno condiviso con te sono in **Condivise con me**, con il nome del proprietario e l'avanzamento delle attività. Il ruolo che ti hanno dato decide cosa puoi fare.
+
+Se il proprietario archivia una lista condivisa, non la vedi più finché non la ripristina.
+
+## Uscire da una lista condivisa
+
+Per non vedere più una lista condivisa con te, usa **Esci dalla lista**:
+
+- dal menu **…** della card in **Condivise con me**;
+- oppure dal menu **…** in alto, dentro la lista.
+
+Dopo la conferma la lista sparisce e smetti di ricevere i suoi promemoria. Per rientrare, il proprietario dovrà condividerla di nuovo con te.
+
+## Inviti
+
+Su Simplist ci si registra solo su invito. Per invitare qualcuno vai in **Impostazioni → Inviti** e crea un **Nuovo invito**:
+
+- puoi indicare l'email della persona, se vuoi;
+- ottieni un **link** da copiare e un **codice QR** da scansionare;
+- l'invito vale **7 giorni** e si usa una volta sola.
+
+L'elenco mostra lo stato di ogni invito (in attesa, utilizzato, scaduto) e permette di **revocare** quelli non ancora usati. L'amministratore dell'istanza può limitare il numero di inviti per utente.

@@ -1,20 +1,25 @@
 ---
-title: "Guida utente"
-description: "Come usare Simplist ogni giorno: liste, attività, calendario e condivisione."
+title: Panoramica
+description: Come usare Simplist ogni giorno, dalle liste ai promemoria.
 ---
 
-import { Aside } from '@astrojs/starlight/components';
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
 
-<Aside type="note" title="In arrivo">
-Questa sezione è in fase di scrittura. Nel frattempo parti da [Primi passi](/getting-started/first-steps/).
-</Aside>
+Simplist si basa su tre elementi:
 
-## Argomenti previsti
+- le **liste**, che raccolgono le attività di un ambito (casa, lavoro, spesa…);
+- le **sezioni**, che dividono una lista in gruppi (per esempio "Da fare", "In attesa");
+- le **attività**, con data, orario, ripetizione, promemoria e priorità.
 
-- Liste
-- Attività
-- Calendario
-- Condivisione
-- Scorciatoie da tastiera
-- Aspetto
-- Account
+Attorno a questi ci sono il **calendario**, la **ricerca**, la **condivisione** con altre persone e le **notifiche** sul telefono e sul computer.
+
+Se non l'hai ancora fatto, [installa l'app](/getting-started/installation/) sul tuo dispositivo: funziona meglio, soprattutto su telefono.
+
+<CardGrid>
+  <LinkCard title="Liste e sezioni" description="Creare, modificare, archiviare e organizzare le liste." href="/user-guide/lists/" />
+  <LinkCard title="Attività" description="Date, orari, ripetizioni, promemoria e priorità." href="/user-guide/tasks/" />
+  <LinkCard title="Calendario e ricerca" description="Vedere tutte le scadenze e trovare qualsiasi cosa." href="/user-guide/calendar/" />
+  <LinkCard title="Condivisione e inviti" description="Lavorare insieme su una lista e invitare nuove persone." href="/user-guide/sharing/" />
+  <LinkCard title="Notifiche" description="Ricevere i promemoria delle attività." href="/user-guide/notifications/" />
+  <LinkCard title="Impostazioni e scorciatoie" description="Lingua, aspetto, account e tasti rapidi." href="/user-guide/settings/" />
+</CardGrid>
