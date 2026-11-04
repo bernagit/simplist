@@ -1,7 +1,8 @@
 'use client'
 
 import { useChangelog } from '@/hooks/useChangelog'
-import { ChangelogView } from '../common/ChangelogView'
+import { ReleaseNotes } from '../common/ReleaseNotes'
+import { DOCS_URL } from '@/utils/constants'
 import {
   Stack,
   Text,
@@ -44,7 +45,7 @@ function useApiInfo() {
 
 export function InfoSection() {
   const t = useTranslations('InfoSection')
-  const { currentVersion, rawChangelog } = useChangelog()
+  const { currentVersion, releases } = useChangelog()
   const environment = process.env.NODE_ENV || 'development'
   const { url: apiUrl, health } = useApiInfo()
   const apiVersion = health.data?.version
@@ -88,7 +89,7 @@ export function InfoSection() {
               {t('links.github')}
             </Badge>
           </Anchor>
-          <Anchor href="/docs" target="_blank" underline="hover">
+          <Anchor href={DOCS_URL} target="_blank" underline="hover">
             <Badge
               variant="default"
               size="sm"
@@ -177,13 +178,7 @@ export function InfoSection() {
               </Group>
             </Accordion.Control>
             <Accordion.Panel>
-              {rawChangelog ? (
-                <ChangelogView rawMarkdown={rawChangelog} />
-              ) : (
-                <Text size="sm" c="dimmed">
-                  {t('changelog.empty')}
-                </Text>
-              )}
+              <ReleaseNotes releases={releases} />
             </Accordion.Panel>
           </Accordion.Item>
         </Accordion>

@@ -10,7 +10,7 @@
     "clear": "Cancella"
   },
   "AppLayout": {
-    "whatsNewTitle": "Cosa c'è di nuovo nella v{version}",
+    "whatsNewTitle": "Cosa c'è di nuovo",
     "gotItButton": "Ho capito!"
   },
   "Sidebar": {
@@ -385,18 +385,13 @@
     "then": "poi"
   },
   "Changelog": {
-    "empty": "Nessuna nota di rilascio trovata.",
-    "sections": {
-      "Added": "Aggiunto",
-      "Fixed": "Risolto",
-      "Changed": "Modificato",
-      "Removed": "Rimosso",
-      "Deprecated": "Deprecato",
-      "Patch Changes": "Correzioni",
-      "Minor Changes": "Nuove funzionalità",
-      "Major Changes": "Cambiamenti strutturali",
-      "Security": "Sicurezza"
-    }
+    "empty": "Nessuna novità da mostrare.",
+    "types": {
+      "new": "Novità",
+      "improved": "Migliorato",
+      "fixed": "Corretto"
+    },
+    "fullChangelog": "Changelog completo"
   },
   "AvatarPicker": {
     "title": "Scegli il tuo avatar",
@@ -527,9 +522,8 @@
       "mismatch": "L'API è alla v{api}, l'app alla v{app}: ricarica la pagina o aggiorna entrambe le immagini alla stessa versione."
     },
     "changelog": {
-      "title": "Storico Rilasci & Changelog",
-      "latest": "Ultima: v{version}",
-      "empty": "Nessuna voce di changelog trovata."
+      "title": "Novità delle versioni",
+      "latest": "Ultima: v{version}"
     }
   },
   "NotificationsSection": {

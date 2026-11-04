@@ -37,5 +37,10 @@ export const sidebar: Group[] = [
     label: 'Sviluppo',
     translations: { en: 'Development' },
     items: [{ label: 'Panoramica', slug: 'development', translations: { en: 'Overview' } }]
+  },
+  {
+    label: 'Versioni',
+    translations: { en: 'Releases' },
+    items: [{ label: 'Changelog', slug: 'changelog', translations: { en: 'Changelog' } }]
   }
 ]

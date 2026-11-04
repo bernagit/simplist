@@ -20,8 +20,8 @@ import AuthLayout from '../auth/AuthLayout'
 import UserSettings from '../modals/UserSettings'
 import EditTask from '../modals/EditTask'
 import { useChangelog } from '@/hooks/useChangelog'
-import { ChangelogView } from '../common/ChangelogView'
-import { useState } from 'react'
+import { ReleaseNotes } from '../common/ReleaseNotes'
+import { useEffect } from 'react'
 import { DatesProvider } from '@mantine/dates'
 import ConfirmArchive from '../modals/ConfirmArchive'
 import { ModalsBackHandler } from '../modals/ModalsBackHandler'
@@ -34,20 +34,21 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const locale = useLocale()
   const t = useTranslations('AppLayout')
-  const { currentVersion, lastSeenVersion, rawChangelog, markAsRead } = useChangelog()
+  const { currentVersion, lastSeenVersion, unseenReleases, markAsRead } = useChangelog()
 
-  const [manualOpen, setManualOpen] = useState(false)
   // AppLayout renders the providers, so it can't use useSidebar(): read the breakpoint here.
   const isMobile = useMediaQuery(MOBILE_QUERY)
 
-  // Automatically check if version has changed once client storage is resolved
+  // After an update (once client storage is resolved): show what's new since the last seen version
   const isNewVersion = !!lastSeenVersion && lastSeenVersion !== currentVersion
-  const isModalOpen = manualOpen || isNewVersion
+  const isModalOpen = isNewVersion && unseenReleases.length > 0
 
-  const handleClose = () => {
-    markAsRead()
-    setManualOpen(false)
-  }
+  // An update with nothing to tell the user (technical changes only): just remember it
+  useEffect(() => {
+    if (isNewVersion && unseenReleases.length === 0) markAsRead()
+  }, [isNewVersion, unseenReleases.length, markAsRead])
+
+  const handleClose = markAsRead
   const isAuthRoute = PUBLIC_ROUTES.some(route => pathname.startsWith(route))
 
   useCloseOnBack(isModalOpen && !isAuthRoute, handleClose)
@@ -123,7 +124,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                           <Modal
                             opened={isModalOpen}
                             onClose={handleClose}
-                            title={t('whatsNewTitle', { version: currentVersion })}
+                            title={t('whatsNewTitle')}
                             size="lg"
                             fullScreen={isMobile}
                           >
@@ -132,7 +133,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                               offsetScrollbars
                               p="xs"
                             >
-                              <ChangelogView rawMarkdown={rawChangelog} />
+                              <ReleaseNotes
+                                releases={unseenReleases}
+                                withVersionTitles={unseenReleases.length > 1}
+                              />
                             </ScrollArea>
                             <Group justify="right" mt="md">
                               <Button onClick={markAsRead}>{t('gotItButton')}</Button>

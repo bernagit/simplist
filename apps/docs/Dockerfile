@@ -6,7 +6,8 @@ ARG NODE_VERSION=24-slim
 
 FROM node:${NODE_VERSION} AS builder
 
-WORKDIR /docs
+# Same layout as the repository: the build reads ../app/CHANGELOG.md (scripts/sync-changelog.mjs)
+WORKDIR /repo/apps/docs
 
 RUN corepack enable
 
@@ -17,6 +18,7 @@ COPY apps/docs/package.json apps/docs/yarn.lock ./
 RUN yarn install --immutable
 
 COPY apps/docs/ ./
+COPY apps/app/CHANGELOG.md ../app/CHANGELOG.md
 
 RUN yarn build
 
@@ -26,6 +28,6 @@ RUN yarn build
 FROM nginx:1.27-alpine
 
 COPY apps/docs/nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /docs/dist /usr/share/nginx/html
+COPY --from=builder /repo/apps/docs/dist /usr/share/nginx/html
 
 EXPOSE 80

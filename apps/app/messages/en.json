@@ -10,7 +10,7 @@
     "clear": "Clear"
   },
   "AppLayout": {
-    "whatsNewTitle": "What's New in v{version}",
+    "whatsNewTitle": "What's new",
     "gotItButton": "Got it!"
   },
   "Sidebar": {
@@ -385,18 +385,13 @@
     "then": "then"
   },
   "Changelog": {
-    "empty": "No release notes found.",
-    "sections": {
-      "Added": "Added",
-      "Fixed": "Fixed",
-      "Changed": "Changed",
-      "Removed": "Removed",
-      "Deprecated": "Deprecated",
-      "Patch Changes": "Patch Changes",
-      "Minor Changes": "Minor Changes",
-      "Major Changes": "Major Changes",
-      "Security": "Security"
-    }
+    "empty": "Nothing new to show.",
+    "types": {
+      "new": "New",
+      "improved": "Improved",
+      "fixed": "Fixed"
+    },
+    "fullChangelog": "Full changelog"
   },
   "AvatarPicker": {
     "title": "Choose your avatar",
@@ -527,9 +522,8 @@
       "mismatch": "The API runs v{api}, the app v{app}: reload the page or update both images to the same version."
     },
     "changelog": {
-      "title": "Release History & Changelog",
-      "latest": "Latest: v{version}",
-      "empty": "No changelog entry found."
+      "title": "Release notes",
+      "latest": "Latest: v{version}"
     }
   },
   "NotificationsSection": {

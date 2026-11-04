@@ -1,18 +1,9 @@
 import type { NextConfig } from 'next'
-import fs from 'node:fs';
-import path from 'node:path';
 import { networkInterfaces } from 'node:os';
 import packageJson from './package.json';
 import createNextIntlPlugin from 'next-intl/plugin'
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts')
-
-const fallbackPath = path.resolve(process.cwd(), './CHANGELOG.md');
-
-let rawChangelog = '';
-if (fs.existsSync(fallbackPath)) {
-  rawChangelog = fs.readFileSync(fallbackPath, 'utf8');
-}
 
 // In production nginx routes /api to the Express API (docker/nginx/simplist.conf). In development
 // there is no nginx, so Next.js forwards /api itself to keep the API on the same origin
@@ -76,8 +67,7 @@ const nextConfig: NextConfig = {
     ]
   },
   env: {
-    NEXT_PUBLIC_APP_VERSION: packageJson.version,
-    NEXT_PUBLIC_CHANGELOG: rawChangelog
+    NEXT_PUBLIC_APP_VERSION: packageJson.version
   }
 }
 

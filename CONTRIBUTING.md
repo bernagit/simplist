@@ -60,6 +60,23 @@ apps/
 - Run `yarn lint` before committing
 - Follow existing module structure in `apps/api/src/modules` (controller / repository / route / schema / service) when adding backend features
 
+## Releases and changelogs
+
+There are two changelogs, for two audiences:
+
+- **`apps/app/CHANGELOG.md`** (and the identical `apps/api/CHANGELOG.md`): the complete, technical history, written by [changesets](https://github.com/changesets/changesets). Add a changeset with `yarn changeset` in every PR that changes behaviour; `yarn release` bumps the versions and writes the entries. The documentation publishes it as the **Changelog** page (`apps/docs/scripts/sync-changelog.mjs` copies it at build time).
+- **`apps/app/release-notes.json`**: the short notes the app shows after an update and in Settings → Info, in Italian and English. Add an entry for the new version only when there is something users notice: a few lines, plain language, no technical details. A version without an entry shows nothing in the app.
+
+```json
+{
+  "version": "0.7.3",
+  "date": "2026-11-04",
+  "notes": [{ "type": "new", "it": "…", "en": "…" }]
+}
+```
+
+`type` is `new`, `improved` or `fixed`. Entries are newest first.
+
 ## Reporting bugs / requesting features
 
 Please open a GitHub issue with:

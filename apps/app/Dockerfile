@@ -67,7 +67,6 @@ RUN chown node:node .next
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=node:node /app/apps/app/.next/standalone ./
 COPY --from=builder --chown=node:node /app/apps/app/.next/static ./.next/static
-COPY apps/app/CHANGELOG.md /app/CHANGELOG.md
 
 
 RUN cp -a apps/app/. ./ \

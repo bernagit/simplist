@@ -1,0 +1,124 @@
+[
+  {
+    "version": "0.7.3",
+    "date": "2026-11-04",
+    "notes": [
+      {
+        "type": "new",
+        "it": "Tour guidato: una breve presentazione dell'app, che puoi rivedere quando vuoi da Aiuto e supporto.",
+        "en": "Guided tour: a short walkthrough of the app, which you can replay any time from Help & Support."
+      }
+    ]
+  },
+  {
+    "version": "0.7.2",
+    "date": "2026-11-04",
+    "notes": [
+      {
+        "type": "new",
+        "it": "Guida utente completa, in italiano e in inglese: aprila da Aiuto e supporto → Documentazione.",
+        "en": "A complete user guide, in English and Italian: open it from Help & Support → Documentation."
+      }
+    ]
+  },
+  {
+    "version": "0.7.1",
+    "date": "2026-11-03",
+    "notes": [
+      {
+        "type": "new",
+        "it": "Puoi abbandonare una lista condivisa con te, dal suo menu.",
+        "en": "You can leave a list shared with you, from its menu."
+      },
+      {
+        "type": "improved",
+        "it": "Le mie liste e Condivise con me sono state rinnovate: ricerca, ordinamento e avanzamento delle attività su ogni lista.",
+        "en": "My lists and Shared with me have been redesigned: search, sorting and task progress on every list."
+      },
+      {
+        "type": "improved",
+        "it": "Su telefono basta toccare un punto qualsiasi della riga per aprire un'attività.",
+        "en": "On phones, tap anywhere on a row to open a task."
+      }
+    ]
+  },
+  {
+    "version": "0.7.0",
+    "date": "2026-11-03",
+    "notes": [
+      {
+        "type": "new",
+        "it": "Promemoria: ricevi una notifica prima della scadenza di un'attività. Attivale in Impostazioni → Notifiche.",
+        "en": "Reminders: get a notification before a task is due. Turn them on in Settings → Notifications."
+      },
+      {
+        "type": "new",
+        "it": "Più modi per ripetere un'attività: ogni giorno feriale, ogni N settimane, in giorni a scelta, fino a una data.",
+        "en": "More ways to repeat a task: every weekday, every N weeks, on chosen days, until a date."
+      },
+      {
+        "type": "new",
+        "it": "La ricerca trova anche le attività e le apre direttamente nella loro lista.",
+        "en": "Search now finds tasks too and opens them right in their list."
+      },
+      {
+        "type": "improved",
+        "it": "Dettagli dell'attività rinnovati, con scelte rapide per la data (oggi, domani, settimana prossima).",
+        "en": "Redesigned task details, with quick date picks (today, tomorrow, next week)."
+      },
+      {
+        "type": "fixed",
+        "it": "Le attività ricorrenti compaiono nel calendario in tutti i mesi, e completarle le sposta alla data successiva.",
+        "en": "Recurring tasks show in the calendar in every month, and completing one moves it to its next date."
+      }
+    ]
+  },
+  {
+    "version": "0.6.0",
+    "date": "2026-11-02",
+    "notes": [
+      {
+        "type": "new",
+        "it": "La documentazione è online: aprila da Aiuto e supporto → Documentazione.",
+        "en": "The documentation is online: open it from Help & Support → Documentation."
+      },
+      {
+        "type": "fixed",
+        "it": "Meno disconnessioni inattese, anche con più schede aperte.",
+        "en": "Fewer unexpected logouts, even with several tabs open."
+      }
+    ]
+  },
+  {
+    "version": "0.5.0",
+    "date": "2026-11-02",
+    "notes": [
+      {
+        "type": "improved",
+        "it": "App molto più comoda su telefono e tablet: finestre a schermo intero, il gesto indietro le chiude, controlli più grandi.",
+        "en": "A much better app on phones and tablets: full-screen windows closed by the back gesture, bigger controls."
+      },
+      {
+        "type": "new",
+        "it": "Pulsante \"…\" su attività e liste per raggiungere le azioni senza pressione prolungata.",
+        "en": "A \"…\" button on tasks and lists to reach their actions without a long press."
+      },
+      {
+        "type": "fixed",
+        "it": "Il trascinamento non blocca più lo scorrimento sugli schermi touch.",
+        "en": "Dragging no longer blocks scrolling on touch screens."
+      }
+    ]
+  },
+  {
+    "version": "0.4.0",
+    "date": "2026-08-10",
+    "notes": [
+      {
+        "type": "new",
+        "it": "Simplist è disponibile in italiano e in inglese.",
+        "en": "Simplist is available in English and Italian."
+      }
+    ]
+  }
+]

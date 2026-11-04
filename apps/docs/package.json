@@ -5,11 +5,12 @@
   "private": true,
   "packageManager": "yarn@4.18.0",
   "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro build",
+    "dev": "yarn changelog && astro dev",
+    "start": "yarn changelog && astro dev",
+    "build": "yarn changelog && astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "changelog": "node scripts/sync-changelog.mjs"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.41.3",
