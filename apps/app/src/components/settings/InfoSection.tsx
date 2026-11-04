@@ -22,12 +22,33 @@ import {
   IconExternalLink,
 } from '@tabler/icons-react'
 import { useTranslations } from 'next-intl'
+import { useQuery } from '@tanstack/react-query'
+import api from '@/utils/ky'
+
+type Health = { status: string; version?: string }
+
+/**
+ * The browser always reaches the API on this same origin under /api: nginx forwards it in
+ * production, a Next.js rewrite in development. So the public URL is derived from the page,
+ * and the internal upstream (simplist-api:2000) is never exposed, nor needed.
+ */
+function useApiInfo() {
+  const url = typeof window === 'undefined' ? '/api' : `${window.location.origin}/api`
+  const health = useQuery({
+    queryKey: ['health'],
+    queryFn: () => api.get('health', { retry: 0, timeout: 5000 }).json<Health>(),
+    staleTime: 30_000
+  })
+  return { url, health }
+}
 
 export function InfoSection() {
   const t = useTranslations('InfoSection')
   const { currentVersion, rawChangelog } = useChangelog()
   const environment = process.env.NODE_ENV || 'development'
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'Local / Proxied'
+  const { url: apiUrl, health } = useApiInfo()
+  const apiVersion = health.data?.version
+  const versionMismatch = !!apiVersion && apiVersion !== currentVersion
 
   return (
     <Stack gap="lg">
@@ -109,13 +130,37 @@ export function InfoSection() {
               <Text size="xs" c="dimmed" fw={500}>
                 {t('apiEndpoint.label')}
               </Text>
-              <Text size="xs" fw={600} truncate mt={2}>
+              <Text size="xs" fw={600} truncate mt={2} title={apiUrl}>
                 {apiUrl}
               </Text>
+              <Group gap={6} mt={4}>
+                <Badge
+                  size="xs"
+                  variant="dot"
+                  color={health.isPending ? 'gray' : health.isSuccess ? 'green' : 'red'}
+                >
+                  {health.isPending
+                    ? '…'
+                    : health.isSuccess
+                      ? t('apiEndpoint.online')
+                      : t('apiEndpoint.offline')}
+                </Badge>
+                {apiVersion && (
+                  <Badge size="xs" variant="light" color={versionMismatch ? 'orange' : 'gray'}>
+                    {t('apiEndpoint.version', { version: apiVersion })}
+                  </Badge>
+                )}
+              </Group>
             </div>
           </Group>
         </Card>
       </SimpleGrid>
+
+      {versionMismatch && (
+        <Text size="xs" c="orange">
+          {t('apiEndpoint.mismatch', { api: apiVersion, app: currentVersion })}
+        </Text>
+      )}
 
       {/* Release Notes */}
       <Card withBorder padding="0" radius="md">

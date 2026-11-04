@@ -13,6 +13,7 @@ import invitesRouter from './modules/invites/invite.route.js'
 import preferenceRouter from './modules/preferences/preference.route.js'
 import notificationRouter from './modules/notifications/notification.route.js'
 import appConfig from './config/env.js'
+import { appInfo } from './config/appInfo.js'
 
 const app = express()
 
@@ -31,9 +32,9 @@ app.use(
   })
 )
 
-// health check endpoint
+// Health check, also used by the app's settings to show the API version it talks to
 app.get('/api/health', (_req, res) => {
-  res.status(HTTP_STATUS.OK).json({ status: 'ok' })
+  res.status(HTTP_STATUS.OK).json({ status: 'ok', version: appInfo.version })
 })
 
 app.use('/api/auth', authRouter)

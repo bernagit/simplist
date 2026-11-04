@@ -520,7 +520,11 @@
       "label": "Environment"
     },
     "apiEndpoint": {
-      "label": "API Endpoint"
+      "label": "API",
+      "online": "Online",
+      "offline": "Unreachable",
+      "version": "API v{version}",
+      "mismatch": "The API runs v{api}, the app v{app}: reload the page or update both images to the same version."
     },
     "changelog": {
       "title": "Release History & Changelog",
