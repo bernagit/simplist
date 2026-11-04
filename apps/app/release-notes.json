@@ -1,5 +1,21 @@
 [
   {
+    "version": "0.7.4",
+    "date": "2026-11-04",
+    "notes": [
+      {
+        "type": "new",
+        "it": "Hai eliminato o completato un'attività per sbaglio? Tocca Annulla nella notifica che compare per qualche secondo.",
+        "en": "Deleted or completed a task by mistake? Tap Undo in the notification that appears for a few seconds."
+      },
+      {
+        "type": "improved",
+        "it": "Le novità dopo un aggiornamento sono più brevi e nella tua lingua. L'elenco completo delle modifiche è nella documentazione.",
+        "en": "What's new after an update is shorter and in your language. The full list of changes is in the documentation."
+      }
+    ]
+  },
+  {
     "version": "0.7.3",
     "date": "2026-11-04",
     "notes": [

@@ -1,5 +1,15 @@
 # app
 
+## 0.7.4
+
+### Patch Changes
+
+- feat: undo after deleting or completing a task from its row: the notification offers Undo for 5 seconds, and a recurring task gets its previous date back
+- feat: shorter "What's new" notes after an update, in your language and only for the versions you haven't seen; the full changelog is now in the documentation (Releases > Changelog)
+- feat: Settings > Info shows the API address, whether it's reachable and its version, with a warning when app and API versions differ (/api/health now returns the version)
+- fix: the Documentation link in Settings > Info opens the documentation site
+- chore: Mantine updated to 9.7.4 and mantine-contextmenu to 9.4.0
+
 ## 0.7.3
 
 ### Patch Changes
