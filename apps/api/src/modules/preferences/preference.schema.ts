@@ -9,7 +9,9 @@ export const updatePreferencesSchema = z.object({
     confirmDelete: z.boolean().optional(),
     settings: z
       .object({
-        syncAppearance: z.boolean().optional()
+        syncAppearance: z.boolean().optional(),
+        /** The guided tour was completed or skipped (it starts by itself until then) */
+        onboardingDone: z.boolean().optional()
       })
       .optional()
   })

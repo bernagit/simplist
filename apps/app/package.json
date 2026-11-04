@@ -19,6 +19,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@formatjs/intl-localematcher": "^0.8.13",
+    "@gfazioli/mantine-onboarding-tour": "4.1.4",
     "@mantine/core": "^9.3.2",
     "@mantine/dates": "^9.4.1",
     "@mantine/form": "^9.3.2",

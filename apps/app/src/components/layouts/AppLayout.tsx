@@ -28,6 +28,7 @@ import { ModalsBackHandler } from '../modals/ModalsBackHandler'
 import { useMediaQuery } from '@mantine/hooks'
 import { useCloseOnBack } from '@/hooks/useCloseOnBack'
 import { PushSync } from '../PushSync'
+import { OnboardingProvider } from '../onboarding/OnboardingProvider'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -82,65 +83,67 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <SidebarProvider>
             <HelpProvider>
               <HotkeyProvider>
-                <SpotlightProvider />
-                <Box display="flex" h="100dvh" style={{ overflow: 'hidden' }}>
-                  <Sidebar />
-                  <MobileOverlay />
-                  <Box
-                    flex={1}
-                    display="flex"
-                    style={{
-                      flexDirection: 'column',
-                      overflow: 'hidden',
-                      minWidth: 0
-                    }}
-                  >
-                    <Topbar />
+                <OnboardingProvider paused={isModalOpen}>
+                  <SpotlightProvider />
+                  <Box display="flex" h="100dvh" style={{ overflow: 'hidden' }}>
+                    <Sidebar />
+                    <MobileOverlay />
                     <Box
-                      id="app-scroll-container"
-                      component="main"
                       flex={1}
+                      display="flex"
                       style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        overflowY: 'auto',
-                        overflowX: 'hidden',
-                        minHeight: 0,
-                        WebkitOverflowScrolling: 'touch'
+                        flexDirection: 'column',
+                        overflow: 'hidden',
+                        minWidth: 0
                       }}
                     >
+                      <Topbar />
                       <Box
-                        w={{ base: '100%', lg: '60%' }}
-                        p="md"
+                        id="app-scroll-container"
+                        component="main"
+                        flex={1}
                         style={{
-                          flex: 1,
-                          minHeight: '100%'
+                          display: 'flex',
+                          justifyContent: 'center',
+                          overflowY: 'auto',
+                          overflowX: 'hidden',
+                          minHeight: 0,
+                          WebkitOverflowScrolling: 'touch'
                         }}
                       >
-                        {children}
-                        <Modal
-                          opened={isModalOpen}
-                          onClose={handleClose}
-                          title={t('whatsNewTitle', { version: currentVersion })}
-                          size="lg"
-                          fullScreen={isMobile}
+                        <Box
+                          w={{ base: '100%', lg: '60%' }}
+                          p="md"
+                          style={{
+                            flex: 1,
+                            minHeight: '100%'
+                          }}
                         >
-                          <ScrollArea
-                            h={isMobile ? 'calc(100dvh - 150px)' : 'min(350px, 55dvh)'}
-                            offsetScrollbars
-                            p="xs"
+                          {children}
+                          <Modal
+                            opened={isModalOpen}
+                            onClose={handleClose}
+                            title={t('whatsNewTitle', { version: currentVersion })}
+                            size="lg"
+                            fullScreen={isMobile}
                           >
-                            <ChangelogView rawMarkdown={rawChangelog} />
-                          </ScrollArea>
-                          <Group justify="right" mt="md">
-                            <Button onClick={markAsRead}>{t('gotItButton')}</Button>
-                          </Group>
-                        </Modal>
+                            <ScrollArea
+                              h={isMobile ? 'calc(100dvh - 150px)' : 'min(350px, 55dvh)'}
+                              offsetScrollbars
+                              p="xs"
+                            >
+                              <ChangelogView rawMarkdown={rawChangelog} />
+                            </ScrollArea>
+                            <Group justify="right" mt="md">
+                              <Button onClick={markAsRead}>{t('gotItButton')}</Button>
+                            </Group>
+                          </Modal>
+                        </Box>
                       </Box>
                     </Box>
+                    <HelpDrawer />
                   </Box>
-                  <HelpDrawer />
-                </Box>
+                </OnboardingProvider>
               </HotkeyProvider>
             </HelpProvider>
           </SidebarProvider>

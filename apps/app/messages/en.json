@@ -30,7 +30,58 @@
     "helpAndSupport": "Help & Support",
     "documentation": "Documentation",
     "keyboardShortcuts": "Keyboard Shortcuts",
-    "resizeSidebar": "Resize sidebar"
+    "resizeSidebar": "Resize sidebar",
+    "guidedTour": "Guided tour"
+  },
+  "Onboarding": {
+    "nav": {
+      "next": "Next",
+      "back": "Back",
+      "skip": "Skip",
+      "finish": "Done",
+      "counter": "{current} of {total}"
+    },
+    "welcome": {
+      "title": "Welcome to Simplist 👋",
+      "content": "Here's a one-minute look at where everything is. You can skip the tour at any time and see it again from Help & Support."
+    },
+    "navigation": {
+      "title": "Getting around",
+      "content": "Home, the Calendar with every due date, and Search, which finds lists, sections and tasks (also with Ctrl + K)."
+    },
+    "lists": {
+      "title": "Your lists",
+      "content": "Your lists live here. The + creates a new one: inside you add sections and tasks, with a date, repeat and reminder."
+    },
+    "shared": {
+      "title": "Shared with you",
+      "content": "Lists other people share with you show up here. The role they give you decides whether you can edit them."
+    },
+    "profile": {
+      "title": "Your account",
+      "content": "Your profile opens the settings: language, appearance, notifications and invites for new people."
+    },
+    "help": {
+      "title": "Help",
+      "content": "Documentation, keyboard shortcuts and this tour, whenever you want to see it again."
+    },
+    "menu": {
+      "title": "The menu",
+      "content": "Tap here to open the menu: your lists, the ones shared with you, the calendar, search and settings."
+    },
+    "actions": {
+      "title": "Quick actions",
+      "content": "Tap a task to open its details. To edit or delete, use the … button or a long press. To move it, drag the ⋮⋮ handle."
+    },
+    "install": {
+      "title": "Install the app",
+      "content": "Add Simplist to your Home Screen to open it like an app and get reminders. On iPhone: Share → Add to Home Screen."
+    },
+    "done": {
+      "title": "You're all set!",
+      "content": "Create your first list and add a few tasks. Want reminders? Turn on notifications on this device.",
+      "notifications": "Turn on notifications"
+    }
   },
   "Topbar": {
     "toggleSidebar": "Toggle sidebar",

@@ -17,6 +17,10 @@ export class PreferenceService {
   }
 
   public async updatePreferences(userId: string, data: UpdatePreferencesInput) {
+    if (data.settings) {
+      const existing = await this.preferenceRepository.findOrCreate(userId)
+      data = { ...data, settings: { ...existing?.settings, ...data.settings } }
+    }
     const updatedPreferences = await this.preferenceRepository.update(userId, data)
 
     if (!updatedPreferences) {

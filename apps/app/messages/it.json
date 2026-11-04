@@ -30,7 +30,58 @@
     "helpAndSupport": "Aiuto e supporto",
     "documentation": "Documentazione",
     "keyboardShortcuts": "Scorciatoie da tastiera",
-    "resizeSidebar": "Ridimensiona barra laterale"
+    "resizeSidebar": "Ridimensiona barra laterale",
+    "guidedTour": "Tour guidato"
+  },
+  "Onboarding": {
+    "nav": {
+      "next": "Avanti",
+      "back": "Indietro",
+      "skip": "Salta",
+      "finish": "Fine",
+      "counter": "{current} di {total}"
+    },
+    "welcome": {
+      "title": "Benvenuto in Simplist 👋",
+      "content": "Ti mostriamo in un minuto dove trovare tutto. Puoi saltare il tour in qualsiasi momento e rivederlo da Aiuto e supporto."
+    },
+    "navigation": {
+      "title": "Muoversi nell'app",
+      "content": "Home, il Calendario con tutte le scadenze e la Ricerca, che trova liste, sezioni e attività (anche con Ctrl + K)."
+    },
+    "lists": {
+      "title": "Le tue liste",
+      "content": "Qui trovi le tue liste. Con il + ne crei una nuova: dentro aggiungi sezioni e attività, con data, ripetizione e promemoria."
+    },
+    "shared": {
+      "title": "Condivise con te",
+      "content": "Le liste che altre persone condividono con te compaiono qui. Il ruolo che ti danno decide se puoi modificarle."
+    },
+    "profile": {
+      "title": "Il tuo account",
+      "content": "Dal tuo profilo apri le impostazioni: lingua, aspetto, notifiche e inviti per nuove persone."
+    },
+    "help": {
+      "title": "Aiuto",
+      "content": "Documentazione, scorciatoie da tastiera e questo tour, quando vuoi rivederlo."
+    },
+    "menu": {
+      "title": "Il menu",
+      "content": "Tocca qui per aprire il menu: le tue liste, quelle condivise con te, il calendario, la ricerca e le impostazioni."
+    },
+    "actions": {
+      "title": "Azioni rapide",
+      "content": "Tocca un'attività per aprirne i dettagli. Per modificare o eliminare usa il pulsante … oppure tieni premuto. Per spostare trascina dalla maniglia ⋮⋮."
+    },
+    "install": {
+      "title": "Installa l'app",
+      "content": "Aggiungi Simplist alla schermata Home per aprirla come un'app e ricevere i promemoria. Su iPhone: Condividi → Aggiungi alla schermata Home."
+    },
+    "done": {
+      "title": "Tutto pronto!",
+      "content": "Crea la tua prima lista e aggiungi qualche attività. Vuoi ricevere i promemoria? Attiva le notifiche su questo dispositivo.",
+      "notifications": "Attiva le notifiche"
+    }
   },
   "Topbar": {
     "toggleSidebar": "Alterna barra laterale",

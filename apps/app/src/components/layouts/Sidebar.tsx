@@ -30,7 +30,8 @@ import {
   IconChevronRight,
   IconHelp,
   IconUsers,
-  IconKeyboard
+  IconKeyboard,
+  IconRoute
 } from '@tabler/icons-react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
@@ -46,6 +47,9 @@ import { HotkeyBinding } from '../common/KeyBinding'
 import { openSettingsModal } from '@/lib/modals/common'
 import { useHelp } from '@/providers/HelpProvider'
 import { DOCS_URL } from '@/utils/constants'
+import { OnboardingTour } from '@gfazioli/mantine-onboarding-tour'
+import { useOnboarding } from '../onboarding/OnboardingProvider'
+import { TOUR_TARGETS } from '../onboarding/tourTargets'
 
 export const MENU_WIDTH = 290
 const MIN_WIDTH = 240
@@ -66,6 +70,8 @@ export function Sidebar() {
   const colorScheme = useComputedColorScheme()
   const { logout } = useAuth()
   const { toggle: toggleHelp } = useHelp()
+  const { startTour } = useOnboarding()
+  const [helpOpened, setHelpOpened] = useState(false)
   const [sidebarWidth, setSidebarWidth] = useLocalStorage({
     key: 'sidebar-width',
     defaultValue: DEFAULT_WIDTH
@@ -191,6 +197,8 @@ export function Sidebar() {
         bg="var(--mantine-color-body)"
       >
         <Stack gap={0} h="100%">
+          <OnboardingTour.Target id={TOUR_TARGETS.profile}>
+          <Box>
           <Menu shadow="md" width={MENU_WIDTH} position="bottom-start">
             <Menu.Target>
               <Group gap="sm" wrap="nowrap" ml={0} m={4}>
@@ -247,9 +255,13 @@ export function Sidebar() {
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>
+          </Box>
+          </OnboardingTour.Target>
 
           <ScrollArea flex={1} scrollbarSize={4} type="hover">
             <Stack gap={2} p="xs">
+              <OnboardingTour.Target id={TOUR_TARGETS.navigation}>
+              <Stack gap={2}>
               <NavLink
                 label={t('home')}
                 leftSection={<IconHome2 size={18} />}
@@ -271,11 +283,14 @@ export function Sidebar() {
                 onClick={() => spotlight.open()}
                 style={{ borderRadius: 'var(--mantine-radius-md)' }}
               />
+              </Stack>
+              </OnboardingTour.Target>
 
               <Divider my="xs" />
 
               <NavLink
                 label={
+                  <OnboardingTour.Target id={TOUR_TARGETS.lists}>
                   <Group justify="space-between" align="center" style={{ width: '100%' }}>
                     <Text
                       size="xs"
@@ -301,6 +316,7 @@ export function Sidebar() {
                       </ActionIcon>
                     </Tooltip>
                   </Group>
+                  </OnboardingTour.Target>
                 }
                 rightSection={
                   <Group wrap="nowrap" gap={4} flex={1}>
@@ -356,15 +372,17 @@ export function Sidebar() {
               <Divider my="xs" />
               <NavLink
                 label={
-                  <Text
-                    size="xs"
-                    fw={600}
-                    tt="uppercase"
-                    c="dimmed"
-                    style={{ letterSpacing: '0.06em' }}
-                  >
-                    {t('sharedWithMe')}
-                  </Text>
+                  <OnboardingTour.Target id={TOUR_TARGETS.shared}>
+                    <Text
+                      size="xs"
+                      fw={600}
+                      tt="uppercase"
+                      c="dimmed"
+                      style={{ letterSpacing: '0.06em' }}
+                    >
+                      {t('sharedWithMe')}
+                    </Text>
+                  </OnboardingTour.Target>
                 }
                 rightSection={
                   <Group wrap="nowrap" gap={4} flex={1}>
@@ -413,34 +431,55 @@ export function Sidebar() {
 
           <Box p="xs">
             <Divider mb="xs" />
-            <Popover width={MENU_WIDTH} position="top-start" shadow="md">
-              <Popover.Target>
-                <NavLink
-                  label={t('helpAndSupport')}
-                  leftSection={<IconHelp size={18} />}
-                  style={{ borderRadius: 'var(--mantine-radius-md)' }}
-                />
-              </Popover.Target>
-              <Popover.Dropdown>
-                <Stack gap={4}>
-                  <NavLink
-                    label={t('documentation')}
-                    leftSection={<IconHelp size={18} />}
-                    onClick={() => window.open(DOCS_URL, '_blank')}
-                    style={{ borderRadius: 'var(--mantine-radius-md)' }}
-                  />
-                  {/* Shortcuts are only useful with a keyboard */}
-                  {!isTouch && (
+            {/* Around the whole popover: Popover.Target's child must keep its ref */}
+            <OnboardingTour.Target id={TOUR_TARGETS.help}>
+              <Box>
+                <Popover
+                  width={MENU_WIDTH}
+                  position="top-start"
+                  shadow="md"
+                  opened={helpOpened}
+                  onChange={setHelpOpened}
+                >
+                  <Popover.Target>
                     <NavLink
-                      label={t('keyboardShortcuts')}
-                      leftSection={<IconKeyboard size={18} />}
-                      onClick={() => toggleHelp()}
+                      label={t('helpAndSupport')}
+                      leftSection={<IconHelp size={18} />}
+                      onClick={() => setHelpOpened(value => !value)}
                       style={{ borderRadius: 'var(--mantine-radius-md)' }}
                     />
-                  )}
-                </Stack>
-              </Popover.Dropdown>
-            </Popover>
+                  </Popover.Target>
+                  <Popover.Dropdown>
+                    <Stack gap={4}>
+                      <NavLink
+                        label={t('documentation')}
+                        leftSection={<IconHelp size={18} />}
+                        onClick={() => window.open(DOCS_URL, '_blank')}
+                        style={{ borderRadius: 'var(--mantine-radius-md)' }}
+                      />
+                      <NavLink
+                        label={t('guidedTour')}
+                        leftSection={<IconRoute size={18} />}
+                        onClick={() => {
+                          setHelpOpened(false)
+                          startTour()
+                        }}
+                        style={{ borderRadius: 'var(--mantine-radius-md)' }}
+                      />
+                      {/* Shortcuts are only useful with a keyboard */}
+                      {!isTouch && (
+                        <NavLink
+                          label={t('keyboardShortcuts')}
+                          leftSection={<IconKeyboard size={18} />}
+                          onClick={() => toggleHelp()}
+                          style={{ borderRadius: 'var(--mantine-radius-md)' }}
+                        />
+                      )}
+                    </Stack>
+                  </Popover.Dropdown>
+                </Popover>
+              </Box>
+            </OnboardingTour.Target>
           </Box>
         </Stack>
       </Box>

@@ -36,6 +36,8 @@ import { useAppRoute } from '@/hooks/useAppRoute'
 import { usePreferences } from '@/queries/preferences'
 import { HotkeyBinding } from '../common/KeyBinding'
 import { useLeaveListAction } from '@/hooks/useLeaveListAction'
+import { OnboardingTour } from '@gfazioli/mantine-onboarding-tour'
+import { TOUR_TARGETS } from '../onboarding/tourTargets'
 
 export const TOPBAR_HEIGHT = 60
 
@@ -128,17 +130,20 @@ export function Topbar() {
       <Group h="100%" px="md" justify="space-between" wrap="nowrap" gap="xs">
         <Group wrap="nowrap" gap="xs" style={{ flexShrink: 0 }}>
           {showToggle && (
-            <ActionIcon
-              {...toggleUntilResolved}
-              mt="sm"
-              variant="subtle"
-              color="gray"
-              size="md"
-              onClick={toggle}
-              aria-label={t('toggleSidebar')}
-            >
-              <IconLayoutSidebar size={18} />
-            </ActionIcon>
+            // Phones: the tour points here (the sidebar, with lists and settings, is behind it)
+            <OnboardingTour.Target id={TOUR_TARGETS.menu}>
+              <ActionIcon
+                {...toggleUntilResolved}
+                mt="sm"
+                variant="subtle"
+                color="gray"
+                size="md"
+                onClick={toggle}
+                aria-label={t('toggleSidebar')}
+              >
+                <IconLayoutSidebar size={18} />
+              </ActionIcon>
+            </OnboardingTour.Target>
           )}
 
           {/* On phones the scrolled-in title replaces the breadcrumbs: both don't fit */}

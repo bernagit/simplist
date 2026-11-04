@@ -1635,6 +1635,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@gfazioli/mantine-onboarding-tour@npm:4.1.4":
+  version: 4.1.4
+  resolution: "@gfazioli/mantine-onboarding-tour@npm:4.1.4"
+  peerDependencies:
+    "@mantine/core": ">=9.0.0"
+    "@mantine/hooks": ">=9.0.0"
+    "@tabler/icons-react": ^3.30.0
+    react: ^18.x || ^19.x
+    react-dom: ^18.x || ^19.x
+  checksum: 10c0/423048117139c72ca090d94c2bf700d50edbd21f76d4ffb0bb4c9a9e25e31d8f88f92d5224f5c37b5c7cc28a44e6a91047ae834a1c5e1b130f394d39c1a4d47c
+  languageName: node
+  linkType: hard
+
 "@hexagon/base64@npm:^1.1.27":
   version: 1.1.28
   resolution: "@hexagon/base64@npm:1.1.28"
@@ -3506,6 +3519,7 @@ __metadata:
     "@dnd-kit/sortable": "npm:^10.0.0"
     "@dnd-kit/utilities": "npm:^3.2.2"
     "@formatjs/intl-localematcher": "npm:^0.8.13"
+    "@gfazioli/mantine-onboarding-tour": "npm:4.1.4"
     "@mantine/core": "npm:^9.3.2"
     "@mantine/dates": "npm:^9.4.1"
     "@mantine/form": "npm:^9.3.2"
