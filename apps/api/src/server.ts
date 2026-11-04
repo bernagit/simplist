@@ -74,8 +74,17 @@ try {
 
   if (transporter) {
     logger.info('Verifying SMTP connection...')
-    await transporter.verify()
-    logger.info('SMTP connection verified.')
+    // Email is optional: a wrong SMTP setting must not take the whole instance down. Sending is
+    // still attempted (each failure is logged), so mail works again once SMTP is reachable.
+    try {
+      await transporter.verify()
+      logger.info('SMTP connection verified.')
+    } catch (error) {
+      logger.warn(
+        `SMTP check failed, starting without working email: ${describeError(error).split('\n')[0]}. ` +
+          'Fix the SMTP_* settings, or remove them to turn email off.'
+      )
+    }
   } else {
     logger.warn('SMTP is disabled.')
   }
