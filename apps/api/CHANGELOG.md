@@ -1,5 +1,13 @@
 # app
 
+## 0.7.5
+
+### Patch Changes
+
+- feat: self-hosting with a single docker/compose.yaml and a .env, no repository clone: the nginx routing ships as the new simplist-proxy image, the database port is no longer published, and the documentation is an optional profile (COMPOSE_PROFILES=docs) served under /docs/ on the instance's own domain. Updating an existing install: stop the old stack before `git pull`, then follow "Moving to the new compose file" in the docs (set POSTGRES_VOLUME to keep your database, and KEYS_DIR=../keys when running from the repository)
+- feat: the API creates its session keys and push notification (VAPID) keys on first start in the keys folder, so no openssl or web-push step is needed and reminders are always available. Keys already in keys/ or in VAPID_* / JWT_* variables are kept; the keys volume must be writable
+- fix: a wrong or unreachable SMTP server no longer stops the API: it logs a warning and starts without working email
+
 ## 0.7.4
 
 ### Patch Changes
