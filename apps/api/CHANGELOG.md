@@ -1,5 +1,12 @@
 # app
 
+## 0.7.2
+
+### Patch Changes
+
+- docs: new documentation, in Italian and English: a step-by-step guide to deploy Simplist with Docker (session keys, configuration, notifications, first user, HTTPS), every configuration option, updates and backups, and a user guide for lists, tasks, repeats, reminders, calendar, search, sharing, notifications and shortcuts. Open it from "Help & Support" > "Documentation"
+- fix: the Docker example configuration now includes APP_URL, so the first user's registration link and email links point to your domain instead of localhost
+
 ## 0.7.1
 
 ### Patch Changes
