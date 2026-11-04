@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers -- durations below are the configuration */
 import { createModuleLogger } from '../../infrastructure/logging/logger.js'
-import { isPushEnabled } from '../../infrastructure/push/push.client.js'
 import { DueReminder, NotificationRepository } from './notification.repository.js'
 import { NotificationService, OutgoingPush } from './notification.service.js'
 
@@ -73,10 +72,6 @@ export class ReminderScheduler {
   private lastCleanupAt = 0
 
   start() {
-    if (!isPushEnabled) {
-      this.logger.warn('Push notifications are disabled (VAPID keys not set): no reminders.')
-      return
-    }
     if (this.timer) return
     this.logger.info('Task reminders started.')
     this.timer = setInterval(() => this.tick(), config.intervalMs)

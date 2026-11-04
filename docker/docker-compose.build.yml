@@ -12,7 +12,8 @@ services:
     environment:
       POSTGRES_HOST: simplist-db
     volumes:
-      - ../keys:/app/keys:ro
+      # Secrets created on first start (session and push keys): writable, and keep it in backups
+      - ../keys:/app/keys
 
   app:
     container_name: simplist-app

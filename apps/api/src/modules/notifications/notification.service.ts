@@ -1,11 +1,6 @@
 import pushConfig from '../../config/push.js'
 import { createModuleLogger } from '../../infrastructure/logging/logger.js'
-import {
-  isPushEnabled,
-  PushOptions,
-  PushPayload,
-  sendPush
-} from '../../infrastructure/push/push.client.js'
+import { PushOptions, PushPayload, sendPush } from '../../infrastructure/push/push.client.js'
 import { Errors } from '../../types/http.js'
 import { NotificationRepository } from './notification.repository.js'
 import {
@@ -52,23 +47,17 @@ export class NotificationService {
   private readonly logger = createModuleLogger('NotificationService')
   private readonly repository = new NotificationRepository()
 
-  private assertEnabled() {
-    if (!isPushEnabled) {
-      throw Errors.conflict('Push notifications are not configured on this server')
-    }
-  }
-
   getConfig() {
     return {
-      enabled: isPushEnabled,
-      publicKey: pushConfig?.publicKey ?? null
+      // Always on since the keys are created on first start; kept for older apps
+      enabled: true,
+      publicKey: pushConfig.publicKey
     }
   }
 
   // DEVICES
 
   async subscribe(userId: string, input: SubscribeInput, userAgent: string | null) {
-    this.assertEnabled()
     if (input.previousEndpoint && input.previousEndpoint !== input.endpoint) {
       await this.repository.deleteSubscriptionByEndpoint(input.previousEndpoint, userId)
     }
@@ -110,7 +99,6 @@ export class NotificationService {
   // DELIVERY
 
   async sendTest(userId: string, input: TestNotificationInput) {
-    this.assertEnabled()
     const report = await this.deliver([
       {
         userId,
@@ -130,7 +118,7 @@ export class NotificationService {
    */
   async deliver(messages: OutgoingPush[]): Promise<DeliveryReport> {
     const report: DeliveryReport = { sent: 0, failed: 0, removed: 0 }
-    if (!isPushEnabled || messages.length === 0) return report
+    if (messages.length === 0) return report
 
     const userIds = [...new Set(messages.map(message => message.userId))]
     const targets = await this.repository.getTargets(userIds)

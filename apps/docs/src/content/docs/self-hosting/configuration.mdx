@@ -45,7 +45,7 @@ All'avvio l'API applica da sola le migrazioni del database: non serve nessun com
 | `REFRESH_TOKEN_EXPIRES_IN_DAYS` | `30` | Giorni dopo i quali, senza usare l'app, bisogna rifare l'accesso. |
 | `COOKIE_SECURE` | `true` | Cookie solo su HTTPS. Mettila a `false` solo per un'istanza servita in HTTP, per esempio su una rete locale. |
 
-Le chiavi di firma delle sessioni si leggono dai file `keys/private.key` e `keys/public.pem` (montati in `/app/keys`): vedi [Deploy con Docker](/self-hosting/docker/#genera-le-chiavi-di-sessione).
+Le chiavi che firmano le sessioni (coppia EC P-384, algoritmo ES384) le crea l'API al primo avvio in `keys/private.key` e `keys/public.pem`, nella cartella montata in `/app/keys`. Se usi un sistema per i segreti, puoi passarle invece con le variabili `JWT_PRIVATE_KEY` e `JWT_PUBLIC_KEY` (in formato PEM): in quel caso i file non vengono creati.
 
 ## Registrazione e inviti
 
@@ -75,10 +75,10 @@ Senza email non vengono inviati l'email di benvenuto, gli inviti via email e il 
 
 | Variabile | Predefinito | Descrizione |
 |---|---|---|
-| `VAPID_PUBLIC_KEY` | — | Chiave pubblica VAPID. |
-| `VAPID_PRIVATE_KEY` | — | Chiave privata VAPID. |
-| `VAPID_SUBJECT` | `mailto:` + `MAIL_FROM_EMAIL` | Contatto inviato ai servizi push: `mailto:` oppure un URL `https://`. Obbligatoria se non c'è `MAIL_FROM_EMAIL` e `APP_URL` non è in HTTPS. |
+| `VAPID_PUBLIC_KEY` | generata | Chiave pubblica VAPID, da impostare solo per usare una coppia tua. |
+| `VAPID_PRIVATE_KEY` | generata | Chiave privata VAPID, insieme alla pubblica. |
+| `VAPID_SUBJECT` | `mailto:` + `MAIL_FROM_EMAIL`, altrimenti `APP_URL` | Contatto inviato ai servizi push: `mailto:` oppure un URL `https://`. |
 
-Senza le chiavi VAPID i promemoria sono disattivati, e nelle impostazioni dell'app lo si vede. Per generarle: [Deploy con Docker](/self-hosting/docker/#attiva-le-notifiche-push-consigliato).
+Non serve configurare niente: al primo avvio l'API crea le chiavi VAPID in `keys/vapid.json`. Conservale con i backup: se cambiano, ogni dispositivo deve riattivare le notifiche.
 
 I promemoria partono dall'API, che ogni minuto controlla quelli in scadenza. Anche con più istanze dell'API ogni promemoria viene inviato una sola volta.

@@ -31,7 +31,7 @@ Le novità di ogni versione sono nel changelog: gli utenti lo vedono anche nell'
    VERSION=0.7.1
    ```
 
-   Controlla nel changelog se la versione richiede nuove variabili, per esempio le chiavi VAPID introdotte nella 0.7.0.
+   Controlla nel changelog se la versione richiede nuove variabili o modifiche alla configurazione.
 
 4. Scarica le immagini e riavvia:
 
@@ -61,8 +61,8 @@ I dati da salvare sono tre:
 | Cosa | Dove | Perché |
 |---|---|---|
 | Database | volume `postgres_data` | Liste, attività, utenti, impostazioni |
-| Chiavi di sessione | `keys/` | Senza, tutti gli utenti devono rifare l'accesso |
-| Configurazione | `docker/.env` | Password del database e chiavi VAPID |
+| Chiavi | `keys/` | Chiavi di sessione e delle notifiche: senza, tutti devono rifare l'accesso e riattivare le notifiche |
+| Configurazione | `docker/.env` | Password del database e le altre impostazioni |
 
 Per il database usa `pg_dump`, che funziona anche con l'istanza accesa:
 
@@ -110,7 +110,8 @@ Guarda il motivo nei log:
 docker logs simplist-api
 ```
 
-- **`ENOENT … keys/private.key`**: mancano le chiavi di sessione, oppure la cartella `keys/` non è accanto a `docker/`. Vedi [Genera le chiavi di sessione](/self-hosting/docker/#genera-le-chiavi-di-sessione).
+- **`Cannot create … keys/…`**: al primo avvio l'API deve poter scrivere nella cartella `keys/`. Controlla che nel compose il volume non sia montato in sola lettura (`:ro`) e che la cartella sia scrivibile.
+- **`public.pem exists but private.key is missing`**: la chiave privata è andata persa. Ripristinala dal backup, oppure cancella `public.pem` per crearne una nuova: tutti gli utenti dovranno rifare l'accesso.
 - **Errore di connessione SMTP all'avvio**: i dati `SMTP_*` sono sbagliati, o sono rimasti quelli di esempio. Correggili, oppure cancella le righe `SMTP_*` per fare a meno dell'email.
 - **`password authentication failed`**: `POSTGRES_PASSWORD` è cambiata dopo il primo avvio. Rimetti quella originale, oppure cambiala anche dentro PostgreSQL.
 
@@ -124,7 +125,7 @@ Manca `APP_URL` in `docker/.env`. Impostala e riavvia l'API: finché non esiste 
 
 ### Le notifiche non arrivano
 
-- Nei log dell'API deve comparire `Task reminders started.`. Se invece compare `Push notifications are disabled`, mancano le chiavi VAPID.
+- Nei log dell'API deve comparire `Task reminders started.`.
 - In **Impostazioni → Notifiche** il dispositivo deve risultare attivo, e la notifica di prova deve arrivare.
 - Il promemoria va attivato su ogni attività (icona della campanella).
 - Su iPhone e iPad le notifiche funzionano solo nell'app aggiunta alla schermata Home.

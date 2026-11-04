@@ -1,11 +1,7 @@
 import z from 'zod'
 import 'dotenv/config'
 import { cfg } from './internal.js'
-import fs from 'fs'
-import path from 'path'
-
-const privkey = fs.readFileSync(path.resolve(process.cwd(), '../../keys/private.key'), 'utf8')
-const pubkey = fs.readFileSync(path.resolve(process.cwd(), '../../keys/public.pem'), 'utf8')
+import { secrets } from './secrets.js'
 
 const appConfigSchema = z.object({
   appUrl: z.string().default(cfg.DEFAULT_APP_URL),
@@ -16,8 +12,9 @@ const appConfigSchema = z.object({
   isDev: z.boolean().default(cfg.DEFAULT_IS_DEV),
   corsOrigin: z.string().default(cfg.DEFAULT_CORS_ORIGIN),
   databaseUrl: z.string(),
-  jwtPrivateKey: z.string().default(privkey),
-  jwtPublicKey: z.string().default(pubkey),
+  // Created on first start if missing, or from JWT_PRIVATE_KEY / JWT_PUBLIC_KEY (see secrets.ts)
+  jwtPrivateKey: z.string().min(1),
+  jwtPublicKey: z.string().min(1),
   jwtExpiresIn: z.string().default(cfg.DEFAULT_JWT_EXPIRES_IN),
   // coerce: env values are strings, z.number() rejected REFRESH_TOKEN_EXPIRES_IN_DAYS when set
   refreshTokenExpiresIn: z.coerce
@@ -42,8 +39,8 @@ const appConfig = appConfigSchema.parse({
   databaseUrl:
     process.env.DATABASE_URL ??
     `postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public`,
-  jwtPrivateKey: process.env.JWT_PRIVATE_KEY,
-  jwtPublicKey: process.env.JWT_PUBLIC_KEY,
+  jwtPrivateKey: secrets.session.privateKey,
+  jwtPublicKey: secrets.session.publicKey,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN,
   refreshTokenExpiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN_DAYS,
   invitePerUser: process.env.INVITE_PER_USER,

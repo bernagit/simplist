@@ -13,7 +13,7 @@ Negli esempi l'istanza risponde su `https://simplist.esempio.it`: sostituiscilo 
 
 1. ## Scarica i file di deploy
 
-   Sul server ti servono la cartella `docker/` del repository (compose, configurazione di nginx, esempio di `.env`) e una cartella `keys/` accanto a essa. Il modo più semplice è clonare il repository:
+   Sul server ti serve la cartella `docker/` del repository (compose, configurazione di nginx, esempio di `.env`). Il modo più semplice è clonare il repository:
 
    ```bash
    git clone --depth 1 https://github.com/bernagit/simplist.git
@@ -22,38 +22,7 @@ Negli esempi l'istanza risponde su `https://simplist.esempio.it`: sostituiscilo 
 
    Tutti i comandi seguenti partono da questa cartella.
 
-2. ## Genera le chiavi di sessione
-
-   L'API firma le sessioni con una coppia di chiavi **EC P-384** (algoritmo ES384), letta dai file `keys/private.key` e `keys/public.pem`. Generale una volta sola:
-
-   <Tabs>
-   <TabItem label="Con Docker">
-
-   ```bash
-   mkdir -p keys
-   docker run --rm -v "$PWD/keys:/keys" alpine/openssl \
-     ecparam -name secp384r1 -genkey -noout -out /keys/private.key
-   docker run --rm -v "$PWD/keys:/keys" alpine/openssl \
-     ec -in /keys/private.key -pubout -out /keys/public.pem
-   ```
-
-   </TabItem>
-   <TabItem label="Con openssl">
-
-   ```bash
-   mkdir -p keys
-   openssl ecparam -name secp384r1 -genkey -noout -out keys/private.key
-   openssl ec -in keys/private.key -pubout -out keys/public.pem
-   ```
-
-   </TabItem>
-   </Tabs>
-
-   <Aside type="caution">
-   Conserva `keys/private.key` insieme ai backup e non condividerla. Se la cambi, tutti gli utenti dovranno rifare l'accesso.
-   </Aside>
-
-3. ## Crea il file di configurazione
+2. ## Crea il file di configurazione
 
    ```bash
    cp docker/.env.example docker/.env
@@ -84,26 +53,7 @@ Negli esempi l'istanza risponde su `https://simplist.esempio.it`: sostituiscilo 
 
    Tutte le altre opzioni sono descritte in [Configurazione](/self-hosting/configuration/).
 
-4. ## Attiva le notifiche push (consigliato)
-
-   I promemoria delle attività usano le notifiche push, che richiedono una coppia di chiavi **VAPID**. Generala una volta sola:
-
-   ```bash
-   docker run --rm node:24-alpine npx -y web-push@3.6.7 generate-vapid-keys
-   ```
-
-   e copia i due valori in `docker/.env`:
-
-   ```ini
-   VAPID_PUBLIC_KEY=BNc...
-   VAPID_PRIVATE_KEY=x7f...
-   ```
-
-   <Aside>
-   Senza queste chiavi Simplist funziona lo stesso, ma i promemoria sono disattivati. Conservale: se le cambi, ogni dispositivo dovrà riattivare le notifiche.
-   </Aside>
-
-5. ## Non esporre il database
+3. ## Non esporre il database
 
    Il file `docker/docker-compose.yml` pubblica PostgreSQL sulla porta `5432` del server, che è utile in sviluppo. In produzione chiudila creando `docker/docker-compose.server.yml`:
 
@@ -115,7 +65,7 @@ Negli esempi l'istanza risponde su `https://simplist.esempio.it`: sostituiscilo 
 
    (`!reset` richiede Docker Compose 2.24 o successivo.)
 
-6. ## Avvia Simplist
+4. ## Avvia Simplist
 
    ```bash
    docker compose --env-file docker/.env \
@@ -125,16 +75,25 @@ Negli esempi l'istanza risponde su `https://simplist.esempio.it`: sostituiscilo 
      up -d
    ```
 
-   Al primo avvio l'API crea le tabelle del database. Controlla che sia tutto a posto:
+   Al primo avvio l'API crea le tabelle del database e genera i suoi segreti nella cartella `keys/`, accanto a `docker/`:
+
+   - `private.key` e `public.pem`, le chiavi che firmano le sessioni;
+   - `vapid.json`, le chiavi delle notifiche push.
+
+   <Aside type="caution">
+   Conserva la cartella `keys/` insieme ai backup e non condividerla. Se la perdi, tutti gli utenti devono rifare l'accesso e riattivare le notifiche su ogni dispositivo.
+   </Aside>
+
+   Controlla che sia tutto a posto:
 
    ```bash
    docker compose --env-file docker/.env -f docker/docker-compose.yml -f docker/docker-compose.prod.yml ps
    curl http://localhost:3000/api/health
    ```
 
-   La risposta deve essere `{"status":"ok"}`.
+   La risposta deve contenere `"status":"ok"` e la versione installata.
 
-7. ## Crea il primo utente
+5. ## Crea il primo utente
 
    La registrazione su Simplist avviene solo su invito. Quando il database è vuoto, l'API crea un invito per il primo utente e stampa il link nei log:
 
@@ -152,7 +111,7 @@ Negli esempi l'istanza risponde su `https://simplist.esempio.it`: sostituiscilo 
    Il link vale un'ora. Se scade prima che tu lo usi, riavvia l'API con `docker restart simplist-api`: finché non esiste nessun utente, a ogni avvio viene creato un nuovo invito.
    </Aside>
 
-8. ## Pubblica in HTTPS
+6. ## Pubblica in HTTPS
 
    Il container nginx risponde in HTTP sulla porta `3000`. Davanti serve un reverse proxy che gestisca il certificato e inoltri le richieste **mantenendo l'header `Host`**. Quell'header serve anche a riconoscere il sottodominio `docs.` della documentazione.
 
@@ -200,7 +159,7 @@ Negli esempi l'istanza risponde su `https://simplist.esempio.it`: sostituiscilo 
 ## Verifica finale
 
 - Apri `https://simplist.esempio.it` e accedi.
-- Nei log dell'API (`docker logs simplist-api`) devono comparire `Application ready` e, se hai impostato le chiavi VAPID, `Task reminders started.`.
+- Nei log dell'API (`docker logs simplist-api`) devono comparire `Application ready` e `Task reminders started.`.
 - Da un telefono, installa l'app e attiva le notifiche in **Impostazioni → Notifiche**, poi invia una notifica di prova.
 
 <Aside type="note" title="Senza HTTPS">

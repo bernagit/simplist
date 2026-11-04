@@ -3,11 +3,8 @@ import pushConfig from '../../config/push.js'
 
 const { WebPushError } = webpush
 
-if (pushConfig) {
-  webpush.setVapidDetails(pushConfig.subject, pushConfig.publicKey, pushConfig.privateKey)
-}
-
-export const isPushEnabled = pushConfig !== null
+// The keys always exist: created on first start if not provided (config/secrets.ts)
+webpush.setVapidDetails(pushConfig.subject, pushConfig.publicKey, pushConfig.privateKey)
 
 export type PushTarget = {
   endpoint: string
@@ -49,8 +46,6 @@ export async function sendPush(
   payload: PushPayload,
   options: PushOptions
 ): Promise<PushResult> {
-  if (!pushConfig) return { status: 'failed', reason: 'Push is not configured' }
-
   try {
     await webpush.sendNotification(
       { endpoint: target.endpoint, keys: { p256dh: target.p256dh, auth: target.auth } },

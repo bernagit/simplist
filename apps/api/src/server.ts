@@ -3,6 +3,7 @@ import { cfg } from './config/internal.js'
 import appConfig from './config/env.js'
 import { createModuleLogger } from './infrastructure/logging/logger.js'
 import { appInfo } from './config/appInfo.js'
+import { secrets } from './config/secrets.js'
 import { transporter } from './infrastructure/mail/mail.client.js'
 import { bootstrapFirstInvite } from './bootstrap/first-invite.js'
 import { reminderScheduler } from './modules/notifications/reminder.scheduler.js'
@@ -69,6 +70,7 @@ async function shutdown(server: ReturnType<typeof app.listen>, signal: string) {
 
 try {
   logger.info('Starting application...')
+  secrets.notes.forEach(note => logger.info(note))
 
   if (transporter) {
     logger.info('Verifying SMTP connection...')

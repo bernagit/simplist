@@ -45,7 +45,7 @@ On startup the API applies database migrations by itself: you never need a comma
 | `REFRESH_TOKEN_EXPIRES_IN_DAYS` | `30` | Days without using the app after which you have to sign in again. |
 | `COOKIE_SECURE` | `true` | Cookies over HTTPS only. Set it to `false` only for an instance served over HTTP, for example on a local network. |
 
-The session signing keys are read from `keys/private.key` and `keys/public.pem` (mounted in `/app/keys`): see [Deploy with Docker](/en/self-hosting/docker/#generate-the-session-keys).
+The keys that sign sessions (an EC P-384 pair, ES384) are created by the API on first start in `keys/private.key` and `keys/public.pem`, in the folder mounted on `/app/keys`. If you use a secrets manager, you can pass them with `JWT_PRIVATE_KEY` and `JWT_PUBLIC_KEY` instead (PEM format): then no files are created.
 
 ## Registration and invites
 
@@ -75,10 +75,10 @@ Without email, the welcome email, email invites and password reset are not sent.
 
 | Variable | Default | Description |
 |---|---|---|
-| `VAPID_PUBLIC_KEY` | — | VAPID public key. |
-| `VAPID_PRIVATE_KEY` | — | VAPID private key. |
-| `VAPID_SUBJECT` | `mailto:` + `MAIL_FROM_EMAIL` | Contact sent to push services: `mailto:` or an `https://` URL. Required when there is no `MAIL_FROM_EMAIL` and `APP_URL` isn't HTTPS. |
+| `VAPID_PUBLIC_KEY` | generated | VAPID public key, set it only to use your own pair. |
+| `VAPID_PRIVATE_KEY` | generated | VAPID private key, together with the public one. |
+| `VAPID_SUBJECT` | `mailto:` + `MAIL_FROM_EMAIL`, otherwise `APP_URL` | Contact sent to push services: `mailto:` or an `https://` URL. |
 
-Without the VAPID keys reminders are off, and the app's settings say so. To generate them: [Deploy with Docker](/en/self-hosting/docker/#turn-on-push-notifications-recommended).
+There is nothing to configure: on first start the API creates the VAPID keys in `keys/vapid.json`. Keep them with your backups: if they change, every device has to turn notifications on again.
 
 Reminders are sent by the API, which checks every minute for the ones that are due. Each reminder is sent once, even with several API instances.

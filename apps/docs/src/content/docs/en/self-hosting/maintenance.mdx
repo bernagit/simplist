@@ -31,7 +31,7 @@ What changes in each version is in the changelog. Users see it in the app too: i
    VERSION=0.7.1
    ```
 
-   Check the changelog for new variables a version needs, like the VAPID keys introduced in 0.7.0.
+   Check the changelog for new variables or configuration changes a version needs.
 
 4. Pull the images and restart:
 
@@ -61,8 +61,8 @@ There are three things to save:
 | What | Where | Why |
 |---|---|---|
 | Database | `postgres_data` volume | Lists, tasks, users, settings |
-| Session keys | `keys/` | Without them everyone has to sign in again |
-| Configuration | `docker/.env` | Database password and VAPID keys |
+| Keys | `keys/` | Session and notification keys: without them everyone has to sign in again and turn notifications back on |
+| Configuration | `docker/.env` | Database password and the other settings |
 
 For the database use `pg_dump`, which works while the instance is running:
 
@@ -110,7 +110,8 @@ Look for the reason in the logs:
 docker logs simplist-api
 ```
 
-- **`ENOENT … keys/private.key`**: the session keys are missing, or the `keys/` folder isn't next to `docker/`. See [Generate the session keys](/en/self-hosting/docker/#generate-the-session-keys).
+- **`Cannot create … keys/…`**: on first start the API must be able to write to the `keys/` folder. Check that the compose volume isn't mounted read-only (`:ro`) and that the folder is writable.
+- **`public.pem exists but private.key is missing`**: the private key was lost. Restore it from the backup, or delete `public.pem` to create a new one: everyone will have to sign in again.
 - **SMTP connection error at startup**: the `SMTP_*` details are wrong, or still the example ones. Fix them, or delete the `SMTP_*` lines to run without email.
 - **`password authentication failed`**: `POSTGRES_PASSWORD` changed after the first start. Put the original one back, or change it inside PostgreSQL too.
 
@@ -124,7 +125,7 @@ Session cookies only work over HTTPS. Make sure the instance is opened with `htt
 
 ### Notifications don't arrive
 
-- The API logs must show `Task reminders started.`. If they show `Push notifications are disabled` instead, the VAPID keys are missing.
+- The API logs must show `Task reminders started.`.
 - In **Settings → Notifications** the device must be on, and the test notification must arrive.
 - The reminder has to be turned on for each task (bell icon).
 - On iPhone and iPad notifications only work in the app added to the Home Screen.
