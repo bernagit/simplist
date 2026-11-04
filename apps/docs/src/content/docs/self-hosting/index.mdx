@@ -5,7 +5,7 @@ description: Come è fatta un'installazione di Simplist e cosa serve per ospitar
 
 import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
-Simplist si installa con **Docker Compose**. Le immagini sono pubblicate su GitHub Container Registry (`ghcr.io/bernagit`), quindi sul server non serve compilare nulla.
+Simplist si installa con **Docker Compose**. Le immagini sono pubblicate su GitHub Container Registry (`ghcr.io/bernagit`), quindi sul server non serve compilare nulla: tutta l'istanza è descritta da un solo `compose.yaml`, configurato con un file `.env`.
 
 ## Come è fatta un'installazione
 
@@ -14,22 +14,22 @@ Simplist si installa con **Docker Compose**. Le immagini sono pubblicate su GitH
 | `db` | `postgres:17` | Database PostgreSQL con tutti i dati |
 | `api` | `ghcr.io/bernagit/simplist-api` | API Express: autenticazione, liste, attività, promemoria |
 | `app` | `ghcr.io/bernagit/simplist-app` | Web app Next.js (installabile come PWA) |
-| `docs` | `ghcr.io/bernagit/simplist-docs` | Questa documentazione (facoltativa) |
-| `nginx` | `nginx:1.27-alpine` | Unico punto d'ingresso: instrada le richieste agli altri servizi |
+| `docs` | `ghcr.io/bernagit/simplist-docs` | Questa documentazione, su `/docs/` (facoltativa, profilo `docs`) |
+| `proxy` | `ghcr.io/bernagit/simplist-proxy` | Unico punto d'ingresso: nginx con l'instradamento già configurato |
 
-Il traffico entra solo da **nginx**, sulla porta `3000` dell'host:
+Il traffico entra solo dal **proxy**, sulla porta `3000` dell'host (`HTTP_PORT`):
 
 - `/api/*` va all'API;
-- tutto il resto va alla web app;
-- le richieste a un host che inizia con `docs.` (per esempio `docs.esempio.it`) vanno alla documentazione.
+- `/docs/*` va alla documentazione; senza il servizio `docs` rimanda ai sorgenti della documentazione su GitHub;
+- tutto il resto va alla web app.
 
-App e API stanno quindi sullo **stesso dominio**: i cookie di sessione funzionano senza configurazioni CORS.
+App, API e documentazione stanno sullo **stesso dominio**: i cookie di sessione funzionano senza configurazioni CORS, e non serve nessun record DNS in più. Il database non è pubblicato: lo raggiunge solo l'API.
 
 ```text
-Browser ──HTTPS──▶ reverse proxy (Caddy, nginx, Traefik…) ──HTTP──▶ simplist-nginx :3000
-                                                                    ├── /api  ─▶ api :2000 ─▶ db :5432
-                                                                    ├── /     ─▶ app :3000
-                                                                    └── docs.* ─▶ docs :80
+Browser ──HTTPS──▶ reverse proxy (Caddy, nginx, Traefik…) ──HTTP──▶ proxy :3000
+                                                                    ├── /api   ─▶ api :2000 ─▶ db :5432
+                                                                    ├── /docs  ─▶ docs :80
+                                                                    └── /      ─▶ app :3000
 ```
 
 ## Requisiti
@@ -48,16 +48,16 @@ Browser ──HTTPS──▶ reverse proxy (Caddy, nginx, Traefik…) ──HTTP
   <LinkCard
     title="Deploy con Docker"
     description="Installazione passo passo: configurazione, avvio, primo utente e HTTPS."
-    href="/self-hosting/docker/"
+    href="/docs/self-hosting/docker/"
   />
   <LinkCard
     title="Configurazione"
     description="Tutte le variabili d'ambiente dell'API, con i valori predefiniti."
-    href="/self-hosting/configuration/"
+    href="/docs/self-hosting/configuration/"
   />
   <LinkCard
     title="Aggiornamenti e backup"
     description="Aggiornare a una nuova versione, fare backup e ripristino, risolvere i problemi comuni."
-    href="/self-hosting/maintenance/"
+    href="/docs/self-hosting/maintenance/"
   />
 </CardGrid>

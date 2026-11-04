@@ -5,30 +5,33 @@ description: Variabili d'ambiente dell'API di Simplist, con i valori predefiniti
 
 import { Aside } from '@astrojs/starlight/components';
 
-Nel deploy Docker tutta la configurazione sta in `docker/.env`. Il file lo leggono sia Docker Compose (per il database) sia l'API (`env_file`). Dopo una modifica, ricrea i container con lo stesso comando `docker compose … up -d` usato per l'avvio.
+Nel deploy Docker tutta la configurazione sta nel file `.env` accanto a `compose.yaml`. Il file lo leggono sia Docker Compose (immagini, porta, database) sia l'API (`env_file`). Dopo una modifica, applicala con `docker compose up -d`.
 
-La web app non ha configurazione: in produzione parla con l'API sullo stesso dominio, tramite nginx.
+La web app non ha configurazione: in produzione parla con l'API sullo stesso dominio, tramite il proxy.
 
 ## Generale
 
 | Variabile | Predefinito | Descrizione |
 |---|---|---|
-| `VERSION` | `latest` | Versione delle immagini da usare (per esempio `0.7.1`). Usata solo da Docker Compose. |
+| `VERSION` | `latest` | Versione delle immagini da usare (per esempio `0.7.4`). Usata solo da Docker Compose. |
+| `HTTP_PORT` | `3000` | Porta dell'host su cui risponde il proxy. Usata solo da Docker Compose. |
+| `COMPOSE_PROFILES` | — | Servizi facoltativi da avviare: `docs` aggiunge la documentazione su `/docs/`. |
+| `KEYS_DIR` | `./keys` | Cartella dell'host con i segreti dell'API (chiavi di sessione e delle notifiche). Usata solo da Docker Compose. |
 | `REGISTRY` | `ghcr.io/bernagit` | Registry delle immagini. Usata solo da Docker Compose. |
 | `APP_URL` | `http://localhost:3000` | Indirizzo pubblico dell'istanza. Serve per i link nelle email, per il link del primo utente e per gli inviti. |
 | `CORS_ORIGIN` | `http://localhost:3000` | Origine consentita per le chiamate all'API. Impostala uguale ad `APP_URL`. |
-| `PORT` | `2000` | Porta dell'API dentro il container. Non cambiarla nel deploy Docker: nginx la cerca lì. |
+| `PORT` | `2000` | Porta dell'API dentro il container. Non cambiarla nel deploy Docker: il proxy la cerca lì. |
 | `LOG_LEVEL` | `info` | `error`, `warn`, `info` o `debug`. |
 
 ## Database
 
 | Variabile | Predefinito | Descrizione |
 |---|---|---|
-| `POSTGRES_USER` | — | Utente PostgreSQL. Lo usa anche il container `db` per inizializzare il database. |
-| `POSTGRES_PASSWORD` | — | Password PostgreSQL. |
-| `POSTGRES_DB` | — | Nome del database. |
-| `POSTGRES_HOST` | — | Host del database: `simplist-db` nel deploy Docker. |
-| `POSTGRES_PORT` | — | Porta del database: `5432`. |
+| `POSTGRES_USER` | `postgres` | Utente PostgreSQL. Lo usa anche il container `db` per inizializzare il database. |
+| `POSTGRES_PASSWORD` | — | Password PostgreSQL. Obbligatoria. |
+| `POSTGRES_DB` | `simplist` | Nome del database. |
+| `POSTGRES_VOLUME` | `simplist_postgres_data` | Volume Docker con i dati del database. Serve solo per riusare il volume di un'installazione precedente (vedi [Aggiornamenti e backup](/docs/self-hosting/maintenance/#passare-al-nuovo-compose)). |
+| `POSTGRES_HOST`, `POSTGRES_PORT` | `db`, `5432` | Indirizzo del database. Nel deploy Docker li imposta `compose.yaml`: servono solo senza Docker. |
 | `DATABASE_URL` | — | In alternativa alle variabili sopra: URL completo (`postgresql://utente:password@host:5432/db`). Se è impostata, ha la precedenza. |
 
 <Aside type="caution">
@@ -57,7 +60,7 @@ La registrazione è solo su invito. Un invito vale **7 giorni** e si usa una vol
 
 ## Email
 
-Tutte facoltative. L'email si attiva solo se ci sono **tutte** le prime cinque variabili. In quel caso l'API verifica la connessione all'avvio e non parte se la verifica fallisce.
+Tutte facoltative. L'email si attiva solo se ci sono **tutte** le prime cinque variabili. In quel caso l'API verifica la connessione all'avvio: se la verifica fallisce lo segnala nei log e parte comunque, senza email funzionanti finché il server SMTP non risponde.
 
 | Variabile | Predefinito | Descrizione |
 |---|---|---|

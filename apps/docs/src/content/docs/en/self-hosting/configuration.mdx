@@ -5,30 +5,33 @@ description: Simplist API environment variables, with their defaults.
 
 import { Aside } from '@astrojs/starlight/components';
 
-In the Docker deploy the whole configuration lives in `docker/.env`. Both Docker Compose (for the database) and the API (`env_file`) read it. After a change, recreate the containers with the same `docker compose … up -d` command you started them with.
+In the Docker deploy the whole configuration lives in the `.env` file next to `compose.yaml`. Both Docker Compose (images, port, database) and the API (`env_file`) read it. After a change, apply it with `docker compose up -d`.
 
-The web app has no configuration: in production it talks to the API on the same domain, through nginx.
+The web app has no configuration: in production it talks to the API on the same domain, through the proxy.
 
 ## General
 
 | Variable | Default | Description |
 |---|---|---|
-| `VERSION` | `latest` | Image version to run (for example `0.7.1`). Docker Compose only. |
+| `VERSION` | `latest` | Image version to run (for example `0.7.4`). Docker Compose only. |
+| `HTTP_PORT` | `3000` | Host port the proxy answers on. Docker Compose only. |
+| `COMPOSE_PROFILES` | — | Optional services to start: `docs` adds the documentation under `/docs/`. |
+| `KEYS_DIR` | `./keys` | Host folder with the API's secrets (session and notification keys). Docker Compose only. |
 | `REGISTRY` | `ghcr.io/bernagit` | Image registry. Docker Compose only. |
 | `APP_URL` | `http://localhost:3000` | Public address of the instance. Used for links in emails, for the first user link and for invites. |
 | `CORS_ORIGIN` | `http://localhost:3000` | Origin allowed to call the API. Set it to the same value as `APP_URL`. |
-| `PORT` | `2000` | API port inside the container. Don't change it in the Docker deploy: nginx expects it there. |
+| `PORT` | `2000` | API port inside the container. Don't change it in the Docker deploy: the proxy expects it there. |
 | `LOG_LEVEL` | `info` | `error`, `warn`, `info` or `debug`. |
 
 ## Database
 
 | Variable | Default | Description |
 |---|---|---|
-| `POSTGRES_USER` | — | PostgreSQL user. The `db` container also uses it to create the database. |
-| `POSTGRES_PASSWORD` | — | PostgreSQL password. |
-| `POSTGRES_DB` | — | Database name. |
-| `POSTGRES_HOST` | — | Database host: `simplist-db` in the Docker deploy. |
-| `POSTGRES_PORT` | — | Database port: `5432`. |
+| `POSTGRES_USER` | `postgres` | PostgreSQL user. The `db` container also uses it to create the database. |
+| `POSTGRES_PASSWORD` | — | PostgreSQL password. Required. |
+| `POSTGRES_DB` | `simplist` | Database name. |
+| `POSTGRES_VOLUME` | `simplist_postgres_data` | Docker volume with the database data. Only needed to reuse the volume of an earlier install (see [Updates and backups](/docs/en/self-hosting/maintenance/#moving-to-the-new-compose-file)). |
+| `POSTGRES_HOST`, `POSTGRES_PORT` | `db`, `5432` | Database address. In the Docker deploy `compose.yaml` sets them: only needed without Docker. |
 | `DATABASE_URL` | — | Instead of the variables above: a full URL (`postgresql://user:password@host:5432/db`). When set, it takes precedence. |
 
 <Aside type="caution">
@@ -57,7 +60,7 @@ Registration is by invitation only. An invite is valid for **7 days** and can be
 
 ## Email
 
-All optional. Email is on only when **all** of the first five variables are set. Then the API checks the connection at startup and does not start if the check fails.
+All optional. Email is on only when **all** of the first five variables are set. Then the API checks the connection at startup: if the check fails it says so in the logs and starts anyway, without working email until the SMTP server answers.
 
 | Variable | Default | Description |
 |---|---|---|

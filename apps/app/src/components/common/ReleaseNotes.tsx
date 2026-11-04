@@ -15,7 +15,7 @@ const NOTE_STYLE: Record<ReleaseNoteType, { color: string; icon: typeof IconSpar
 /** Full changelog in the docs, in the user's language when there is one */
 export function useFullChangelogUrl() {
   const locale = useLocale()
-  return `${DOCS_URL}${locale === 'en' ? '/en' : ''}/changelog/`
+  return `${DOCS_URL}${locale === 'en' ? 'en/' : ''}changelog/`
 }
 
 /** The short, user-facing notes of one or more releases (release-notes.json). */

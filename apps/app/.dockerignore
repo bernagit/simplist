@@ -62,7 +62,9 @@ Dockerfile*
 compose.yaml
 compose.yml
 docker-compose*.yaml
+compose*.yaml
 docker-compose*.yml
+compose*.yml
 
 # Documentation
 *.md

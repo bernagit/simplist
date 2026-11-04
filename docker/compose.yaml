@@ -1,0 +1,74 @@
+# Simplist: the whole instance in one file. Next to it you only need a .env (see .env.example):
+#
+#   curl -fsSLO https://raw.githubusercontent.com/bernagit/simplist/master/docker/compose.yaml
+#   curl -fsSL  https://raw.githubusercontent.com/bernagit/simplist/master/docker/.env.example -o .env
+#   docker compose up -d
+#
+# Compose reads .env from this folder by itself. Only the proxy is published (HTTP_PORT); put a
+# reverse proxy with HTTPS in front of it.
+name: simplist
+
+services:
+  db:
+    image: postgres:17
+    container_name: simplist-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-simplist}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    image: ${REGISTRY:-ghcr.io/bernagit}/simplist-api:${VERSION:-latest}
+    container_name: simplist-api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-simplist}
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+    volumes:
+      # Secrets created on first start (session and push keys): keep this folder in backups
+      - ${KEYS_DIR:-./keys}:/app/keys
+
+  app:
+    image: ${REGISTRY:-ghcr.io/bernagit}/simplist-app:${VERSION:-latest}
+    container_name: simplist-app
+    restart: unless-stopped
+    depends_on:
+      - api
+
+  # Documentation under /docs/. Optional: turn it on with COMPOSE_PROFILES=docs in .env
+  docs:
+    image: ${REGISTRY:-ghcr.io/bernagit}/simplist-docs:${VERSION:-latest}
+    container_name: simplist-docs
+    restart: unless-stopped
+    profiles: [docs]
+
+  # Only public entry point: /api -> api, /docs -> docs, everything else -> app
+  proxy:
+    image: ${REGISTRY:-ghcr.io/bernagit}/simplist-proxy:${VERSION:-latest}
+    container_name: simplist-proxy
+    restart: unless-stopped
+    depends_on:
+      - api
+      - app
+    ports:
+      - "${HTTP_PORT:-3000}:80"
+
+volumes:
+  postgres_data:
+    # Installs made with the old docker/docker-compose.*.yml files keep their data in
+    # "docker_postgres_data": set POSTGRES_VOLUME=docker_postgres_data in .env to reuse it
+    name: ${POSTGRES_VOLUME:-simplist_postgres_data}

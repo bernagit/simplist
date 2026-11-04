@@ -6,7 +6,11 @@ import starlightLinksValidator from 'starlight-links-validator';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://docs.simplist.app.bernitec.it',
+	// Served by each instance under /docs/ (docker/nginx/simplist.conf). DOCS_SITE (optional, e.g.
+	// https://simplist.example.com) only adds canonical URLs and a sitemap for a public instance.
+	...(process.env.DOCS_SITE ? { site: process.env.DOCS_SITE } : {}),
+	base: '/docs',
+	trailingSlash: 'always',
 	integrations: [
 		starlight({
 			plugins: [starlightLinksValidator()],

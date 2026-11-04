@@ -28,6 +28,7 @@ RUN yarn build
 FROM nginx:1.27-alpine
 
 COPY apps/docs/nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /repo/apps/docs/dist /usr/share/nginx/html
+# Under /docs: the site is built with base '/docs'
+COPY --from=builder /repo/apps/docs/dist /usr/share/nginx/html/docs
 
 EXPOSE 80

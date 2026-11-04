@@ -28,18 +28,14 @@ apps/
    cp apps/api/.env.example apps/api/.env
    cp apps/app/.env.example apps/app/.env
    ```
-4. Start Postgres (or point `.env` at your own instance)
+4. Start Postgres on `localhost:5432` (or point `apps/api/.env` at your own instance)
    ```bash
-   docker compose up -d db
+   yarn dev:db
    ```
-5. Run migrations
+5. Start the dev servers (API on :2000, app on :3000). The API applies the migrations and
+   creates its session and push keys in `keys/` on first start.
    ```bash
-   yarn workspace api db:migrate
-   ```
-6. Start the dev servers
-   ```bash
-   yarn workspace api dev
-   yarn workspace app dev
+   yarn dev
    ```
 
 ## Branching & commits

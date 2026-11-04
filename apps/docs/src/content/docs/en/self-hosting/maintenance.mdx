@@ -5,100 +5,133 @@ description: Updating Simplist, backup and restore, and fixing common problems.
 
 import { Aside, Steps } from '@astrojs/starlight/components';
 
-To keep the examples short, this alias holds the start command from [Deploy with Docker](/en/self-hosting/docker/):
-
-```bash
-alias simplist='docker compose --env-file docker/.env -f docker/docker-compose.yml -f docker/docker-compose.prod.yml -f docker/docker-compose.server.yml'
-```
+All commands run from the instance folder, the one with `compose.yaml` and `.env` (see [Deploy with Docker](/docs/en/self-hosting/docker/)).
 
 ## Updating to a new version
 
-What changes in each version is in the changelog. Users see it in the app too: it opens after an update, and is always in **Settings → Info**.
+What's new in every version is in the [changelog](/docs/en/changelog/). Users also see a summary in the app: it shows after an update and is always in **Settings → Info**.
 
 <Steps>
 
 1. Make a [backup](#backups) of the database.
 
-2. Update the deploy files, in case compose or nginx changed:
-
-   ```bash
-   git pull
-   ```
-
-3. Set the new version in `docker/.env`:
+2. Set the new version in `.env`:
 
    ```ini
-   VERSION=0.7.1
+   VERSION=0.7.4
    ```
 
-   Check the changelog for new variables or configuration changes a version needs.
+   Check the changelog for new variables or a new `compose.yaml` the version needs. In that case download it again, with the same `curl` command as the installation.
 
-4. Pull the images and restart:
+3. Pull the images and restart:
 
    ```bash
-   simplist pull
-   simplist up -d
+   docker compose pull
+   docker compose up -d
    ```
 
-   On startup the API applies database migrations by itself.
+   On startup the API applies the database migrations by itself.
 
-5. Check the logs:
+4. Check the logs:
 
    ```bash
-   docker logs --tail 50 simplist-api
+   docker compose logs --tail 50 api
    ```
 
 </Steps>
 
 <Aside type="tip">
-With `VERSION=latest` the same `pull` + `up -d` always takes you to the latest published version. It's convenient, but you may update without noticing: pinning the version is more predictable.
+With `VERSION=latest` the same `pull` + `up -d` always brings you to the latest published version. It's handy, but you may update without noticing: pinning the version is more predictable.
 </Aside>
 
 ## Backups
 
-There are three things to save:
+There are three things to keep:
 
 | What | Where | Why |
 |---|---|---|
-| Database | `postgres_data` volume | Lists, tasks, users, settings |
+| Database | volume `simplist_postgres_data` | Lists, tasks, users, settings |
 | Keys | `keys/` | Session and notification keys: without them everyone has to sign in again and turn notifications back on |
-| Configuration | `docker/.env` | Database password and the other settings |
+| Configuration | `.env` | Database password and the other settings |
 
-For the database use `pg_dump`, which works while the instance is running:
+`keys/` and `.env` are in the instance folder: just copy it. For the database use `pg_dump`, which also works while the instance is running:
 
 ```bash
-docker exec simplist-db pg_dump -U postgres -d simplist -Fc > simplist-$(date +%F).dump
+docker compose exec -T db pg_dump -U postgres -d simplist -Fc > simplist-$(date +%F).dump
 ```
 
-Replace `postgres` and `simplist` if you used other values for `POSTGRES_USER` and `POSTGRES_DB` in `docker/.env`. Keep the copies off the server, for example with a daily `cron` job that uploads them elsewhere.
+Replace `postgres` and `simplist` if you used other values for `POSTGRES_USER` and `POSTGRES_DB` in `.env`. Keep the copies off the server, for example with a daily `cron` job that uploads them elsewhere.
 
 ## Restore
 
 <Steps>
 
-1. Stop the app and the API, keeping the database running:
+1. Stop the app and the API, leaving the database running:
 
    ```bash
-   simplist stop nginx app api
+   docker compose stop proxy app api
    ```
 
 2. Empty the database and restore the dump:
 
    ```bash
-   docker exec simplist-db dropdb -U postgres simplist
-   docker exec simplist-db createdb -U postgres simplist
-   docker exec -i simplist-db pg_restore -U postgres -d simplist < simplist-2026-11-03.dump
+   docker compose exec -T db dropdb -U postgres simplist
+   docker compose exec -T db createdb -U postgres simplist
+   docker compose exec -T db pg_restore -U postgres -d simplist < simplist-2026-11-03.dump
    ```
 
 3. Start everything again:
 
    ```bash
-   simplist up -d
+   docker compose up -d
    ```
 
 </Steps>
 
-Restore `keys/` and `docker/.env` from the same backup too, so sessions and notifications keep working.
+Restore `keys/` and `.env` from the same backup too, so sessions and notifications keep working.
+
+## Moving to the new compose file
+
+Up to 0.7.4 you installed Simplist by cloning the repository and starting `docker/docker-compose.yml` together with other files. Now `compose.yaml` is enough. To move an existing instance without losing data:
+
+<Steps>
+
+1. Make a [backup](#backups) of the database.
+
+2. Stop the old instance, from the repository folder:
+
+   ```bash
+   docker compose --env-file docker/.env -f docker/docker-compose.yml -f docker/docker-compose.prod.yml down
+   ```
+
+   Add the other `-f` files you used, for example `docker/docker-compose.server.yml`. `down` doesn't delete the database volume.
+
+3. Create the new folder and copy the configuration and the keys:
+
+   ```bash
+   mkdir ~/simplist && cd ~/simplist
+   curl -fsSLO https://raw.githubusercontent.com/bernagit/simplist/master/docker/compose.yaml
+   cp /path/to/the/repository/docker/.env .env
+   cp -a /path/to/the/repository/keys keys
+   ```
+
+4. In the new `.env`, add the name of the old database volume so it's reused:
+
+   ```ini
+   POSTGRES_VOLUME=docker_postgres_data
+   ```
+
+   Check the exact name with `docker volume ls`: it's the one ending in `_postgres_data`. You can delete `POSTGRES_HOST` and `POSTGRES_PORT`, which `compose.yaml` now sets.
+
+5. Start the new instance and check that you see your lists:
+
+   ```bash
+   docker compose up -d
+   ```
+
+</Steps>
+
+If you used the `docs.` subdomain for the documentation, it's now under `/docs/` on the same domain, with `COMPOSE_PROFILES=docs` in `.env`: you can remove that subdomain from DNS and from the reverse proxy.
 
 ## Common problems
 
@@ -107,29 +140,40 @@ Restore `keys/` and `docker/.env` from the same backup too, so sessions and noti
 Look for the reason in the logs:
 
 ```bash
-docker logs simplist-api
+docker compose logs api
 ```
 
-- **`Cannot create … keys/…`**: on first start the API must be able to write to the `keys/` folder. Check that the compose volume isn't mounted read-only (`:ro`) and that the folder is writable.
+- **`Cannot create … keys/…`**: on first start the API must be able to write to the `keys/` folder. Check that the folder is writable.
 - **`public.pem exists but private.key is missing`**: the private key was lost. Restore it from the backup, or delete `public.pem` to create a new one: everyone will have to sign in again.
-- **SMTP connection error at startup**: the `SMTP_*` details are wrong, or still the example ones. Fix them, or delete the `SMTP_*` lines to run without email.
 - **`password authentication failed`**: `POSTGRES_PASSWORD` changed after the first start. Put the original one back, or change it inside PostgreSQL too.
+
+### `docker compose up` stops with "Set POSTGRES_PASSWORD in .env"
+
+The database password is missing: `.env` isn't in the folder of `compose.yaml`, or it has no `POSTGRES_PASSWORD`.
+
+### After the update my lists are gone
+
+It's almost always a different database volume, for example after [moving to the new compose file](#moving-to-the-new-compose-file). The data isn't lost: find the old volume with `docker volume ls`, set it in `POSTGRES_VOLUME` and restart with `docker compose up -d`.
 
 ### I can't sign in, or I'm signed out right away
 
-Session cookies only work over HTTPS. Make sure the instance is opened with `https://` and that the reverse proxy forwards the `X-Forwarded-Proto` header. Only for an instance served over HTTP on a local network, set `COOKIE_SECURE=false`.
+Session cookies only work over HTTPS. Check that the instance is opened with `https://`, and that the reverse proxy forwards the `X-Forwarded-Proto` header. Only for an instance on plain HTTP in a local network, set `COOKIE_SECURE=false`.
 
 ### The first user's registration link points to localhost
 
-`APP_URL` is missing from `docker/.env`. Set it and restart the API: as long as there are no users, a new invite with the right address is created on startup.
+`APP_URL` is missing in `.env`. Set it and restart the API with `docker compose up -d`: as long as there are no users, every start creates a new invite with the right address.
+
+### Emails don't arrive
+
+At startup the API logs show `SMTP check failed…` with the reason: the `SMTP_*` details are wrong, or still the example ones. Fix them and restart with `docker compose up -d`, or delete the `SMTP_*` lines to run without email.
 
 ### Notifications don't arrive
 
 - The API logs must show `Task reminders started.`.
-- In **Settings → Notifications** the device must be on, and the test notification must arrive.
+- In **Settings → Notifications** the device must show as active, and the test notification must arrive.
 - The reminder has to be turned on for each task (bell icon).
 - On iPhone and iPad notifications only work in the app added to the Home Screen.
 
-### The documentation doesn't open on `docs.`
+### `/docs/` goes to GitHub
 
-The subdomain must point to the server, and the reverse proxy must forward it keeping the `Host` header. Without that header nginx can't tell it's the subdomain and shows the app.
+The documentation service isn't running: add `COMPOSE_PROFILES=docs` to `.env` and start with `docker compose up -d`.

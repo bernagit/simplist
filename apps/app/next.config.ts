@@ -9,6 +9,8 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts')
 // there is no nginx, so Next.js forwards /api itself to keep the API on the same origin
 // (the auth cookies are scoped to /api). `next build` runs with NODE_ENV=production: no rewrite.
 const devApiUrl = process.env.NODE_ENV === 'development' ? process.env.API_URL : undefined
+// Same for the documentation (/docs), served by `yarn dev:docs` on Astro's default port
+const devDocsUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:4321' : undefined
 
 // Development only: Next.js blocks dev assets requested from another host, so a phone opening
 // https://<lan-ip>:3000 (yarn dev:https) needs this machine's LAN addresses allowed.
@@ -26,7 +28,10 @@ const nextConfig: NextConfig = {
   output: 'standalone',
   allowedDevOrigins: lanAddresses,
   async rewrites() {
-    return devApiUrl ? [{ source: '/api/:path*', destination: `${devApiUrl}/:path*` }] : []
+    return [
+      ...(devApiUrl ? [{ source: '/api/:path*', destination: `${devApiUrl}/:path*` }] : []),
+      ...(devDocsUrl ? [{ source: '/docs/:path*', destination: `${devDocsUrl}/docs/:path*` }] : [])
+    ]
   },
   async headers() {
     return [

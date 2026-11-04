@@ -16,9 +16,9 @@ Simplist - Keep your lists together
   <a href="https://github.com/bernagit/simplist/releases"><img src="https://img.shields.io/github/v/tag/bernagit/simplist?style=flat-square&label=version" alt="Version"></a>
 </p>
 <p align="center">
-  <a href="https://docs.simplist.app.bernitec.it"><b>Documentation</b></a> ·
-  <a href="https://docs.simplist.app.bernitec.it/en/self-hosting/docker/">Self-hosting guide</a> ·
-  <a href="https://docs.simplist.app.bernitec.it/en/changelog/">Changelog</a>
+  <a href="./apps/docs/src/content/docs/en"><b>Documentation</b></a> ·
+  <a href="./apps/docs/src/content/docs/en/self-hosting/docker.mdx">Self-hosting guide</a> ·
+  <a href="./apps/app/CHANGELOG.md">Changelog</a>
 </p>
 
 ## Introduction
@@ -39,26 +39,26 @@ It's a full-stack TypeScript monorepo (Next.js frontend, Express + Drizzle API, 
 - 📱 **Installable app (PWA)**: designed for phones too, with full-screen windows, the back gesture and large touch targets
 - ⌨️ **Keyboard-first**: hotkeys and a command spotlight on desktop
 - 🌍 **English and Italian**, light and dark theme, and a guided tour for new users
-- 🐳 **Self-hosted**: Docker images for the app, API and docs, behind a single nginx entry point
+- 🐳 **Self-hosted**: one `compose.yaml` and a `.env`, secrets generated on first start, documentation served by your own instance
 
 ## Self-hosting
 
-You need a server with Docker Compose and a domain with HTTPS. In short:
+You need a server with Docker Compose and a domain with HTTPS. No need to clone the repository:
 
 ```bash
-git clone --depth 1 https://github.com/bernagit/simplist.git
-cd simplist
+mkdir simplist && cd simplist
+curl -fsSLO https://raw.githubusercontent.com/bernagit/simplist/master/docker/compose.yaml
+curl -fsSL https://raw.githubusercontent.com/bernagit/simplist/master/docker/.env.example -o .env
 
-# Configuration: set at least VERSION, APP_URL, CORS_ORIGIN and POSTGRES_PASSWORD
-cp docker/.env.example docker/.env
+# Set at least VERSION, APP_URL, CORS_ORIGIN and POSTGRES_PASSWORD
+nano .env
 
-docker compose --env-file docker/.env \
-  -f docker/docker-compose.yml -f docker/docker-compose.prod.yml up -d
+docker compose up -d
 ```
 
-Simplist then answers on port `3000`: nginx routes `/api` to the API, the `docs.` subdomain to the documentation and everything else to the app. On first start the API creates the database tables and its secrets (session and push notification keys) in `keys/`: keep that folder in your backups. Put a reverse proxy with HTTPS in front of it, then open the registration link the API prints in its logs to create the first user.
+Simplist then answers on port `3000`: its proxy routes `/api` to the API, `/docs` to the documentation (optional, `COMPOSE_PROFILES=docs`) and everything else to the app; the database isn't published. On first start the API creates the database tables and its secrets (session and push notification keys) in `keys/`: keep that folder in your backups. Put a reverse proxy with HTTPS in front of it, then open the registration link the API prints in its logs (`docker compose logs api`) to create the first user.
 
-The [self-hosting guide](https://docs.simplist.app.bernitec.it/en/self-hosting/docker/) covers every step in detail: email, closing the database port, Caddy/nginx examples, [configuration](https://docs.simplist.app.bernitec.it/en/self-hosting/configuration/), [updates and backups](https://docs.simplist.app.bernitec.it/en/self-hosting/maintenance/).
+The [self-hosting guide](./apps/docs/src/content/docs/en/self-hosting/docker.mdx) covers every step in detail: email, Caddy/nginx examples, [configuration](./apps/docs/src/content/docs/en/self-hosting/configuration.mdx), [updates, backups and moving from the old compose files](./apps/docs/src/content/docs/en/self-hosting/maintenance.mdx).
 
 ## Development
 
@@ -71,8 +71,8 @@ yarn install
 cp apps/api/.env.example apps/api/.env
 cp apps/app/.env.example apps/app/.env
 
-# PostgreSQL
-docker compose --env-file apps/api/.env -f docker/docker-compose.yml up -d db
+# PostgreSQL on localhost:5432 (docker/compose.dev.yml)
+yarn dev:db
 
 # API (http://localhost:2000) + app (http://localhost:3000)
 yarn dev
@@ -83,10 +83,10 @@ The API applies the database migrations when it starts. Other useful scripts:
 | Command | What it does |
 |---|---|
 | `yarn dev:https` | App over HTTPS on your LAN, to test the PWA and notifications on a phone (run `yarn dev:certs` once, needs [mkcert](https://github.com/FiloSottile/mkcert)) |
-| `yarn dev:docs` | Documentation site (Astro Starlight) |
+| `yarn dev:docs` | Documentation site (Astro Starlight), also at http://localhost:3000/docs/ while `yarn dev` runs |
 | `yarn lint` / `yarn format` | ESLint / Prettier |
 | `yarn changeset` / `yarn release` | Describe a change / bump versions and changelogs |
-| `yarn docker:build` | Build and run the whole stack from source |
+| `yarn docker:build` | Build and run the whole stack from source (`docker/compose.yaml` + `compose.build.yml`, configured by `docker/.env`) |
 
 ### Project structure
 
@@ -95,7 +95,7 @@ apps/
   api/    Express + Drizzle ORM API (PostgreSQL)
   app/    Next.js + Mantine web app (PWA)
   docs/   Astro Starlight documentation (standalone project)
-docker/   Compose files and the nginx entry point
+docker/   compose.yaml (production), dev/build overrides, the proxy image (nginx)
 scripts/  Dev certificates and Docker image release
 ```
 

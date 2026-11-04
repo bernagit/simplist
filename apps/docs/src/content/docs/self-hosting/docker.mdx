@@ -5,77 +5,56 @@ description: Installa Simplist sul tuo server con Docker Compose, passo passo.
 
 import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 
-Questa guida porta da un server vuoto a un'istanza di Simplist raggiungibile in HTTPS. Servono circa 15 minuti.
+Questa guida porta da un server vuoto a un'istanza di Simplist raggiungibile in HTTPS. Servono circa 10 minuti, e non serve clonare il repository: bastano due file.
 
 Negli esempi l'istanza risponde su `https://simplist.esempio.it`: sostituiscilo con il tuo dominio.
 
 <Steps>
 
-1. ## Scarica i file di deploy
+1. ## Scarica i file
 
-   Sul server ti serve la cartella `docker/` del repository (compose, configurazione di nginx, esempio di `.env`). Il modo più semplice è clonare il repository:
-
-   ```bash
-   git clone --depth 1 https://github.com/bernagit/simplist.git
-   cd simplist
-   ```
-
-   Tutti i comandi seguenti partono da questa cartella.
-
-2. ## Crea il file di configurazione
+   Crea una cartella per l'istanza e scarica il file di Compose e la configurazione di esempio:
 
    ```bash
-   cp docker/.env.example docker/.env
+   mkdir simplist && cd simplist
+   curl -fsSLO https://raw.githubusercontent.com/bernagit/simplist/master/docker/compose.yaml
+   curl -fsSL https://raw.githubusercontent.com/bernagit/simplist/master/docker/.env.example -o .env
    ```
 
-   Apri `docker/.env` e imposta almeno questi valori:
+   Tutti i comandi seguenti partono da questa cartella. Docker Compose legge `compose.yaml` e `.env` da qui, senza altre opzioni.
+
+2. ## Configura l'istanza
+
+   Apri `.env` e imposta almeno questi valori:
 
    ```ini
-   # Versione da installare: fissala (per esempio 0.7.1) invece di "latest",
+   # Versione da installare: fissala (per esempio 0.7.4) invece di "latest",
    # così aggiorni quando lo decidi tu
-   VERSION=0.7.1
+   VERSION=0.7.4
 
    # Indirizzo pubblico dell'istanza: usato nei link delle email e nel link del primo utente
    APP_URL=https://simplist.esempio.it
    CORS_ORIGIN=https://simplist.esempio.it
 
-   # Password del database: scegline una lunga e casuale
+   # Password del database: scegline una lunga e casuale prima del primo avvio
    POSTGRES_PASSWORD=una-password-lunga-e-casuale
    ```
 
-   <Aside type="caution" title="Email">
-   Se le variabili `SMTP_*` sono tutte impostate, l'API verifica la connessione al server di posta all'avvio e **non parte** se la verifica fallisce. I valori di esempio non funzionano:
-   - inserisci i dati del tuo server SMTP;
-   - oppure, se non ti serve l'email, cancella o commenta le righe `SMTP_*` e `MAIL_FROM_*`.
+   <Aside title="Email (facoltativa)">
+   Per l'email di benvenuto, gli inviti via email e il recupero della password, togli il commento alle righe `SMTP_*` e `MAIL_FROM_*` e inserisci i dati del tuo server di posta. Se all'avvio il server non risponde, l'API lo segnala nei log e parte comunque.
 
-   Senza email Simplist funziona normalmente. Non ci sono solo l'email di benvenuto, gli inviti via email e il recupero della password: gli inviti si condividono comunque con un link.
+   Senza email Simplist funziona normalmente: gli inviti si condividono con un link.
    </Aside>
 
-   Tutte le altre opzioni sono descritte in [Configurazione](/self-hosting/configuration/).
+   Per avere anche questa documentazione sulla tua istanza, all'indirizzo `/docs/`, aggiungi `COMPOSE_PROFILES=docs`. Tutte le altre opzioni sono descritte in [Configurazione](/docs/self-hosting/configuration/).
 
-3. ## Non esporre il database
-
-   Il file `docker/docker-compose.yml` pubblica PostgreSQL sulla porta `5432` del server, che è utile in sviluppo. In produzione chiudila creando `docker/docker-compose.server.yml`:
-
-   ```yaml title="docker/docker-compose.server.yml"
-   services:
-     db:
-       ports: !reset []
-   ```
-
-   (`!reset` richiede Docker Compose 2.24 o successivo.)
-
-4. ## Avvia Simplist
+3. ## Avvia Simplist
 
    ```bash
-   docker compose --env-file docker/.env \
-     -f docker/docker-compose.yml \
-     -f docker/docker-compose.prod.yml \
-     -f docker/docker-compose.server.yml \
-     up -d
+   docker compose up -d
    ```
 
-   Al primo avvio l'API crea le tabelle del database e genera i suoi segreti nella cartella `keys/`, accanto a `docker/`:
+   Al primo avvio l'API crea le tabelle del database e genera i suoi segreti nella cartella `keys/`:
 
    - `private.key` e `public.pem`, le chiavi che firmano le sessioni;
    - `vapid.json`, le chiavi delle notifiche push.
@@ -87,18 +66,18 @@ Negli esempi l'istanza risponde su `https://simplist.esempio.it`: sostituiscilo 
    Controlla che sia tutto a posto:
 
    ```bash
-   docker compose --env-file docker/.env -f docker/docker-compose.yml -f docker/docker-compose.prod.yml ps
+   docker compose ps
    curl http://localhost:3000/api/health
    ```
 
-   La risposta deve contenere `"status":"ok"` e la versione installata.
+   La risposta deve contenere `"status":"ok"` e la versione installata. Il database non è raggiungibile dall'esterno: l'unico servizio pubblicato è il proxy, sulla porta `3000`.
 
-5. ## Crea il primo utente
+4. ## Crea il primo utente
 
    La registrazione su Simplist avviene solo su invito. Quando il database è vuoto, l'API crea un invito per il primo utente e stampa il link nei log:
 
    ```bash
-   docker logs simplist-api 2>&1 | grep "Register at"
+   docker compose logs api | grep "Register at"
    ```
 
    ```text
@@ -108,12 +87,12 @@ Negli esempi l'istanza risponde su `https://simplist.esempio.it`: sostituiscilo 
    Apri il link e crea il tuo account. Gli utenti successivi li inviti dall'app, in **Impostazioni → Inviti**.
 
    <Aside type="tip">
-   Il link vale un'ora. Se scade prima che tu lo usi, riavvia l'API con `docker restart simplist-api`: finché non esiste nessun utente, a ogni avvio viene creato un nuovo invito.
+   Il link vale un'ora. Se scade prima che tu lo usi, riavvia l'API con `docker compose restart api`: finché non esiste nessun utente, a ogni avvio viene creato un nuovo invito.
    </Aside>
 
-6. ## Pubblica in HTTPS
+5. ## Pubblica in HTTPS
 
-   Il container nginx risponde in HTTP sulla porta `3000`. Davanti serve un reverse proxy che gestisca il certificato e inoltri le richieste **mantenendo l'header `Host`**. Quell'header serve anche a riconoscere il sottodominio `docs.` della documentazione.
+   Il proxy di Simplist risponde in HTTP sulla porta `3000`. Davanti serve un reverse proxy che gestisca il certificato e inoltri le richieste **mantenendo l'header `Host`**.
 
    <Tabs>
    <TabItem label="Caddy">
@@ -121,7 +100,7 @@ Negli esempi l'istanza risponde su `https://simplist.esempio.it`: sostituiscilo 
    Caddy ottiene e rinnova il certificato da solo:
 
    ```text title="/etc/caddy/Caddyfile"
-   simplist.esempio.it, docs.simplist.esempio.it {
+   simplist.esempio.it {
      reverse_proxy localhost:3000
    }
    ```
@@ -132,7 +111,7 @@ Negli esempi l'istanza risponde su `https://simplist.esempio.it`: sostituiscilo 
    ```nginx title="/etc/nginx/sites-available/simplist"
    server {
      listen 443 ssl http2;
-     server_name simplist.esempio.it docs.simplist.esempio.it;
+     server_name simplist.esempio.it;
 
      ssl_certificate     /etc/letsencrypt/live/simplist.esempio.it/fullchain.pem;
      ssl_certificate_key /etc/letsencrypt/live/simplist.esempio.it/privkey.pem;
@@ -152,18 +131,18 @@ Negli esempi l'istanza risponde su `https://simplist.esempio.it`: sostituiscilo 
    </TabItem>
    </Tabs>
 
-   Il sottodominio `docs.` è facoltativo: se non ti serve la documentazione sulla tua istanza, non creare il record DNS.
+   Se sul server la porta `3000` è già occupata, scegline un'altra con `HTTP_PORT` in `.env`.
 
 </Steps>
 
 ## Verifica finale
 
 - Apri `https://simplist.esempio.it` e accedi.
-- Nei log dell'API (`docker logs simplist-api`) devono comparire `Application ready` e `Task reminders started.`.
+- Nei log dell'API (`docker compose logs api`) devono comparire `Application ready` e `Task reminders started.`.
 - Da un telefono, installa l'app e attiva le notifiche in **Impostazioni → Notifiche**, poi invia una notifica di prova.
 
 <Aside type="note" title="Senza HTTPS">
-Su una rete locale senza HTTPS puoi impostare `COOKIE_SECURE=false` in `docker/.env` per poter accedere. Installazione come app e notifiche push però richiedono HTTPS, tranne che su `localhost`.
+Su una rete locale senza HTTPS puoi impostare `COOKIE_SECURE=false` in `.env` per poter accedere. Installazione come app e notifiche push però richiedono HTTPS, tranne che su `localhost`.
 </Aside>
 
-Prossimo passo: [aggiornamenti e backup](/self-hosting/maintenance/).
+Prossimo passo: [aggiornamenti e backup](/docs/self-hosting/maintenance/).

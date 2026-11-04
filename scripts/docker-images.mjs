@@ -4,8 +4,14 @@ import { execSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 
 const REGISTRY = "ghcr.io/bernagit";
-// docs: static documentation site (apps/docs/Dockerfile), tagged with the release version
-const APPS = ["api", "app", "docs"];
+// Every image of an instance, tagged with the release version (see docker/compose.yaml):
+// proxy is nginx with the instance routing built in (docker/nginx)
+const IMAGES = {
+  api: "apps/api/Dockerfile",
+  app: "apps/app/Dockerfile",
+  docs: "apps/docs/Dockerfile",
+  proxy: "docker/nginx/Dockerfile",
+};
 
 const VERSION = JSON.parse(
   readFileSync("apps/api/package.json", "utf8"),
@@ -28,14 +34,14 @@ function run(command) {
   });
 }
 
-for (const app of APPS) {
+for (const [app, dockerfile] of Object.entries(IMAGES)) {
   const image = `${REGISTRY}/simplist-${app}`;
 
   switch (mode) {
     case "build":
       run(
         `docker build --no-cache \
--f apps/${app}/Dockerfile \
+-f ${dockerfile} \
 -t ${image}:${VERSION} \
 -t ${image}:latest .`,
       );
@@ -49,7 +55,7 @@ for (const app of APPS) {
     case "release":
       run(
         `docker build --no-cache \
--f apps/${app}/Dockerfile \
+-f ${dockerfile} \
 -t ${image}:${VERSION} \
 -t ${image}:latest .`,
       );

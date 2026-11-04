@@ -1,0 +1,22 @@
+# Builds the images from this repository instead of pulling them (yarn docker:build):
+#   docker compose -f docker/compose.yaml -f docker/compose.build.yml up --build
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: apps/api/Dockerfile
+    volumes:
+      # Same keys as `yarn dev` (repository root)
+      - ../keys:/app/keys
+  app:
+    build:
+      context: ..
+      dockerfile: apps/app/Dockerfile
+  docs:
+    build:
+      context: ..
+      dockerfile: apps/docs/Dockerfile
+  proxy:
+    build:
+      context: ..
+      dockerfile: docker/nginx/Dockerfile

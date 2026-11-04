@@ -19,4 +19,8 @@ export const TASK_QUERY_PARAM = 'task'
 export const PUBLIC_ROUTES = ['/login', '/register', '/forgot-password', '/reset-password']
 
 /** Must match `site` in apps/docs/astro.config.ts */
-export const DOCS_URL = 'https://docs.simplist.app.bernitec.it'
+/**
+ * Documentation of this instance, on the same domain (docker/nginx/simplist.conf). When the docs
+ * service isn't enabled, the proxy redirects to the documentation sources on GitHub.
+ */
+export const DOCS_URL = '/docs/'

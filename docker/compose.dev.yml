@@ -1,0 +1,23 @@
+# Development database only, published on localhost:5432 for `yarn dev` (credentials from
+# apps/api/.env):
+#   docker compose --env-file apps/api/.env -f docker/compose.dev.yml up -d
+name: simplist-dev
+
+services:
+  db:
+    image: postgres:17
+    container_name: simplist-dev-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in apps/api/.env}
+      POSTGRES_DB: ${POSTGRES_DB:-simplist}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+    # Same volume as the old docker/docker-compose.yml, so existing dev data is kept
+    name: docker_postgres_data

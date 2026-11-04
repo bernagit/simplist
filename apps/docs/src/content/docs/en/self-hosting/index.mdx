@@ -5,7 +5,7 @@ description: What a Simplist installation is made of and what you need to host i
 
 import { CardGrid, LinkCard } from '@astrojs/starlight/components';
 
-Simplist is installed with **Docker Compose**. Images are published on GitHub Container Registry (`ghcr.io/bernagit`), so nothing is built on your server.
+Simplist is installed with **Docker Compose**. Images are published on GitHub Container Registry (`ghcr.io/bernagit`), so nothing is built on your server: the whole instance is described by a single `compose.yaml`, configured with a `.env` file.
 
 ## What an installation is made of
 
@@ -14,22 +14,22 @@ Simplist is installed with **Docker Compose**. Images are published on GitHub Co
 | `db` | `postgres:17` | PostgreSQL database with all the data |
 | `api` | `ghcr.io/bernagit/simplist-api` | Express API: authentication, lists, tasks, reminders |
 | `app` | `ghcr.io/bernagit/simplist-app` | Next.js web app (installable as a PWA) |
-| `docs` | `ghcr.io/bernagit/simplist-docs` | This documentation (optional) |
-| `nginx` | `nginx:1.27-alpine` | Single entry point: routes requests to the other services |
+| `docs` | `ghcr.io/bernagit/simplist-docs` | This documentation, under `/docs/` (optional, `docs` profile) |
+| `proxy` | `ghcr.io/bernagit/simplist-proxy` | Single entry point: nginx with the routing built in |
 
-Traffic only comes in through **nginx**, on port `3000` of the host:
+Traffic only comes in through the **proxy**, on port `3000` of the host (`HTTP_PORT`):
 
 - `/api/*` goes to the API;
-- everything else goes to the web app;
-- requests to a host starting with `docs.` (for example `docs.example.com`) go to the documentation.
+- `/docs/*` goes to the documentation; without the `docs` service it redirects to the documentation sources on GitHub;
+- everything else goes to the web app.
 
-The app and the API are on the **same domain**, so session cookies work without any CORS setup.
+App, API and documentation are on the **same domain**: session cookies work without any CORS setup, and no extra DNS record is needed. The database isn't published, only the API reaches it.
 
 ```text
-Browser ──HTTPS──▶ reverse proxy (Caddy, nginx, Traefik…) ──HTTP──▶ simplist-nginx :3000
-                                                                    ├── /api  ─▶ api :2000 ─▶ db :5432
-                                                                    ├── /     ─▶ app :3000
-                                                                    └── docs.* ─▶ docs :80
+Browser ──HTTPS──▶ reverse proxy (Caddy, nginx, Traefik…) ──HTTP──▶ proxy :3000
+                                                                    ├── /api   ─▶ api :2000 ─▶ db :5432
+                                                                    ├── /docs  ─▶ docs :80
+                                                                    └── /      ─▶ app :3000
 ```
 
 ## Requirements
@@ -48,16 +48,16 @@ Browser ──HTTPS──▶ reverse proxy (Caddy, nginx, Traefik…) ──HTTP
   <LinkCard
     title="Deploy with Docker"
     description="Step-by-step installation: configuration, start, first user and HTTPS."
-    href="/en/self-hosting/docker/"
+    href="/docs/en/self-hosting/docker/"
   />
   <LinkCard
     title="Configuration"
     description="Every API environment variable, with its default."
-    href="/en/self-hosting/configuration/"
+    href="/docs/en/self-hosting/configuration/"
   />
   <LinkCard
     title="Updates and backups"
     description="Updating to a new version, backup and restore, common problems."
-    href="/en/self-hosting/maintenance/"
+    href="/docs/en/self-hosting/maintenance/"
   />
 </CardGrid>
