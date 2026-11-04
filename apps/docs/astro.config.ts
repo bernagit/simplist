@@ -2,7 +2,6 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import { sidebar } from './src/content/sidebar';
-import starlightCatppuccin from '@catppuccin/starlight'
 import starlightLinksValidator from 'starlight-links-validator';
 
 // https://astro.build/config
@@ -10,13 +9,9 @@ export default defineConfig({
 	site: 'https://docs.simplist.app.bernitec.it',
 	integrations: [
 		starlight({
-			plugins: [
-				starlightCatppuccin({
-					dark: { flavor: 'mocha', accent: 'blue' },
-					light: { flavor: 'latte', accent: 'blue' }
-				}),
-				starlightLinksValidator()
-			],
+			plugins: [starlightLinksValidator()],
+			// The app's look: Mantine colors, font and radius (see the file)
+			customCss: ['./src/styles/simplist.css'],
 			title: 'Simplist Docs',
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/bernagit/simplist' }],
 			locales: {

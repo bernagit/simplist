@@ -217,7 +217,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@astrojs/starlight@npm:^0.41.1, @astrojs/starlight@npm:^0.41.3":
+"@astrojs/starlight@npm:^0.41.3":
   version: 0.41.3
   resolution: "@astrojs/starlight@npm:0.41.3"
   dependencies:
@@ -380,18 +380,6 @@ __metadata:
   dependencies:
     fontkitten: "npm:^1.0.3"
   checksum: 10c0/72ce03871e137bae1c4925f9dc916a6250cf9b9630a8bb28d2ef7575d20fd7ef0e8966b361aaa3a54c0e8d5ff40b133490bd97a9beb6dc209529102947d392b1
-  languageName: node
-  linkType: hard
-
-"@catppuccin/starlight@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "@catppuccin/starlight@npm:2.1.0"
-  dependencies:
-    "@astrojs/starlight": "npm:^0.41.1"
-  peerDependencies:
-    "@astrojs/starlight": ">=0.38"
-    astro: ^6.0.0 || ^7.0.0
-  checksum: 10c0/d16f0dac18c827784adddb10131530cf7728b7bfbd35c4e368d8a173aa83f4c941b645baf267d3af340ee09b97f5968ebee63569084b7f63f193ff9f732df547
   languageName: node
   linkType: hard
 
@@ -2115,7 +2103,6 @@ __metadata:
   resolution: "docs@workspace:."
   dependencies:
     "@astrojs/starlight": "npm:^0.41.3"
-    "@catppuccin/starlight": "npm:^2.1.0"
     astro: "npm:^7.0.2"
     sharp: "npm:^0.34.5"
     starlight-links-validator: "npm:^0.25.2"
